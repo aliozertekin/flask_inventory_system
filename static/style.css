@@ -1,0 +1,185 @@
+/* === Genel Reset & Temel Ayarlar === */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #333;
+}
+
+body {
+  padding: 2rem;
+  background-color: #f5f7fa;
+  line-height: 1.6;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* === Header === */
+header {
+  background-color: #0d6efd;
+  color: white;
+  padding: 1rem 2rem;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+header h1 {
+  font-weight: 700;
+  font-size: 1.8rem;
+}
+
+/* === Navigation === */
+nav {
+  margin-top: 0.5rem;
+}
+
+nav a {
+  color: white;
+  text-decoration: none;
+  margin-right: 1.5rem;
+  font-weight: 600;
+  transition: color 0.3s ease;
+}
+
+nav a:hover {
+  color: #cfe2ff;
+}
+
+/* === Ana İçerik Alanı === */
+main {
+  flex: 1;
+  padding: 4rem;
+  max-width: 900px;
+  margin: 2rem auto 0 auto;
+  background-color: white;
+  border-radius: 6px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+
+/* === Footer === */
+footer {
+  background-color: #e9ecef;
+  color: #6c757d;
+  padding: 1rem 2rem;
+  text-align: center;
+  font-size: 0.9rem;
+  margin-top: auto;
+}
+
+/* === Butonlar === */
+button {
+  background-color: #0d6efd;
+  border: none;
+  color: white;
+  padding: 0.6rem 1.2rem;
+  font-size: 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #0b5ed7;
+}
+
+/* === Form Elemanları === */
+input[type="text"],
+input[type="email"],
+textarea {
+  width: 100%;
+  padding: 0.6rem;
+  margin: 0.5rem 0 1.2rem 0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+textarea:focus {
+  border-color: #0d6efd;
+  outline: none;
+}
+
+/* === Müşteri Listesi & Genel Liste Stili === */
+ul,
+table {
+  width: 100%;
+  margin: 2rem 0;
+  border-collapse: collapse;
+}
+
+ul {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+ul li {
+  padding: 0.6rem 1rem;
+  border-bottom: 1px solid #eee;
+  font-weight: 500;
+}
+
+/* Tablo başlıkları */
+table th {
+  background-color: #0d6efd;
+  color: white;
+  padding: 0.8rem 1rem;
+  text-align: left;
+  font-weight: 600;
+  border-bottom: 3px solid #0b5ed7;
+}
+
+/* Tablo satırları */
+table td {
+  padding: 0.6rem 1rem;
+  border-bottom: 1px solid #eee;
+}
+
+/* Alternatif satır arka planı */
+table tbody tr:nth-child(even) {
+  background-color: #f9fbff;
+}
+
+/* Responsive (küçük ekran için) */
+@media (max-width: 600px) {
+  main {
+    padding: 2rem 1rem;
+  }
+
+  table, thead, tbody, th, td, tr {
+    display: block;
+  }
+
+  table thead tr {
+    position: absolute;
+    top: -9999px;
+    left: -9999px;
+  }
+
+  table tbody tr {
+    margin-bottom: 1rem;
+    border-bottom: 2px solid #0d6efd;
+  }
+
+  table tbody td {
+    border: none;
+    position: relative;
+    padding-left: 50%;
+    text-align: left;
+  }
+
+  table tbody td::before {
+    position: absolute;
+    top: 0.6rem;
+    left: 1rem;
+    width: 45%;
+    white-space: nowrap;
+    font-weight: 700;
+    color: #0d6efd;
+    content: attr(data-label);
+  }
+}

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8" />
+    <title>Sipariş Listesi</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <h1>Siparişler</h1>
+  <table>
+    <thead>
+      <tr>
+        <th>Sipariş ID</th>
+        <th>Tarih</th>
+        <th>Durum</th>
+        <th>Müşteri</th>
+        <th>Mağaza</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for order in orders %}
+      <tr>
+        <td>{{ order[0] }}</td>
+        <td>{{ order[1] }}</td>
+        <td>{{ order[2] }}</td>
+        <td>{{ order[3] }}</td>
+        <td>{{ order[4] }}</td>
+      </tr>
+      {% else %}
+      <tr><td colspan="5">Sipariş bulunamadı.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</body>
+</html>

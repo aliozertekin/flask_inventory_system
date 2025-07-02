@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <meta charset="UTF-8">
+    <title>Müşteri Yönetimi</title>
+</head>
+<body>
+    <h2>Müşteri Ekle</h2>
+    <form method="POST" action="{{ url_for('customer_bp.add_customer') }}">
+        <input type="text" name="name" placeholder="Ad Soyad" required>
+        <input type="email" name="email" placeholder="E-posta" required>
+        <button type="submit">Ekle</button>
+    </form>
+
+    <h2>Mevcut Müşteriler</h2>
+    <ul>
+        {% for customer in customers %}
+        <li>{{ customer[1] }} ({{ customer[2] }})</li>
+        {% endfor %}
+    </ul>
+</body>
+
+</html>

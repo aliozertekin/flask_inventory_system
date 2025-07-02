@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Yeni Sipariş Ekle</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f5f7fa;
+      padding: 2rem;
+      max-width: 600px;
+      margin: auto;
+    }
+    h1 {
+      color: #0d6efd;
+      margin-bottom: 1.5rem;
+    }
+    label {
+      display: block;
+      margin-top: 1rem;
+      font-weight: 600;
+    }
+    input, select {
+      width: 100%;
+      padding: 0.6rem;
+      margin-top: 0.3rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 1rem;
+    }
+    button {
+      margin-top: 1.5rem;
+      background-color: #0d6efd;
+      color: white;
+      border: none;
+      padding: 0.8rem 1.2rem;
+      font-size: 1rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    button:hover {
+      background-color: #0b5ed7;
+    }
+    .item-row {
+      margin-top: 1rem;
+      border: 1px solid #ddd;
+      padding: 1rem;
+      border-radius: 6px;
+    }
+    .item-row label {
+      margin-top: 0;
+    }
+    #items-container {
+      margin-top: 1rem;
+      margin-bottom: 1rem;
+    }
+    #msg {
+      margin-top: 1rem;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <h1>Yeni Sipariş Ekle</h1>
+
+  <label for="customer_id">Müşteri ID</label>
+  <input type="number" id="customer_id" placeholder="Müşteri ID girin" required />
+
+  <label for="store_id">Mağaza ID</label>
+  <input type="number" id="store_id" placeholder="Mağaza ID girin" required />
+
+  <div id="items-container">
+    <h3>Ürünler</h3>
+    <div class="item-row">
+      <label>Ürün ID</label>
+      <input type="number" class="product_id" required />
+      <label>Miktar</label>
+      <input type="number" class="quantity" min="1" value="1" required />
+      <label>Birim Fiyat</label>
+      <input type="number" class="unit_price" min="0" step="0.01" value="0.00" required />
+    </div>
+  </div>
+
+  <button id="add-item-btn" type="button">+ Ürün Ekle</button>
+  <button id="submit-btn" type="button">Siparişi Gönder</button>
+
+  <div id="msg"></div>
+
+  <script>
+    const itemsContainer = document.getElementById('items-container');
+    const addItemBtn = document.getElementById('add-item-btn');
+    const submitBtn = document.getElementById('submit-btn');
+    const msgDiv = document.getElementById('msg');
+
+    addItemBtn.addEventListener('click', () => {
+      const itemDiv = document.createElement('div');
+      itemDiv.classList.add('item-row');
+      itemDiv.innerHTML = `
+        <label>Ürün ID</label>
+        <input type="number" class="product_id" required />
+        <label>Miktar</label>
+        <input type="number" class="quantity" min="1" value="1" required />
+        <label>Birim Fiyat</label>
+        <input type="number" class="unit_price" min="0" step="0.01" value="0.00" required />
+      `;
+      itemsContainer.appendChild(itemDiv);
+    });
+
+    submitBtn.addEventListener('click', () => {
+      msgDiv.textContent = '';
+
+      const customerId = document.getElementById('customer_id').value;
+      const storeId = document.getElementById('store_id').value;
+
+      if (!customerId || !storeId) {
+        msgDiv.textContent = 'Müşteri ID ve Mağaza ID zorunludur.';
+        msgDiv.style.color = 'red';
+        return;
+      }
+
+      const productIds = [...document.querySelectorAll('.product_id')];
+      const quantities = [...document.querySelectorAll('.quantity')];
+      const unitPrices = [...document.querySelectorAll('.unit_price')];
+
+      let items = [];
+      for (let i = 0; i < productIds.length; i++) {
+        const pid = productIds[i].value;
+        const qty = quantities[i].value;
+        const price = unitPrices[i].value;
+
+        if (!pid || !qty || !price) {
+          msgDiv.textContent = 'Ürün bilgileri eksik.';
+          msgDiv.style.color = 'red';
+          return;
+        }
+
+        items.push({
+          product_id: parseInt(pid),
+          quantity: parseInt(qty),
+          unit_price: parseFloat(price)
+        });
+      }
+
+      const payload = {
+        customer_id: parseInt(customerId),
+        store_id: parseInt(storeId),
+        items: items
+      };
+
+      fetch('/orders/add', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(payload)
+      })
+      .then(response => response.json())
+      .then(data => {
+        if(data.status === 'success') {
+          msgDiv.textContent = `Sipariş başarıyla oluşturuldu! Sipariş ID: ${data.order_id}`;
+          msgDiv.style.color = 'green';
+        } else {
+          msgDiv.textContent = `Hata: ${data.message}`;
+          msgDiv.style.color = 'red';
+        }
+      })
+      .catch(err => {
+        msgDiv.textContent = 'Sunucu ile bağlantı kurulamadı.';
+        msgDiv.style.color = 'red';
+      });
+    });
+  </script>
+</body>
+</html>
