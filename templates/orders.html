@@ -15,6 +15,7 @@
         <th>Durum</th>
         <th>Müşteri</th>
         <th>Mağaza</th>
+        <th>İşlem</th>  <!-- Yeni sütun -->
       </tr>
     </thead>
     <tbody>
@@ -25,9 +26,18 @@
         <td>{{ order[2] }}</td>
         <td>{{ order[3] }}</td>
         <td>{{ order[4] }}</td>
+        <td>
+          {% if order[2] == 'OPEN' %}
+          <a href="{{ url_for('orders.update_order_status', order_id=order[0]) }}">
+            <button>Durumu Güncelle</button>
+          </a>
+          {% else %}
+          -
+          {% endif %}
+        </td>
       </tr>
       {% else %}
-      <tr><td colspan="5">Sipariş bulunamadı.</td></tr>
+      <tr><td colspan="6">Sipariş bulunamadı.</td></tr>
       {% endfor %}
     </tbody>
   </table>

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <title>Sipariş Detayı</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <header>
+    <h1>Sipariş Detayı - #{{ order.order_id }}</h1>
+  </header>
+
+  <main>
+    <p><strong>Tarih:</strong> {{ order.order_tms }}</p>
+    <p><strong>Müşteri:</strong> {{ order.customer_id }}</p>
+    <p><strong>Mağaza:</strong> {{ order.store_id }}</p>
+    <p><strong>Mevcut Durum:</strong> <span id="current-status">{{ order.order_status }}</span></p>
+
+    {% if order.order_status == 'OPEN' %}
+    <div>
+      <label for="status">Durum Güncelle:</label>
+      <select id="status">
+        <option value="OPEN">OPEN</option>
+        <option value="PAID">PAID</option>
+        <option value="SHIPPED">SHIPPED</option>
+        <option value="COMPLETE">COMPLETE</option>
+        <option value="CANCELLED">CANCELLED</option>
+        <option value="REFUNDED">REFUNDED</option>
+      </select>
+      <button onclick="updateStatus()">Güncelle</button>
+    </div>
+    {% endif %}
+
+    <h3>Ürünler</h3>
+    <ul>
+      {% for item in order['items'] %}
+        <li>
+          Ürün ID: {{ item.product_id }} | Adet: {{ item.quantity }} | Fiyat: {{ item.unit_price }}
+        </li>
+      {% endfor %}
+    </ul>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 Sipariş Sistemi</p>
+  </footer>
+
+  <script>
+    function updateStatus() {
+      const status = document.getElementById("status").value;
+
+      fetch("/orders/{{ order.order_id }}/update_status", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ order_status: status })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.status === "success") {
+          alert("Durum güncellendi!");
+          document.getElementById("current-status").innerText = status;
+        } else {
+          alert("Hata: " + data.message);
+        }
+      });
+    }
+  </script>
+</body>
+</html>
