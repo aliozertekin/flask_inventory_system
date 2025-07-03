@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <meta charset="UTF-8">
     <title>Müşteri Yönetimi</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
     <h2>Müşteri Ekle</h2>
@@ -13,12 +13,56 @@
         <button type="submit">Ekle</button>
     </form>
 
-    <h2>Mevcut Müşteriler</h2>
-    <ul>
-        {% for customer in customers %}
-        <li>{{ customer[1] }} ({{ customer[2] }})</li>
-        {% endfor %}
-    </ul>
-</body>
+    <h2>Müşteri Listesi</h2>
 
+    <form method="GET" action="{{ url_for('customer_bp.list_customers') }}" class="search-form">
+        <input type="text" name="search" placeholder="Ara..." value="{{ search_term or '' }}">
+        <button type="submit">Ara</button>
+    </form>
+
+        <div class="pagination">
+        {% if page > 1 %}
+        <a href="{{ url_for('customer_bp.list_customers', page=page-1, search=search_term) }}">Önceki</a>
+        {% endif %}
+
+        <span>Sayfa {{ page }} (Toplam {{ (total/per_page)|round(0, 'ceil')|int }} sayfa)</span>
+
+        {% if page * per_page < total %}
+        <a href="{{ url_for('customer_bp.list_customers', page=page+1, search=search_term) }}">Sonraki</a>
+        {% endif %}
+    </div>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>Müşteri ID</th>
+                <th>Ad Soyad</th>
+                <th>E-posta</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for customer in customers %}
+            <tr>
+                <td>{{ customer[0] }}</td>
+                <td>{{ customer[1] }}</td>
+                <td>{{ customer[2] }}</td>
+            </tr>
+            {% else %}
+            <tr><td colspan="3">Müşteri bulunamadı.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="pagination">
+        {% if page > 1 %}
+        <a href="{{ url_for('customer_bp.list_customers', page=page-1, search=search_term) }}">Önceki</a>
+        {% endif %}
+
+        <span>Sayfa {{ page }} (Toplam {{ (total/per_page)|round(0, 'ceil')|int }} sayfa)</span>
+
+        {% if page * per_page < total %}
+        <a href="{{ url_for('customer_bp.list_customers', page=page+1, search=search_term) }}">Sonraki</a>
+        {% endif %}
+    </div>
+</body>
 </html>

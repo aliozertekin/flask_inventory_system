@@ -3,63 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <title>Yeni Sipariş Ekle</title>
-  <style>
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #f5f7fa;
-      padding: 2rem;
-      max-width: 600px;
-      margin: auto;
-    }
-    h1 {
-      color: #0d6efd;
-      margin-bottom: 1.5rem;
-    }
-    label {
-      display: block;
-      margin-top: 1rem;
-      font-weight: 600;
-    }
-    input, select {
-      width: 100%;
-      padding: 0.6rem;
-      margin-top: 0.3rem;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      font-size: 1rem;
-    }
-    button {
-      margin-top: 1.5rem;
-      background-color: #0d6efd;
-      color: white;
-      border: none;
-      padding: 0.8rem 1.2rem;
-      font-size: 1rem;
-      border-radius: 4px;
-      cursor: pointer;
-      font-weight: 600;
-    }
-    button:hover {
-      background-color: #0b5ed7;
-    }
-    .item-row {
-      margin-top: 1rem;
-      border: 1px solid #ddd;
-      padding: 1rem;
-      border-radius: 6px;
-    }
-    .item-row label {
-      margin-top: 0;
-    }
-    #items-container {
-      margin-top: 1rem;
-      margin-bottom: 1rem;
-    }
-    #msg {
-      margin-top: 1rem;
-      font-weight: 600;
-    }
-  </style>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
   <h1>Yeni Sipariş Ekle</h1>
@@ -79,6 +23,7 @@
       <input type="number" class="quantity" min="1" value="1" required />
       <label>Birim Fiyat</label>
       <input type="number" class="unit_price" min="0" step="0.01" value="0.00" required />
+      <button type="button" class="remove-item-btn" title="Ürünü kaldır">Sil</button>
     </div>
   </div>
 
@@ -92,8 +37,10 @@
     const addItemBtn = document.getElementById('add-item-btn');
     const submitBtn = document.getElementById('submit-btn');
     const msgDiv = document.getElementById('msg');
+    const storeIdInput = document.getElementById('store_id');
 
-    addItemBtn.addEventListener('click', () => {
+    // Ürün satırı ekleme fonksiyonu
+    function createItemRow() {
       const itemDiv = document.createElement('div');
       itemDiv.classList.add('item-row');
       itemDiv.innerHTML = `
@@ -103,15 +50,34 @@
         <input type="number" class="quantity" min="1" value="1" required />
         <label>Birim Fiyat</label>
         <input type="number" class="unit_price" min="0" step="0.01" value="0.00" required />
+        <button type="button" class="remove-item-btn" title="Ürünü kaldır">Sil</button>
       `;
-      itemsContainer.appendChild(itemDiv);
+      return itemDiv;
+    }
+
+    addItemBtn.addEventListener('click', () => {
+      const newItem = createItemRow();
+      itemsContainer.appendChild(newItem);
     });
 
+    // Sil butonu için event delegation
+    itemsContainer.addEventListener('click', (e) => {
+      if (e.target.classList.contains('remove-item-btn')) {
+        const itemRow = e.target.closest('.item-row');
+        if (itemRow) {
+          itemRow.remove();
+          updateSubmitButtonState();
+          msgDiv.textContent = '';
+        }
+      }
+    });
+
+    // Sipariş gönderme işlemi
     submitBtn.addEventListener('click', () => {
       msgDiv.textContent = '';
 
       const customerId = document.getElementById('customer_id').value;
-      const storeId = document.getElementById('store_id').value;
+      const storeId = storeIdInput.value;
 
       if (!customerId || !storeId) {
         msgDiv.textContent = 'Müşteri ID ve Mağaza ID zorunludur.';
@@ -122,6 +88,12 @@
       const productIds = [...document.querySelectorAll('.product_id')];
       const quantities = [...document.querySelectorAll('.quantity')];
       const unitPrices = [...document.querySelectorAll('.unit_price')];
+
+      if(productIds.length === 0) {
+        msgDiv.textContent = 'En az bir ürün ekleyin.';
+        msgDiv.style.color = 'red';
+        return;
+      }
 
       let items = [];
       for (let i = 0; i < productIds.length; i++) {
@@ -158,16 +130,125 @@
         if(data.status === 'success') {
           msgDiv.textContent = `Sipariş başarıyla oluşturuldu! Sipariş ID: ${data.order_id}`;
           msgDiv.style.color = 'green';
+          // İstersen formu temizleyebilirsin:
+          // resetForm();
         } else {
           msgDiv.textContent = `Hata: ${data.message}`;
           msgDiv.style.color = 'red';
         }
       })
-      .catch(err => {
+      .catch(() => {
         msgDiv.textContent = 'Sunucu ile bağlantı kurulamadı.';
         msgDiv.style.color = 'red';
       });
     });
+
+    // Ürün ID değişince fiyatı getir
+    document.addEventListener('input', async function (e) {
+      if (e.target.classList.contains('product_id')) {
+        const productId = e.target.value;
+        const itemRow = e.target.closest('.item-row');
+        const priceInput = itemRow.querySelector('.unit_price');
+
+        if (productId) {
+          try {
+            const res = await fetch(`/inventory/get_price/${productId}`);
+            const data = await res.json();
+
+            if (data.status === 'success') {
+              priceInput.value = data.unit_price.toFixed(2);
+            } else {
+              priceInput.value = '0.00';
+            }
+          } catch {
+            priceInput.value = '0.00';
+          }
+        }
+        updateProductInfo(itemRow);
+      }
+    });
+
+    // Store ID veya miktar değişince stok ve fiyat güncelle
+    itemsContainer.addEventListener('input', (e) => {
+      if (e.target.classList.contains('quantity') || e.target.id === 'store_id' || e.target.classList.contains('product_id')) {
+        const itemRows = itemsContainer.querySelectorAll('.item-row');
+        itemRows.forEach(row => updateProductInfo(row));
+        updateSubmitButtonState();
+      }
+    });
+
+    storeIdInput.addEventListener('input', () => {
+      const itemRows = itemsContainer.querySelectorAll('.item-row');
+      itemRows.forEach(row => updateProductInfo(row));
+      updateSubmitButtonState();
+    });
+
+    // Ürün stok ve fiyat bilgisini güncelleyen fonksiyon
+    function updateProductInfo(itemRow) {
+      const storeId = storeIdInput.value;
+      const productIdInput = itemRow.querySelector('.product_id');
+      const unitPriceInput = itemRow.querySelector('.unit_price');
+      const quantityInput = itemRow.querySelector('.quantity');
+
+      const productId = productIdInput.value;
+
+      if (storeId && productId) {
+        fetch(`/inventory/get_product_info/${storeId}/${productId}`)
+          .then(res => res.json())
+          .then(data => {
+            let stockInfo = itemRow.querySelector('.stock-info');
+            if(!stockInfo) {
+              stockInfo = document.createElement('div');
+              stockInfo.classList.add('stock-info');
+              stockInfo.style.marginTop = '0.3rem';
+              itemRow.appendChild(stockInfo);
+            }
+
+            if(data.status === 'success') {
+              unitPriceInput.value = data.unit_price.toFixed(2);
+              stockInfo.textContent = `Stokta: ${data.quantity}`;
+
+              if(parseInt(quantityInput.value) > data.quantity) {
+                stockInfo.style.color = 'red';
+                stockInfo.textContent += ' - Yeterli stok yok!';
+              } else {
+                stockInfo.style.color = 'green';
+              }
+            } else {
+              stockInfo.style.color = 'red';
+              stockInfo.textContent = 'Envanterde ürün yok!';
+              unitPriceInput.value = '0.00';
+            }
+            updateSubmitButtonState();
+          })
+          .catch(() => {
+            msgDiv.textContent = 'Sunucu ile bağlantı kurulamadı.';
+            msgDiv.style.color = 'red';
+          });
+      }
+    }
+
+    // Gönder butonunun aktifliğini stok durumuna ve satır varlığına göre ayarlar
+    function updateSubmitButtonState() {
+      const itemRows = itemsContainer.querySelectorAll('.item-row');
+      if(itemRows.length === 0) {
+        submitBtn.disabled = true;
+        return;
+      }
+
+      let canSubmit = true;
+      itemRows.forEach(row => {
+        const stockInfo = row.querySelector('.stock-info');
+        if(stockInfo && stockInfo.style.color === 'red') {
+          canSubmit = false;
+        }
+      });
+      submitBtn.disabled = !canSubmit;
+    }
+
+    // Sayfa açılırken buton durumu kontrolü
+    updateSubmitButtonState();
+
   </script>
 </body>
 </html>

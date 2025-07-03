@@ -4,27 +4,68 @@ import cx_Oracle
 
 order_bp = Blueprint('orders', __name__, url_prefix='/orders')
 ORDERS_VIEW = "orders_view"
+PER_PAGE = 20
 
 # Siparişleri listele
 @order_bp.route('/')
 def list_orders():
     cursor = conn.cursor()
-    query = f"SELECT * FROM {ORDERS_VIEW} ORDER BY order_tms DESC"
-    cursor.execute(query)
-    orders = cursor.fetchall()
+    search_term = request.args.get('search', '').strip()
+    page = request.args.get('page', 1, type=int)
 
-    # orders: list of tuples [(order_id, order_tms, order_status, full_name, store_name), ...]
-    return render_template('orders.html', orders=orders)
+    try:
+        # Toplam sipariş sayısı
+        count_query = f"SELECT COUNT(*) FROM {ORDERS_VIEW}"
+        if search_term:
+            count_query += """
+            WHERE LOWER(customer_name) LIKE :search
+               OR LOWER(store_name) LIKE :search
+               OR TO_CHAR(order_id) LIKE :search
+               OR LOWER(order_status) LIKE :search
+            """
+            cursor.execute(count_query, {'search': f'%{search_term.lower()}%'})
+        else:
+            cursor.execute(count_query)
+        total = cursor.fetchone()[0]
 
+        # Sipariş verilerini çek
+        base_query = f"""
+        SELECT * FROM (
+            SELECT a.*, ROWNUM rnum FROM (
+                SELECT * FROM {ORDERS_VIEW}
+                {f"WHERE LOWER(customer_name) LIKE :search OR LOWER(store_name) LIKE :search OR TO_CHAR(order_id) LIKE :search OR LOWER(order_status) LIKE :search" if search_term else ""}
+                ORDER BY order_tms DESC
+            ) a WHERE ROWNUM <= :end_row
+        ) WHERE rnum > :start_row
+        """
+        params = {
+            'end_row': page * PER_PAGE,
+            'start_row': (page - 1) * PER_PAGE
+        }
+        if search_term:
+            params['search'] = f'%{search_term.lower()}%'
+
+        cursor.execute(base_query, params)
+        orders = cursor.fetchall()
+
+        return render_template('orders.html',
+                               orders=orders,
+                               search_term=search_term,
+                               page=page,
+                               per_page=PER_PAGE,
+                               total=total)
+    except Exception as e:
+        print("Hata:", str(e))
+        return "Bir hata oluştu", 500
+    finally:
+        cursor.close()
 
 @order_bp.route('/add', methods=['GET', 'POST'])
 def add_order():
     if request.method == 'GET':
-        # Sipariş ekleme formunu göster
         return render_template('orders_add.html')
 
     if request.method == 'POST':
-        # JSON ile gelen sipariş verisini işle
         data = request.json
         customer_id = data.get('customer_id')
         store_id = data.get('store_id')
@@ -34,6 +75,25 @@ def add_order():
             return jsonify({'status': 'error', 'message': 'Eksik parametre'}), 400
 
         cursor = conn.cursor()
+
+        # Her ürün için stok kontrolü
+        for item in items:
+            product_id = item['product_id']
+            quantity = item['quantity']
+
+            # Envanterde ürün var mı ve yeterli miktar var mı sorgusu
+            stock_query = """
+                SELECT SUM(product_inventory)
+                FROM inventory
+                WHERE product_id = :product_id AND store_id = :store_id
+            """
+            cursor.execute(stock_query, {'product_id': product_id, 'store_id': store_id})
+            stock = cursor.fetchone()
+
+            if stock[0] is None or stock[0] < quantity:
+                return jsonify({'status': 'error', 'message': f"Ürün ID {product_id} için yeterli stok yok. Mevcut: {stock[0] or 0}"}), 400
+
+        # Eğer stok kontrolü geçtiyse siparişi eklemeye devam et
         order_item_rec = conn.gettype("ORDER_ITEM_REC")
         order_item_table = conn.gettype("ORDER_ITEM_TABLE")
 

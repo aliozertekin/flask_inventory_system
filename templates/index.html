@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Envanter Yönetim Sistemi</title>
+  <style>
+    :root {
+      --primary: #2c3e50;
+      --secondary: #3498db;
+      --light: #ecf0f1;
+      --white: #ffffff;
+      --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      --border-radius: 8px;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f5f7fa;
+      color: #333;
+      line-height: 1.6;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    header {
+      background: var(--primary);
+      color: var(--white);
+      padding: 2rem 0;
+      text-align: center;
+    }
+    
+    header h1 {
+      margin: 0;
+      font-size: 2.2rem;
+    }
+    
+    main {
+      flex: 1;
+      max-width: 800px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+      text-align: center;
+    }
+    
+    .intro {
+      margin-bottom: 2rem;
+    }
+    
+    .nav-links {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    
+    .nav-links a {
+      background: var(--secondary);
+      color: var(--white);
+      padding: 1rem 2rem;
+      text-decoration: none;
+      border-radius: var(--border-radius);
+      font-weight: 600;
+      transition: transform 0.3s ease;
+    }
+    
+    .nav-links a:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow);
+    }
+    
+    footer {
+      background: var(--primary);
+      color: var(--white);
+      text-align: center;
+      padding: 1rem 0;
+      margin-top: auto;
+    }
+    
+    @media (max-width: 600px) {
+      .nav-links {
+        flex-direction: column;
+        align-items: center;
+      }
+      
+      .nav-links a {
+        width: 80%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Envanter Yönetim Sistemine Hoş Geldiniz</h1>
+  </header>
+
+  <main>
+    <div class="intro">
+      <p>Oracle PL/SQL veritabanı ile entegre müşteri, sipariş ve envanter yönetim sistemi</p>
+    </div>
+
+    <div class="nav-links">
+      <a href="{{ url_for('customer_bp.list_customers') }}">Müşteriler</a>
+      <a href="{{ url_for('orders.list_orders') }}">Siparişler</a>
+      <a href="{{ url_for('inventory.list_orders') }}">Envanter</a>
+    </div>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 Envanter Sistemi</p>
+  </footer>
+</body>
+</html>

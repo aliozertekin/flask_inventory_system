@@ -7,6 +7,26 @@
 </head>
 <body>
   <h1>Siparişler</h1>
+
+  <!-- Arama Formu -->
+  <form method="GET" action="{{ url_for('orders.list_orders') }}" class="search-form">
+    <input type="text" name="search" placeholder="Ara..." value="{{ search_term or '' }}">
+    <button type="submit">Ara</button>
+  </form>
+
+  <!-- Sayfalama -->
+  <div class="pagination">
+    {% if page > 1 %}
+      <a href="{{ url_for('orders.list_orders', page=page-1, search=search_term) }}">Önceki</a>
+    {% endif %}
+
+    <span>Sayfa {{ page }} (Toplam {{ (total/per_page)|round(0, 'ceil')|int }} sayfa)</span>
+
+    {% if page * per_page < total %}
+      <a href="{{ url_for('orders.list_orders', page=page+1, search=search_term) }}">Sonraki</a>
+    {% endif %}
+  </div>
+
   <table>
     <thead>
       <tr>
@@ -15,7 +35,7 @@
         <th>Durum</th>
         <th>Müşteri</th>
         <th>Mağaza</th>
-        <th>İşlem</th>  <!-- Yeni sütun -->
+        <th>İşlem</th>
       </tr>
     </thead>
     <tbody>
@@ -41,5 +61,18 @@
       {% endfor %}
     </tbody>
   </table>
+
+  <!-- Sayfalama -->
+  <div class="pagination">
+    {% if page > 1 %}
+      <a href="{{ url_for('orders.list_orders', page=page-1, search=search_term) }}">Önceki</a>
+    {% endif %}
+
+    <span>Sayfa {{ page }} (Toplam {{ (total/per_page)|round(0, 'ceil')|int }} sayfa)</span>
+
+    {% if page * per_page < total %}
+      <a href="{{ url_for('orders.list_orders', page=page+1, search=search_term) }}">Sonraki</a>
+    {% endif %}
+  </div>
 </body>
 </html>
