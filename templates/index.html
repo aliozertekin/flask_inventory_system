@@ -4,14 +4,26 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Envanter Yönetim Sistemi</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     :root {
       --primary: #2c3e50;
       --secondary: #3498db;
+      --success: #27ae60;
+      --warning: #f39c12;
+      --danger: #e74c3c;
+      --info: #9b59b6;
       --light: #ecf0f1;
+      --dark: #34495e;
       --white: #ffffff;
       --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
       --border-radius: 8px;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
     
     body {
@@ -19,98 +31,440 @@
       background-color: #f5f7fa;
       color: #333;
       line-height: 1.6;
-      margin: 0;
-      padding: 0;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
     }
     
+    /* Header */
     header {
-      background: var(--primary);
+      background: linear-gradient(135deg, var(--primary), var(--dark));
       color: var(--white);
-      padding: 2rem 0;
-      text-align: center;
-    }
-    
-    header h1 {
-      margin: 0;
-      font-size: 2.2rem;
-    }
-    
-    main {
-      flex: 1;
-      max-width: 800px;
-      margin: 2rem auto;
-      padding: 0 1rem;
-      text-align: center;
-    }
-    
-    .intro {
-      margin-bottom: 2rem;
-    }
-    
-    .nav-links {
-      display: flex;
-      justify-content: center;
-      gap: 1rem;
-      flex-wrap: wrap;
-    }
-    
-    .nav-links a {
-      background: var(--secondary);
-      color: var(--white);
-      padding: 1rem 2rem;
-      text-decoration: none;
-      border-radius: var(--border-radius);
-      font-weight: 600;
-      transition: transform 0.3s ease;
-    }
-    
-    .nav-links a:hover {
-      transform: translateY(-3px);
+      padding: 1.5rem 2rem;
       box-shadow: var(--shadow);
     }
     
+    .header-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 1.8rem;
+      font-weight: 700;
+    }
+    
+    .logo i {
+      color: var(--secondary);
+    }
+    
+    /* Main Content */
+    .container {
+      max-width: 1400px;
+      margin: 2rem auto;
+      padding: 0 2rem;
+      flex: 1;
+      width: 100%;
+    }
+    
+    .dashboard-header {
+      margin-bottom: 2rem;
+    }
+    
+    .dashboard-header h1 {
+      font-size: 2.2rem;
+      color: var(--primary);
+      margin-bottom: 0.5rem;
+    }
+    
+    .dashboard-header p {
+      color: var(--dark);
+      font-size: 1.1rem;
+    }
+    
+    /* Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 3rem;
+    }
+    
+    .stat-card {
+      background-color: var(--white);
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow);
+      padding: 1.5rem;
+      transition: transform 0.3s ease;
+      border-top: 4px solid;
+    }
+    
+    .stat-card:hover {
+      transform: translateY(-5px);
+    }
+    
+    .stat-card.users {
+      border-top-color: var(--info);
+    }
+    
+    .stat-card.products {
+      border-top-color: var(--success);
+    }
+    
+    .stat-card.value {
+      border-top-color: var(--warning);
+    }
+    
+    .stat-card.orders {
+      border-top-color: var(--secondary);
+    }
+    
+    .stat-card.cost {
+      border-top-color: var(--danger);
+    }
+    
+    .stat-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+    
+    .stat-icon {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+    }
+    
+    .stat-card.users .stat-icon {
+      background-color: rgba(155, 89, 182, 0.15);
+      color: var(--info);
+    }
+    
+    .stat-card.products .stat-icon {
+      background-color: rgba(39, 174, 96, 0.15);
+      color: var(--success);
+    }
+    
+    .stat-card.value .stat-icon {
+      background-color: rgba(243, 156, 18, 0.15);
+      color: var(--warning);
+    }
+    
+    .stat-card.orders .stat-icon {
+      background-color: rgba(52, 152, 219, 0.15);
+      color: var(--secondary);
+    }
+    
+    .stat-card.cost .stat-icon {
+      background-color: rgba(231, 76, 60, 0.15);
+      color: var(--danger);
+    }
+    
+    .stat-value {
+      font-size: 2.2rem;
+      font-weight: 700;
+      margin: 0.5rem 0;
+    }
+    
+    .stat-title {
+      color: var(--dark);
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+    
+    .stat-change {
+      font-size: 0.9rem;
+      color: var(--success);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    
+    .stat-change.negative {
+      color: var(--danger);
+    }
+    
+    /* Navigation */
+    .nav-links {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
+    
+    .nav-card {
+      background-color: var(--white);
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow);
+      padding: 1.5rem;
+      transition: transform 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      text-decoration: none;
+      color: var(--dark);
+    }
+    
+    .nav-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .nav-card i {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      color: var(--secondary);
+    }
+    
+    .nav-card h3 {
+      font-size: 1.3rem;
+      margin-bottom: 0.5rem;
+    }
+    
+    .nav-card p {
+      color: var(--dark);
+    }
+    
+    /* Footer */
     footer {
       background: var(--primary);
       color: var(--white);
       text-align: center;
-      padding: 1rem 0;
-      margin-top: auto;
+      padding: 1.5rem 0;
+      margin-top: 3rem;
     }
     
-    @media (max-width: 600px) {
-      .nav-links {
-        flex-direction: column;
-        align-items: center;
+    /* Responsive */
+    @media (max-width: 992px) {
+      .stats-grid {
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .container {
+        padding: 0 1rem;
       }
       
-      .nav-links a {
-        width: 80%;
+      .header-container {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 1rem;
+      }
+      
+      .dashboard-header h1 {
+        font-size: 1.8rem;
+      }
+      
+      .nav-links {
+        grid-template-columns: 1fr;
       }
     }
   </style>
 </head>
 <body>
+    <!-- Header -->
   <header>
-    <h1>Envanter Yönetim Sistemine Hoş Geldiniz</h1>
+    <div class="header-container">
+      <div class="logo">
+        <i class="fas fa-boxes"></i>
+        <span>EnvanterPro</span>
+      </div>
+      <div class="user-info">
+        <i class="fas fa-user-circle"></i>
+        <span>Yönetici</span>
+      </div>
+    </div>
   </header>
 
-  <main>
-    <div class="intro">
+  <!-- Main Content -->
+  <div class="container">
+    <div class="dashboard-header">
+      <h1>Sistem Dashboard</h1>
       <p>Oracle PL/SQL veritabanı ile entegre müşteri, sipariş ve envanter yönetim sistemi</p>
     </div>
 
-    <div class="nav-links">
-      <a href="{{ url_for('customer_bp.list_customers') }}">Müşteriler</a>
-      <a href="{{ url_for('orders.list_orders') }}">Siparişler</a>
-      <a href="{{ url_for('inventory.list_orders') }}">Envanter</a>
-    </div>
-  </main>
+    <!-- Stats Grid -->
+    <div class="stats-grid">
+      <div class="stat-card users">
+        <div class="stat-card-header">
+          <div>
+            <div class="stat-title">Kullanıcı Sayısı</div>
+            <div class="stat-change">
+              <i class="fas fa-arrow-up"></i>
+              12.5% artış
+            </div>
+          </div>
+          <div class="stat-icon">
+            <i class="fas fa-users"></i>
+          </div>
+        </div>
+        <div class="stat-value">Yükleniyor...</div>
+      </div>
 
+      <div class="stat-card products">
+        <div class="stat-card-header">
+          <div>
+            <div class="stat-title">Depodaki Ürün Miktarı</div>
+            <div class="stat-change">
+              <i class="fas fa-arrow-up"></i>
+              8.3% artış
+            </div>
+          </div>
+          <div class="stat-icon">
+            <i class="fas fa-boxes"></i>
+          </div>
+        </div>
+        <div class="stat-value">Yükleniyor...</div>
+      </div>
+
+      <div class="stat-card value">
+        <div class="stat-card-header">
+          <div>
+            <div class="stat-title">Ürünlerin Toplam Değeri</div>
+            <div class="stat-change">
+              <i class="fas fa-arrow-up"></i>
+              15.2% artış
+            </div>
+          </div>
+          <div class="stat-icon">
+            <i class="fas fa-coins"></i>
+          </div>
+        </div>
+        <div class="stat-value">Yükleniyor...</div>
+      </div>
+
+      <div class="stat-card orders">
+        <div class="stat-card-header">
+          <div>
+            <div class="stat-title">Toplam Sipariş Sayısı</div>
+            <div class="stat-change">
+              <i class="fas fa-arrow-up"></i>
+              7.8% artış
+            </div>
+          </div>
+          <div class="stat-icon">
+            <i class="fas fa-shopping-cart"></i>
+          </div>
+        </div>
+        <div class="stat-value">Yükleniyor...</div>
+      </div>
+
+      <div class="stat-card cost">
+        <div class="stat-card-header">
+          <div>
+            <div class="stat-title">Siparişlerin Toplam Maliyeti</div>
+            <div class="stat-change negative">
+              <i class="fas fa-arrow-down"></i>
+              3.2% azalma
+            </div>
+          </div>
+          <div class="stat-icon">
+            <i class="fas fa-money-bill-wave"></i>
+          </div>
+        </div>
+        <div class="stat-value">Yükleniyor...</div>
+      </div>
+    </div>
+
+    <!-- Navigation Cards -->
+    <div class="nav-links">
+      <a href="{{ url_for('customer_bp.list_customers') }}" class="nav-card">
+        <i class="fas fa-users"></i>
+        <h3>Müşteriler</h3>
+        <p>Müşteri listesini görüntüleyin ve yönetin</p>
+      </a>
+      <a href="{{ url_for('orders.list_orders') }}" class="nav-card">
+        <i class="fas fa-shopping-cart"></i>
+        <h3>Siparişler</h3>
+        <p>Siparişleri görüntüleyin ve yönetin</p>
+      </a>
+      <a href="{{ url_for('inventory.list_orders') }}" class="nav-card">
+        <i class="fas fa-warehouse"></i>
+        <h3>Envanter</h3>
+        <p>Depo envanterini görüntüleyin ve yönetin</p>
+      </a>
+    </div>
+  </div>
+
+  <!-- Footer -->
   <footer>
-    <p>&copy; 2025 Envanter Sistemi</p>
+    <p>&copy; 2025 Envanter Yönetim Sistemi - Tüm hakları saklıdır</p>
   </footer>
+
+  <!-- JavaScript: Gerçek verileri çek -->
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    fetch('/api/dashboard')
+      .then(res => res.json())
+      .then(data => {
+        // Sayısal verileri yaz
+        document.querySelector('.stat-card.users .stat-value').textContent = data.user_count;
+        document.querySelector('.stat-card.products .stat-value').textContent = data.product_count.toLocaleString('tr-TR');
+        document.querySelector('.stat-card.value .stat-value').textContent = `₺${data.inventory_value.toLocaleString('tr-TR')}`;
+        document.querySelector('.stat-card.orders .stat-value').textContent = data.order_count.toLocaleString('tr-TR');
+        document.querySelector('.stat-card.cost .stat-value').textContent = `₺${data.order_value.toLocaleString('tr-TR')}`;
+
+        // Değişim yüzdeleri
+        const latestChange = data.monthly_changes[data.monthly_changes.length - 1];  // son ay verisi
+
+        // Kullanıcı değişimi
+        const userChange = latestChange.user_change_pct;
+        const userChangeEl = document.querySelector('.stat-card.users .stat-change');
+        userChangeEl.innerHTML = `
+          <i class="fas fa-arrow-${userChange >= 0 ? 'up' : 'down'}"></i>
+          ${Math.abs(userChange).toFixed(1)}% ${userChange >= 0 ? 'artış' : 'azalma'}
+        `;
+        userChangeEl.classList.toggle('negative', userChange < 0);
+
+        // Ürün değişimi (product_count için elimizde yok ama sabit bırakabilirsin ya da çıkar)
+        // Eğer aylık ürün değişimi hesaplanıyorsa buraya da eklenebilir
+
+        // Envanter değeri değişimi
+        const valueChange = latestChange.value_change_pct;
+        const valueChangeEl = document.querySelector('.stat-card.value .stat-change');
+        valueChangeEl.innerHTML = `
+          <i class="fas fa-arrow-${valueChange >= 0 ? 'up' : 'down'}"></i>
+          ${Math.abs(valueChange).toFixed(1)}% ${valueChange >= 0 ? 'artış' : 'azalma'}
+        `;
+        valueChangeEl.classList.toggle('negative', valueChange < 0);
+
+        // Sipariş sayısı değişimi
+        const orderChange = latestChange.order_change_pct;
+        const orderChangeEl = document.querySelector('.stat-card.orders .stat-change');
+        orderChangeEl.innerHTML = `
+          <i class="fas fa-arrow-${orderChange >= 0 ? 'up' : 'down'}"></i>
+          ${Math.abs(orderChange).toFixed(1)}% ${orderChange >= 0 ? 'artış' : 'azalma'}
+        `;
+        orderChangeEl.classList.toggle('negative', orderChange < 0);
+
+        // Sipariş maliyetindeki değişimi varsayalım ki value_change_pct ile gösteriyoruz (gerekirse ayrıca tanımlarsın)
+        const costChangeEl = document.querySelector('.stat-card.cost .stat-change');
+        costChangeEl.innerHTML = `
+          <i class="fas fa-arrow-${valueChange >= 0 ? 'up' : 'down'}"></i>
+          ${Math.abs(valueChange).toFixed(1)}% ${valueChange >= 0 ? 'artış' : 'azalma'}
+        `;
+        costChangeEl.classList.toggle('negative', valueChange < 0);
+
+      })
+      .catch(err => {
+        console.error("Dashboard verileri alınırken hata oluştu:", err);
+      });
+  });
+</script>
 </body>
 </html>

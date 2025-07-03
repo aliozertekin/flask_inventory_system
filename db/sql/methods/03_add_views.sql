@@ -28,3 +28,57 @@ JOIN stores s ON i.store_id = s.store_id
 ORDER BY i.inventory_id ASC;
 /
 
+-- Kullanıcı sayısı için view
+CREATE OR REPLACE VIEW vw_user_count AS
+SELECT COUNT(*) AS customer_id FROM customers;
+
+/
+
+-- Depodaki ürün miktarı ve toplam değer için view
+CREATE OR REPLACE VIEW vw_inventory_stats AS
+SELECT 
+    SUM(i.product_inventory) AS total_products,
+    SUM(i.product_inventory * p.unit_price) AS total_value
+FROM 
+    inventory i
+JOIN 
+    products p ON i.product_id = p.product_id;
+
+/
+
+CREATE OR REPLACE VIEW vw_order_stats AS
+SELECT 
+    COUNT(DISTINCT o.order_id) AS total_orders,
+    SUM(oi.quantity * oi.unit_price) AS total_cost
+FROM 
+    order_items oi
+JOIN 
+    orders o ON oi.order_id = o.order_id 
+WHERE 
+    o.order_status NOT IN ('CANCELLED', 'REFUNDED');
+    
+/
+
+CREATE MATERIALIZED VIEW mv_daily_stats
+REFRESH COMPLETE ON DEMAND
+AS
+SELECT 
+  TRUNC(SYSDATE) AS report_date,
+  c.user_count,
+  i.total_products,
+  i.total_value,
+  o.today_orders,
+  o.today_sales
+FROM 
+  (SELECT COUNT(*) AS user_count FROM customers) c,
+  (SELECT 
+     SUM(product_inventory) AS total_products,
+     SUM(product_inventory * unit_price) AS total_value
+   FROM inventory i JOIN products p ON i.product_id = p.product_id) i,
+  (SELECT 
+     COUNT(*) AS today_orders,
+     NVL(SUM(oi.quantity * oi.unit_price), 0) AS today_sales
+   FROM order_items oi JOIN orders o ON oi.order_id = o.order_id
+   WHERE TRUNC(o.order_tms) = TRUNC(SYSDATE)) o;
+   
+/

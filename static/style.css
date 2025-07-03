@@ -62,8 +62,9 @@ nav ul {
       list-style: none;
       gap: 1.5rem;
 }
+
 nav a {
-      color: var(--white);
+      color: #ffffff;
       text-decoration: none;
       font-weight: 600;
       padding: 0.5rem 1rem;
@@ -73,9 +74,29 @@ nav a {
       align-items: center;
       gap: 8px;
 }
-nav a:hover, nav a.active {
-      background-color: rgba(255, 255, 255, 0.15);
+
+.nav-links {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
 }
+
+.nav-links a {
+  background: #3498db;
+  color: #ffffff;
+  padding: 1rem 2rem;
+  text-decoration: none;
+  border-radius: var(--border-radius);
+  font-weight: 600;
+  transition: transform 0.3s ease;
+}
+
+.nav-links a:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
 .user-info {
       display: flex;
       align-items: center;
@@ -116,6 +137,7 @@ nav a:hover, nav a.active {
 .page-title i {
       color: var(--secondary);
 }
+
 /* === Kartlar ve Tablolar === */
 .card {
       background-color: var(--white);
@@ -188,6 +210,37 @@ table tr:hover {
       padding: 0.4rem 0.8rem;
       font-size: 0.9rem;
 }
+#add-item-btn,#submit-btn {
+  /* Temel Stiller */
+  background-color: #3498db; /* Mavi arkaplan */
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 10px 20px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin: 0.4rem;
+  /* İkon ve Yazı Düzeni */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  
+  /* Gölge ve Efektler */
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+#add-item-btn:active,#submit-btn{
+  transform: translateY(0);
+  box-shadow: 0 2px 3px rgba(0,0,0,0.1);
+}
+
+#add-item-btn::before {
+  font-size: 20px;
+  font-weight: bold;
+}
 /* === Form Elemanları === */
 .form-group {
       margin-bottom: 1.5rem;
@@ -249,11 +302,10 @@ input:focus, select:focus, textarea:focus {
       color: var(--danger);
 }
 /* === Sayfalama === */
-.pagination {
+.pagination, h1, h2, form {
       display: flex;
       justify-content: center;
       gap: 0.5rem;
-      margin-top: 2rem;
       flex-wrap: wrap;
 }
 .pagination a, .pagination span {
@@ -347,6 +399,17 @@ footer {
       color: var(--secondary);
 }
 /* === Responsive Tasarım === */
+
+@media (max-width: 600px) {
+  .nav-links {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .nav-links a {
+    width: 80%;
+  }
+}
 @media (max-width: 992px) {
       nav ul {
           margin-top: 1rem;
