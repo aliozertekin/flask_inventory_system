@@ -14,27 +14,6 @@ A professional-grade inventory and order management system built with **Flask** 
 - 📊 **Oracle Integration** – Uses PL/SQL stored procedures and user-defined types for advanced backend processing.
 - 💡 **Modern UI** – Clean and user-friendly interface with responsive design.
 
-## 🗂️ Project Structure
-
-```
-flask_inventory_system/
-│
-├── app.py                  # Flask app entry point
-├── db/
-│   └── connection.py       # Oracle DB connection
-├── routes/
-│   ├── customers.py        # Customer routes
-│   └── orders.py           # Order routes
-├── static/
-│   └── style.css           # Main stylesheet
-├── templates/
-│   ├── base.html           # (optional) layout template
-│   ├── customers.html      # Customer list
-│   ├── orders.html         # Orders list
-│   └── orders_details.html # Order details + status update
-└── README.md               # You are here
-```
-
 ## ⚙️ Technologies Used
 
 - Python 3.13+
