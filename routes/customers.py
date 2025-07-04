@@ -58,3 +58,30 @@ def add_customer():
     cursor = conn.cursor()
     cursor.callproc("add_customer", [email, name])
     return redirect(url_for('customer_bp.list_customers'))
+
+@customer_bp.route('/customers/edit/<int:customer_id>', methods=['GET', 'POST'])
+def edit_customer(customer_id):
+    cursor = conn.cursor()
+    if request.method == 'POST':
+        name = request.form.get('name')
+        email = request.form.get('email')
+        cursor.execute("""
+            UPDATE customers SET full_name = :name, email_address = :email
+            WHERE customer_id = :cid
+        """, {'name': name, 'email': email, 'cid': customer_id})
+        conn.commit()
+        return redirect(url_for('customer_bp.list_customers'))
+
+    cursor.execute("SELECT customer_id, full_name, email_address FROM customers WHERE customer_id = :cid",
+                   {'cid': customer_id})
+    customer = cursor.fetchone()
+    cursor.close()
+    return render_template('customer_edit.html', customer=customer)
+
+@customer_bp.route('/customers/delete/<int:customer_id>', methods=['POST'])
+def delete_customer(customer_id):
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM customers WHERE customer_id = :cid", {'cid': customer_id})
+    conn.commit()
+    cursor.close()
+    return redirect(url_for('customer_bp.list_customers'))

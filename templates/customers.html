@@ -66,6 +66,7 @@
                             <th>Müşteri ID</th>
                             <th>Ad Soyad</th>
                             <th>E-posta</th>
+                            <th>İşlemler</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -74,9 +75,20 @@
                             <td>{{ customer[0] }}</td>
                             <td>{{ customer[1] }}</td>
                             <td>{{ customer[2] }}</td>
+                            <td>
+                                <div style="display:flex; gap:10px;">
+                                    <a href="{{ url_for('customer_bp.edit_customer', customer_id=customer[0]) }}" 
+                                       class="btn btn-sm btn-warning">Düzenle</a>
+                                
+                                    <form method="POST" action="{{ url_for('customer_bp.delete_customer', customer_id=customer[0]) }}" 
+                                          onsubmit="return confirm('Silmek istediğinize emin misiniz?')">
+                                        <button type="submit" class="btn btn-sm btn-danger">Sil</button>
+                                    </form>
+                                </div>
+                            </td>
                         </tr>
                         {% else %}
-                        <tr><td colspan="3">Müşteri bulunamadı.</td></tr>
+                        <tr><td colspan="4">Müşteri bulunamadı.</td></tr>
                         {% endfor %}
                     </tbody>
                 </table>

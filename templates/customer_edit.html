@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <title>Müşteri Düzenle</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    /* Özel stiller */
+    .customer-form-container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 30px;
+      background-color: var(--white);
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow);
+    }
+    
+    .form-header {
+      text-align: center;
+      margin-bottom: 30px;
+      padding-bottom: 20px;
+      border-bottom: 2px solid #f0f4f8;
+    }
+    
+    .form-header h2 {
+      font-size: 1.8rem;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+    }
+    
+    .form-group {
+      margin-bottom: 25px;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 10px;
+      font-weight: 600;
+      color: #555;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .form-control {
+      width: 100%;
+      padding: 14px 18px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+    }
+    
+    .form-control:focus {
+      border-color: var(--secondary);
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+    }
+    
+    .form-actions {
+      display: flex;
+      gap: 15px;
+      margin-top: 30px;
+    }
+    
+    .btn-primary {
+      background: linear-gradient(to right, #3498db, #2980b9);
+      color: white;
+      border: none;
+      padding: 14px 28px;
+      border-radius: 8px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .btn-primary:hover {
+      background: linear-gradient(to right, #2980b9, #2573a7);
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .btn-secondary {
+      background: #95a5a6;
+      color: white;
+      border: none;
+      padding: 14px 28px;
+      border-radius: 8px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+    
+    .btn-secondary:hover {
+      background: #7f8c8d;
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .customer-info {
+      background: #f9fbfd;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 25px;
+      border-left: 4px solid var(--secondary);
+    }
+    
+    .info-item {
+      display: flex;
+      margin-bottom: 12px;
+    }
+    
+    .info-label {
+      font-weight: 600;
+      min-width: 120px;
+      color: #555;
+    }
+    
+    .info-value {
+      flex: 1;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-container">
+      <div class="logo">Müşteri Düzenle</div>
+      <nav>
+        <ul class="nav-links">
+          <li><a href="/inventory">Envanter</a></li>
+          <li><a href="/orders">Siparişler</a></li>
+          <li><a href="/customers">Müşteriler</a></li>
+          <li><a href="/orders/add">Yeni Sipariş</a></li>
+        </ul>
+      </nav>
+      <div class="user-info">
+        <span>Kullanıcı</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="customer-form-container">
+      <div class="form-header">
+        <h2>
+          <i class="fas fa-user-edit"></i> Müşteri Bilgilerini Güncelle
+        </h2>
+      </div>
+      
+      <div class="customer-info">
+        <div class="info-item">
+          <div class="info-label">Müşteri ID:</div>
+          <div class="info-value">{{ customer[0] }}</div>
+        </div>
+      </div>
+
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, message in messages %}
+            <div class="alert alert-{{ category }}">{{ message }}</div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+
+      <form method="POST" action="{{ url_for('customer_bp.edit_customer', customer_id=customer[0]) }}">
+        <div class="form-group">
+          <label for="name">
+            <i class="fas fa-user"></i> Ad Soyad
+          </label>
+          <input type="text" id="name" name="name" class="form-control" 
+                 value="{{ customer[1] }}" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="email">
+            <i class="fas fa-envelope"></i> E-posta
+          </label>
+          <input type="email" id="email" name="email" class="form-control" 
+                 value="{{ customer[2] }}" required>
+        </div>
+        
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary">
+            <i class="fas fa-save"></i> Güncelle
+          </button>
+          <a href="{{ url_for('customer_bp.list_customers') }}" class="btn btn-secondary">
+            <i class="fas fa-times"></i> İptal
+          </a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-content">
+      <p>&copy; 2025 Müşteri Yönetim Sistemi</p>
+      <div class="footer-links">
+        <a href="#">Gizlilik</a>
+        <a href="#">Şartlar</a>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

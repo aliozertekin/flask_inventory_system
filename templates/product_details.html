@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <title>Ürün Detayları - {{ product.name }}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    /* Özel stiller */
+    .product-details-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 30px;
+    }
+    
+    .product-image-container {
+      background: #f8f9fa;
+      border-radius: 10px;
+      padding: 20px;
+      text-align: center;
+    }
+    
+    .product-image-container img {
+      max-width: 100%;
+      max-height: 300px;
+      border-radius: 8px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      margin-bottom: 15px;
+    }
+    
+    .product-info-container {
+      background: white;
+      border-radius: 10px;
+      padding: 25px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #555;
+    }
+    
+    .form-control {
+      width: 100%;
+      padding: 12px 15px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-size: 1rem;
+    }
+    
+    textarea.form-control {
+      min-height: 150px;
+      resize: vertical;
+    }
+    
+    .btn-container {
+      display: flex;
+      gap: 15px;
+      margin-top: 25px;
+    }
+    
+    .btn-update {
+      background: linear-gradient(to right, #3498db, #2980b9);
+      color: white;
+      border: none;
+      padding: 12px 25px;
+      border-radius: 5px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .btn-update:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .btn-delete {
+      background: linear-gradient(to right, #e74c3c, #c0392b);
+      color: white;
+      border: none;
+      padding: 12px 25px;
+      border-radius: 5px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .btn-delete:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .btn-back {
+      background: #95a5a6;
+      color: white;
+      border: none;
+      padding: 12px 25px;
+      border-radius: 5px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    
+    .btn-back:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .product-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    
+    .product-title {
+      font-size: 1.8rem;
+      color: #1a2a6c;
+    }
+    
+    .product-id {
+      background: #f0f4f8;
+      padding: 5px 15px;
+      border-radius: 20px;
+      font-weight: 600;
+    }
+    
+    @media (max-width: 768px) {
+      .product-details-container {
+        grid-template-columns: 1fr;
+      }
+      
+      .product-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-container">
+      <div class="logo">Ürün Detayları</div>
+      <nav>
+        <ul class="nav-links">
+          <li><a href="/inventory">Envanter</a></li>
+          <li><a href="/orders">Siparişler</a></li>
+          <li><a href="/customers">Müşteriler</a></li>
+          <li><a href="/product">Ürünler</a></li>
+          <li><a href="/orders/add">Yeni Sipariş</a></li>
+        </ul>
+      </nav>
+      <div class="user-info">
+        <span>Kullanıcı</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="card">
+      <div class="product-header">
+        <h1 class="product-title">
+          <i class="fas fa-box"></i> {{ product.name }}
+        </h1>
+        <div class="product-id">ID: {{ product.id }}</div>
+      </div>
+
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, message in messages %}
+            <div class="alert alert-{{ category }}">{{ message }}</div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+
+      <div class="product-details-container">
+        <div class="product-image-container">
+          {% if product.image_filename %}
+            <img src="{{ url_for('product.get_image', product_id=product.id) }}" 
+                 alt="{{ product.name }}">
+            <p>Mevcut Resim: {{ product.image_filename }}</p>
+          {% else %}
+            <div style="background: #f0f4f8; height: 200px; display: flex; align-items: center; justify-content: center; border-radius: 8px;">
+              <i class="fas fa-image" style="font-size: 3rem; color: #ccc;"></i>
+            </div>
+            <p>Resim yüklenmemiş</p>
+          {% endif %}
+        </div>
+        
+        <div class="product-info-container">
+          <form method="POST" enctype="multipart/form-data">
+            <div class="form-group">
+              <label for="name">Ürün Adı:</label>
+              <input type="text" id="name" name="name" value="{{ product.name }}" 
+                     class="form-control" required>
+            </div>
+            
+            <div class="form-group">
+              <label for="price">Birim Fiyat:</label>
+              <input type="number" step="0.01" id="price" name="price" 
+                     value="{{ product.price }}" class="form-control" required>
+            </div>
+            
+            <div class="form-group">
+              <label for="details">Ürün Detayları (JSON formatında):</label>
+              <textarea id="details" name="details" class="form-control">{{ product.details | safe }}</textarea>
+            </div>
+            
+            <div class="form-group">
+              <label for="product_image">Ürün Resmi:</label>
+              <input type="file" id="product_image" name="product_image" 
+                     accept="image/*" class="form-control">
+            </div>
+            
+            <div class="btn-container">
+              <button type="submit" class="btn-update">
+                <i class="fas fa-save"></i> Güncelle
+              </button>
+              <a href="{{ url_for('product.list_products') }}" class="btn-back">
+                <i class="fas fa-arrow-left"></i> Listeye Dön
+              </a>
+            </div>
+          </form>
+          
+          <form method="POST" action="{{ url_for('product.delete_product', product_id=product.id) }}" 
+                onsubmit="return confirm('Ürünü silmek istediğinize emin misiniz?');" 
+                style="margin-top: 20px;">
+            <button type="submit" class="btn-delete">
+              <i class="fas fa-trash-alt"></i> Ürünü Sil
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-content">
+      <p>&copy; 2025 Ürün Yönetim Sistemi</p>
+      <div class="footer-links">
+        <a href="#">Gizlilik</a>
+        <a href="#">Şartlar</a>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

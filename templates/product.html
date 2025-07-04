@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <title>Ürün Listesi</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    /* Özel stiller */
+    .product-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+      border-radius: 10px;
+      overflow: hidden;
+      table-layout: fixed;
+    }
+    
+    .product-table th {
+      background: linear-gradient(to right, #1a2a6c, #2c3e50);
+      color: white;
+      padding: 15px;
+      text-align: left;
+    }
+    
+    .product-table td {
+      padding: 12px 15px;
+      border-bottom: 1px solid #f0f4f8;
+      vertical-align: middle;
+    }
+    
+    .product-table tr:last-child td {
+      border-bottom: none;
+    }
+    
+    .product-table tr:hover {
+      background-color: #f9fbff;
+    }
+    
+    .product-table img {
+      width: 60px;
+      height: 60px;
+      object-fit: cover;
+      border-radius: 5px;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    .btn-sm {
+      padding: 6px 12px;
+      font-size: 0.85rem;
+    }
+    
+    .search-container {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    
+    .search-container input {
+      flex: 1;
+      max-width: 300px;
+      padding: 10px 15px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-size: 1rem;
+    }
+    
+    .add-product-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: linear-gradient(to right, #2ecc71, #27ae60);
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+    }
+    
+    .add-product-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .action-btns {
+      display: flex;
+      gap: 8px;
+      justify-content: flex-start;
+    }
+    
+    .no-products {
+      text-align: center;
+      padding: 30px;
+      background: #f8f9fa;
+      border-radius: 10px;
+      margin: 20px 0;
+      color: #6c757d;
+    }
+    
+    .product-image {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .product-image em {
+      font-style: normal;
+      color: #888;
+    }
+    
+    /* Sütun genişlikleri */
+    .col-id { width: 5%; }
+    .col-name { width: 20%; }
+    .col-price { width: 10%; }
+    .col-details { width: 25%; }
+    .col-image { width: 15%; }
+    .col-actions { width: 15%; }
+    
+    /* Kırpılmış metinler */
+    .truncate {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 100%;
+      display: inline-block;
+    }
+    
+    @media (max-width: 768px) {
+      .product-table {
+        display: block;
+        overflow-x: auto;
+      }
+      
+      .product-table th, 
+      .product-table td {
+        white-space: nowrap;
+      }
+      
+      .col-id, .col-name, .col-price, 
+      .col-details, .col-image, .col-actions {
+        width: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-container">
+      <div class="logo">Ürün Yönetimi</div>
+      <nav>
+        <ul class="nav-links">
+          <li><a href="/inventory">Envanter</a></li>
+          <li><a href="/orders">Siparişler</a></li>
+          <li><a href="/customers">Müşteriler</a></li>
+          <li><a href="/product">Ürünler</a></li>
+          <li><a href="/orders/add">Yeni Sipariş</a></li>
+        </ul>
+      </nav>
+      <div class="user-info">
+        <span>Kullanıcı</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="card">
+      <div class="page-header">
+        <h1 class="page-title">
+          <i class="fas fa-boxes"></i> Ürün Listesi
+        </h1>
+      </div>
+
+      <div class="search-container">
+        <form method="get" class="search-form">
+          <input type="text" name="search" placeholder="Ürün adıyla ara..." 
+                 value="{{ request.args.get('search', '') }}">
+          <button type="submit" class="btn btn-primary">
+            <i class="fas fa-search"></i> Ara
+          </button>
+        </form>
+        <a href="{{ url_for('product.add_product') }}" class="add-product-btn">
+          <i class="fas fa-plus-circle"></i> Yeni Ürün
+        </a>
+      </div>
+
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, message in messages %}
+            <div class="alert alert-{{ category }}">{{ message }}</div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+
+      {% if products %}
+      <div class="table-responsive">
+        <table class="product-table">
+          <thead>
+            <tr>
+              <th class="col-id">ID</th>
+              <th class="col-name">İsim</th>
+              <th class="col-price">Fiyat ($)</th>
+              <th class="col-details">Detay</th>
+              <th class="col-image">Resim</th>
+              <th class="col-actions">İşlemler</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for product in products %}
+            <tr>
+              <td class="col-id">{{ product.id }}</td>
+              <td class="col-name">{{ product.name }}</td>
+              <td class="col-price">{{ product.price }} $</td>
+              <td class="col-details">
+                <span class="truncate" title="{{ product.details }}">
+                  {{ product.details[:30] }}{% if product.details|length > 30 %}...{% endif %}
+                </span>
+              </td>
+              <td class="col-image">
+                {% if product.image_filename %}
+                  <img src="{{ url_for('product.get_image', product_id=product.id) }}" alt="{{ product.name }}">
+                {% else %}
+                  <em>Yok</em>
+                {% endif %}
+              </td>
+              <td class="col-actions">
+                <div class="action-btns">
+                  <a href="{{ url_for('product.product_details', product_id=product.id) }}" 
+                     class="btn btn-info btn-sm" title="Detaylar">
+                    <i class="fas fa-info-circle"></i>
+                  </a>
+                  <a href="{{ url_for('product.delete_product', product_id=product.id) }}" 
+                     class="btn btn-danger btn-sm" 
+                     onclick="return confirm('Silmek istediğinize emin misiniz?')"
+                     title="Sil">
+                    <i class="fas fa-trash-alt"></i>
+                  </a>
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+        <div class="no-products">
+          <i class="fas fa-box-open" style="font-size: 3rem; margin-bottom: 15px;"></i>
+          <h3>Ürün bulunamadı</h3>
+          <p>Yeni ürün eklemek için "Yeni Ürün" butonunu kullanabilirsiniz</p>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-content">
+      <p>&copy; 2025 Ürün Yönetim Sistemi</p>
+      <div class="footer-links">
+        <a href="#">Gizlilik</a>
+        <a href="#">Şartlar</a>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

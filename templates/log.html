@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <title>İşlem Logları</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    /* Özel stiller */
+    .logs-container {
+      margin-top: 25px;
+    }
+    
+    .logs-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 2px solid #f0f4f8;
+    }
+    
+    .logs-title {
+      font-size: 1.8rem;
+      color: #1a2a6c;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    
+    .filters {
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+      background: #f5f9fc;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+    
+    .filter-group {
+      flex: 1;
+      min-width: 200px;
+    }
+    
+    .filter-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #555;
+    }
+    
+    .filter-group select, .filter-group input {
+      width: 100%;
+      padding: 10px 15px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-size: 1rem;
+    }
+    
+    .logs-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    
+    .logs-table th {
+      background: linear-gradient(to right, #1a2a6c, #2c3e50);
+      color: white;
+      padding: 15px;
+      text-align: left;
+      font-weight: 600;
+    }
+    
+    .logs-table td {
+      padding: 12px 15px;
+      border-bottom: 1px solid #f0f4f8;
+      vertical-align: top;
+    }
+    
+    .logs-table tr:last-child td {
+      border-bottom: none;
+    }
+    
+    .logs-table tr:hover {
+      background-color: #f9fbff;
+    }
+    
+    .data-preview {
+      max-width: 300px;
+      max-height: 100px;
+      overflow: auto;
+      padding: 10px;
+      background: #f8f9fa;
+      border-radius: 5px;
+      border: 1px solid #eee;
+      font-family: monospace;
+      font-size: 0.85rem;
+      word-break: break-all;
+    }
+    
+    .operation-badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+    
+    .operation-insert {
+      background-color: #d4edda;
+      color: #155724;
+    }
+    
+    .operation-update {
+      background-color: #cce5ff;
+      color: #004085;
+    }
+    
+    .operation-delete {
+      background-color: #f8d7da;
+      color: #721c24;
+    }
+    
+    .no-logs {
+      text-align: center;
+      padding: 40px;
+      background: #f8f9fa;
+      border-radius: 10px;
+      margin: 20px 0;
+      color: #6c757d;
+    }
+    
+    .pagination-container {
+      display: flex;
+      justify-content: center;
+      margin-top: 30px;
+    }
+    
+    .pagination {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    
+    .pagination a, .pagination span {
+      padding: 8px 16px;
+      border-radius: 5px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .pagination a {
+      background-color: #3498db;
+      color: white;
+    }
+    
+    .pagination a:hover {
+      background-color: #2980b9;
+      transform: translateY(-2px);
+    }
+    
+    .pagination span {
+      background-color: #f0f4f8;
+      color: #555;
+    }
+    
+    .log-details-btn {
+      background: #f0f4f8;
+      color: #555;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 5px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .log-details-btn:hover {
+      background: #3498db;
+      color: white;
+    }
+    
+    @media (max-width: 992px) {
+      .logs-table {
+        display: block;
+        overflow-x: auto;
+      }
+      
+      .filters {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-container">
+      <div class="logo">İşlem Logları</div>
+      <nav>
+        <ul class="nav-links">
+          <li><a href="/inventory">Envanter</a></li>
+          <li><a href="/orders">Siparişler</a></li>
+          <li><a href="/customers">Müşteriler</a></li>
+          <li><a href="/product">Ürünler</a></li>
+          <li><a href="/inventory/log">Envanter Logları</a></li>
+          <li><a href="/logs">İşlem Logları</a></li>
+        </ul>
+      </nav>
+      <div class="user-info">
+        <span>Kullanıcı</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="card">
+      <div class="logs-header">
+        <h1 class="logs-title">
+          <i class="fas fa-clipboard-list"></i> İşlem Logları
+        </h1>
+        <div>
+          <span>{{ logs|length }} kayıt</span>
+        </div>
+      </div>
+
+      <div class="filters">
+        <div class="filter-group">
+          <label for="table-filter"><i class="fas fa-table"></i> Tablo</label>
+          <select id="table-filter" class="form-control">
+            <option value="">Tüm Tablolar</option>
+            <option value="orders">Siparişler</option>
+            <option value="inventory">Envanter</option>
+            <option value="customers">Müşteriler</option>
+            <option value="products">Ürünler</option>
+          </select>
+        </div>
+        
+        <div class="filter-group">
+          <label for="operation-filter"><i class="fas fa-cog"></i> İşlem</label>
+          <select id="operation-filter" class="form-control">
+            <option value="">Tüm İşlemler</option>
+            <option value="INSERT">Ekleme (INSERT)</option>
+            <option value="UPDATE">Güncelleme (UPDATE)</option>
+            <option value="DELETE">Silme (DELETE)</option>
+          </select>
+        </div>
+        
+        <div class="filter-group">
+          <label for="user-filter"><i class="fas fa-user"></i> Kullanıcı</label>
+          <input type="text" id="user-filter" placeholder="Kullanıcı adı..." class="form-control">
+        </div>
+        
+        <div class="filter-group">
+          <label for="date-filter"><i class="fas fa-calendar"></i> Tarih</label>
+          <input type="date" id="date-filter" class="form-control">
+        </div>
+      </div>
+
+      {% if logs %}
+      <div class="table-responsive">
+        <table class="logs-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Tablo</th>
+              <th>İşlem</th>
+              <th>Kullanıcı</th>
+              <th>Tarih</th>
+              <th>Eski Veri</th>
+              <th>Yeni Veri</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for log in logs %}
+            <tr>
+              <td>{{ log.log_id }}</td>
+              <td>{{ log.table_name }}</td>
+              <td>
+                <span class="operation-badge operation-{{ log.operation|lower }}">
+                  {{ log.operation }}
+                </span>
+              </td>
+              <td>{{ log.changed_by }}</td>
+              <td>{{ log.changed_at }}</td>
+              <td>
+                <div class="data-preview">
+                  {{ log.old_data or '-' }}
+                </div>
+              </td>
+              <td>
+                <div class="data-preview">
+                  {{ log.new_data or '-' }}
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      
+      <div class="pagination-container">
+        <div class="pagination">
+          <a href="#" class="btn btn-light">
+            <i class="fas fa-chevron-left"></i> Önceki
+          </a>
+          <a href="#" class="btn btn-light">1</a>
+          <a href="#" class="btn btn-light">2</a>
+          <a href="#" class="btn btn-light">3</a>
+          <span>...</span>
+          <a href="#" class="btn btn-light">10</a>
+          <a href="#" class="btn btn-light">
+            Sonraki <i class="fas fa-chevron-right"></i>
+          </a>
+        </div>
+      </div>
+      {% else %}
+        <div class="no-logs">
+          <i class="fas fa-file-alt" style="font-size: 3rem; margin-bottom: 15px;"></i>
+          <h3>Log kaydı bulunamadı</h3>
+          <p>Henüz herhangi bir işlem log kaydı oluşmamış</p>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-content">
+      <p>&copy; 2025 İşlem Logları Yönetimi</p>
+      <div class="footer-links">
+        <a href="#">Gizlilik</a>
+        <a href="#">Şartlar</a>
+        <a href="#">Yardım</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Filtreleme işlevselliği
+    document.addEventListener('DOMContentLoaded', function() {
+      const tableFilter = document.getElementById('table-filter');
+      const operationFilter = document.getElementById('operation-filter');
+      const userFilter = document.getElementById('user-filter');
+      const dateFilter = document.getElementById('date-filter');
+      const rows = document.querySelectorAll('.logs-table tbody tr');
+      
+      function filterLogs() {
+        const tableValue = tableFilter.value.toLowerCase();
+        const operationValue = operationFilter.value;
+        const userValue = userFilter.value.toLowerCase();
+        const dateValue = dateFilter.value;
+        
+        rows.forEach(row => {
+          const table = row.cells[1].textContent.toLowerCase();
+          const operation = row.cells[2].textContent.trim();
+          const user = row.cells[3].textContent.toLowerCase();
+          const date = row.cells[4].textContent;
+          
+          const tableMatch = !tableValue || table.includes(tableValue);
+          const operationMatch = !operationValue || operation === operationValue;
+          const userMatch = !userValue || user.includes(userValue);
+          const dateMatch = !dateValue || date.includes(dateValue);
+          
+          if (tableMatch && operationMatch && userMatch && dateMatch) {
+            row.style.display = '';
+          } else {
+            row.style.display = 'none';
+          }
+        });
+      }
+      
+      // Filtre değişikliklerini dinle
+      tableFilter.addEventListener('change', filterLogs);
+      operationFilter.addEventListener('change', filterLogs);
+      userFilter.addEventListener('input', filterLogs);
+      dateFilter.addEventListener('change', filterLogs);
+      
+      // İşlem tipine göre renklendirme
+      document.querySelectorAll('.operation-badge').forEach(badge => {
+        const operation = badge.textContent.trim();
+        badge.classList.remove('operation-insert', 'operation-update', 'operation-delete');
+        
+        if (operation === 'INSERT') {
+          badge.classList.add('operation-insert');
+        } else if (operation === 'UPDATE') {
+          badge.classList.add('operation-update');
+        } else if (operation === 'DELETE') {
+          badge.classList.add('operation-delete');
+        }
+      });
+    });
+  </script>
+</body>
+</html>
