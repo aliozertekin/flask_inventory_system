@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8" />
+    <title>Envanter Ekle</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        /* Mesaj stilleri için ek CSS */
+        .alert {
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .alert-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <div class="logo">Envanter Ekle</div>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="/inventory">Envanter</a></li>
+                    <li><a href="/inventory/log">Envanter Logları</a></li>
+                    <li><a href="/inventory/add">Envanter Ekle</a></li>
+                    <li><a href="/orders">Siparişler</a></li>
+                </ul>
+            </nav>
+            <div class="user-info">
+                <span>Kullanıcı</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="card">
+            <div class="page-header">
+                <h1 class="page-title">Envanter Ekle</h1>
+            </div>
+
+            <!-- Mesajlar için özel alan -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        {{ message }}
+                    </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <form method="POST" action="{{ url_for('inventory.add_inventory') }}" class="inventory-form">
+                <div class="form-group">
+                    <label for="store_id">Mağaza ID</label>
+                    <input type="number" id="store_id" name="store_id" placeholder="Mağaza ID girin" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="product_id">Ürün ID</label>
+                    <input type="number" id="product_id" name="product_id" placeholder="Ürün ID girin" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="quantity">Miktar</label>
+                    <input type="number" id="quantity" name="quantity" min="1" placeholder="Miktar girin" required>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-success">Envanter Ekle</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <p>&copy; 2025 Envanter Yönetim Sistemi</p>
+            <div class="footer-links">
+                <a href="#">Gizlilik</a>
+                <a href="#">Şartlar</a>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

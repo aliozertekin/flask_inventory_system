@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8" />
+    <title>Envanter Logları</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <div class="logo">Envanter Logları</div>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="/inventory">Envanter</a></li>
+                    <li><a href="/inventory/log">Envanter Logları</a></li>
+                    <li><a href="/inventory/add">Envanter Ekle</a></li>
+                    <li><a href="/orders">Siparişler</a></li>
+                </ul>
+            </nav>
+            <div class="user-info">
+                <span>Kullanıcı</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="page-header">
+            <h1 class="page-title">Envanter Logları</h1>
+        </div>
+
+        <div class="card">
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Inventory ID</th>
+                            <th>Mağaza ID</th>
+                            <th>Ürün ID</th>
+                            <th>Değişim Miktarı</th>
+                            <th>Önceki Miktar</th>
+                            <th>Yeni Miktar</th>
+                            <th>İşlem</th>
+                            <th>Tarih & Saat</th>
+                            <th>Değiştiren</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for log in logs %}
+                        <tr>
+                            <td>{{ log[0] }}</td>
+                            <td>{{ log[1] }}</td>
+                            <td>{{ log[2] }}</td>
+                            <td>{{ log[3] }}</td>
+                            <td>{{ log[4] }}</td>
+                            <td>{{ log[5] }}</td>
+                            <td>{{ log[6] }}</td>
+                            <td>{{ log[7] }}</td>
+                            <td>{{ log[8] }}</td>
+                            <td>{{ log[9] or 'Bilinmiyor' }}</td>
+                        </tr>
+                        {% else %}
+                        <tr><td colspan="10">Envanter logu bulunamadı.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <p>&copy; 2025 Envanter Yönetim Sistemi</p>
+            <div class="footer-links">
+                <a href="#">Gizlilik</a>
+                <a href="#">Şartlar</a>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

@@ -80,5 +80,3 @@ FROM
      NVL(SUM(oi.quantity * oi.unit_price), 0) AS today_sales
    FROM order_items oi JOIN orders o ON oi.order_id = o.order_id
    WHERE TRUNC(o.order_tms) = TRUNC(SYSDATE)) o;
-   
-/

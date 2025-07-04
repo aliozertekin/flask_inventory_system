@@ -1,71 +1,340 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8">
-  <title>Sipariş Detayı</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <meta charset="UTF-8">
+    <title>Sipariş Detayı</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Özel stiller */
+        .order-details-card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+        
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .detail-item {
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #f0f4f8;
+        }
+        
+        .detail-item:last-child {
+            border-bottom: none;
+        }
+        
+        .detail-label {
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 5px;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+        }
+        
+        .status-open {
+            background-color: #e3f2fd;
+            color: #1976d2;
+        }
+        .status-paid {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+        }
+        .status-shipped {
+            background-color: #fff3e0;
+            color: #ef6c00;
+        }
+        .status-complete {
+            background-color: #f5f5f5;
+            color: #424242;
+        }
+        .status-cancelled {
+            background-color: #ffebee;
+            color: #c62828;
+        }
+        .status-refunded {
+            background-color: #e3f2fd;
+            color: #0277bd;
+        }
+        
+        .status-update {
+            background-color: #f5f9fc;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 25px 0;
+        }
+        
+        .status-update label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: #555;
+        }
+        
+        .status-update .form-control {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+            margin-bottom: 15px;
+        }
+        
+        .product-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .product-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px;
+            border-bottom: 1px solid #f0f4f8;
+            transition: background-color 0.2s;
+        }
+        
+        .product-item:last-child {
+            border-bottom: none;
+        }
+        
+        .product-item:hover {
+            background-color: #f9fbff;
+        }
+        
+        .product-info {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .product-price {
+            font-weight: 600;
+            color: #2e7d32;
+        }
+        
+        .total-section {
+            background: #e8f5e9;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: right;
+            margin-top: 20px;
+            font-weight: 600;
+        }
+        
+        .total-label {
+            font-size: 1.1rem;
+            margin-right: 10px;
+        }
+        
+        .total-value {
+            font-size: 1.4rem;
+            color: #1a2a6c;
+        }
+        
+        .icon {
+            margin-right: 8px;
+            color: #3498db;
+        }
+        
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f4f8;
+        }
+        
+        .order-id {
+            font-size: 1.8rem;
+            color: #1a2a6c;
+        }
+        
+        .order-date {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        /* Responsive düzenlemeler */
+        @media (max-width: 768px) {
+            .detail-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .product-item {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .order-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
 </head>
 <body>
-  <header>
-    <h1>Sipariş Detayı - #{{ order.order_id }}</h1>
-  </header>
+    <header>
+        <div class="header-container">
+            <div class="logo">Sipariş Detayı</div>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="/inventory">Envanter</a></li>
+                    <li><a href="/orders">Siparişler</a></li>
+                    <li><a href="/customers">Müşteriler</a></li>
+                    <li><a href="/orders/add">Yeni Sipariş</a></li>
+                </ul>
+            </nav>
+            <div class="user-info">
+                <span>Kullanıcı</span>
+            </div>
+        </div>
+    </header>
 
-  <main>
-    <p><strong>Tarih:</strong> {{ order.order_tms }}</p>
-    <p><strong>Müşteri:</strong> {{ order.customer_id }}</p>
-    <p><strong>Mağaza:</strong> {{ order.store_id }}</p>
-    <p><strong>Mevcut Durum:</strong> <span id="current-status">{{ order.order_status }}</span></p>
+    <div class="container">
+        <div class="card">
+            <div class="order-header">
+                <div>
+                    <h1 class="order-id">Sipariş #{{ order.order_id }}</h1>
+                    <div class="order-date">{{ order.order_tms }}</div>
+                </div>
+                <div>
+                    <span id="current-status" class="status-badge status-{{ order.order_status|lower }}">{{ order.order_status }}</span>
+                </div>
+            </div>
 
-    {% if order.order_status == 'OPEN' %}
-    <div>
-      <label for="status">Durum Güncelle:</label>
-      <select id="status">
-        <option value="OPEN">OPEN</option>
-        <option value="PAID">PAID</option>
-        <option value="SHIPPED">SHIPPED</option>
-        <option value="COMPLETE">COMPLETE</option>
-        <option value="CANCELLED">CANCELLED</option>
-        <option value="REFUNDED">REFUNDED</option>
-      </select>
-      <button onclick="updateStatus()">Güncelle</button>
+            <div class="order-details-card">
+                <div class="detail-grid">
+                    <div class="detail-item">
+                        <div class="detail-label">
+                            <i class="fas fa-user icon"></i>Müşteri
+                        </div>
+                        <div>{{ order.customer_id }}</div>
+                    </div>
+                    
+                    <div class="detail-item">
+                        <div class="detail-label">
+                            <i class="fas fa-store icon"></i>Mağaza
+                        </div>
+                        <div>{{ order.store_id }}</div>
+                    </div>
+                </div>
+
+                {% if order.order_status == 'OPEN' %}
+                <div class="status-update">
+                    <label for="status">
+                        <i class="fas fa-sync-alt icon"></i>Durum Güncelle
+                    </label>
+                    <select id="status" class="form-control">
+                        <option value="OPEN" {% if order.order_status == 'OPEN' %}selected{% endif %}>OPEN</option>
+                        <option value="PAID" {% if order.order_status == 'PAID' %}selected{% endif %}>PAID</option>
+                        <option value="SHIPPED" {% if order.order_status == 'SHIPPED' %}selected{% endif %}>SHIPPED</option>
+                        <option value="COMPLETE" {% if order.order_status == 'COMPLETE' %}selected{% endif %}>COMPLETE</option>
+                        <option value="CANCELLED" {% if order.order_status == 'CANCELLED' %}selected{% endif %}>CANCELLED</option>
+                        <option value="REFUNDED" {% if order.order_status == 'REFUNDED' %}selected{% endif %}>REFUNDED</option>
+                    </select>
+                    <button onclick="updateStatus()" class="btn btn-primary">
+                        <i class="fas fa-edit"></i> Güncelle
+                    </button>
+                </div>
+                {% endif %}
+
+                <h3><i class="fas fa-box-open icon"></i> Ürünler</h3>
+                <ul class="product-list">
+                    {% for item in order['items'] %}
+                    <li class="product-item">
+                        <div class="product-info">
+                            <div><strong>Ürün ID:</strong> {{ item.product_id }}</div>
+                            <div><strong>Adet:</strong> {{ item.quantity }}</div>
+                        </div>
+                        <div class="product-price">{{ item.unit_price }} ₺</div>
+                    </li>
+                    {% endfor %}
+                </ul>
+                
+                <div class="total-section">
+                    <span class="total-label">Toplam Tutar:</span>
+                    <span class="total-value">
+                        {% set total = [] %}
+                        {% for item in order['items'] %}
+                            {% set _ = total.append(total.pop() + (item.quantity * item.unit_price)) if total else total.append(item.quantity * item.unit_price) %}
+                        {% endfor %}
+                        {{ total[0]|round(2) }} ₺
+                    </span>
+                </div>
+            </div>
+        </div>
     </div>
-    {% endif %}
 
-    <h3>Ürünler</h3>
-    <ul>
-      {% for item in order['items'] %}
-        <li>
-          Ürün ID: {{ item.product_id }} | Adet: {{ item.quantity }} | Fiyat: {{ item.unit_price }}
-        </li>
-      {% endfor %}
-    </ul>
-  </main>
+    <footer>
+        <div class="footer-content">
+            <p>&copy; 2025 Sipariş Sistemi</p>
+            <div class="footer-links">
+                <a href="#">Gizlilik</a>
+                <a href="#">Şartlar</a>
+            </div>
+        </div>
+    </footer>
 
-  <footer>
-    <p>&copy; 2025 Sipariş Sistemi</p>
-  </footer>
+    <script>
+        function updateStatus() {
+            const status = document.getElementById("status").value;
+            const currentStatus = document.getElementById("current-status");
 
-  <script>
-    function updateStatus() {
-      const status = document.getElementById("status").value;
-
-      fetch("/orders/{{ order.order_id }}/update_status", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ order_status: status })
-      })
-      .then(response => response.json())
-      .then(data => {
-        if (data.status === "success") {
-          alert("Durum güncellendi!");
-          document.getElementById("current-status").innerText = status;
-        } else {
-          alert("Hata: " + data.message);
+            fetch("/orders/{{ order.order_id }}/update_status", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ order_status: status })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === "success") {
+                    alert("Durum güncellendi!");
+                    currentStatus.innerText = status;
+                    
+                    // Tüm durum sınıflarını kaldır
+                    const statusClasses = ['status-open', 'status-paid', 'status-shipped', 
+                                         'status-complete', 'status-cancelled', 'status-refunded'];
+                    statusClasses.forEach(cls => currentStatus.classList.remove(cls));
+                    
+                    // Yeni duruma uygun sınıfı ekle
+                    currentStatus.classList.add(`status-${status.toLowerCase()}`);
+                } else {
+                    alert("Hata: " + data.message);
+                }
+            });
         }
-      });
-    }
-  </script>
+        
+        // Sayfa yüklendiğinde durum rengini ayarla
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentStatus = document.getElementById("current-status");
+            const status = currentStatus.innerText.toLowerCase();
+            
+            // Tüm durum sınıflarını kaldır
+            const statusClasses = ['status-open', 'status-paid', 'status-shipped', 
+                                 'status-complete', 'status-cancelled', 'status-refunded'];
+            statusClasses.forEach(cls => currentStatus.classList.remove(cls));
+            
+            // Mevcut durum rengini ayarla
+            currentStatus.classList.add(`status-${status}`);
+        });
+    </script>
 </body>
 </html>

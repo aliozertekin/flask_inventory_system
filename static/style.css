@@ -20,7 +20,6 @@
       box-sizing: border-box;
 }
 body {
-      margin: 1rem;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       background-color: #f5f7fa;
       color: #333;
@@ -85,7 +84,7 @@ nav a {
 .nav-links a {
   background: #3498db;
   color: #ffffff;
-  padding: 1rem 2rem;
+  padding: 0.5rem 1rem;
   text-decoration: none;
   border-radius: var(--border-radius);
   font-weight: 600;

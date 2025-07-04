@@ -1,254 +1,300 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8" />
-  <title>Yeni Sipariş Ekle</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <meta charset="UTF-8" />
+    <title>Yeni Sipariş Ekle</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-  <h1>Yeni Sipariş Ekle</h1>
+    <header>
+        <div class="header-container">
+            <div class="logo">Yeni Sipariş</div>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="/inventory">Envanter</a></li>
+                    <li><a href="/orders">Siparişler</a></li>
+                    <li><a href="/customers">Müşteriler</a></li>
+                    <li><a href="/orders/add">Yeni Sipariş</a></li>
+                </ul>
+            </nav>
+            <div class="user-info">
+                <span>Kullanıcı</span>
+            </div>
+        </div>
+    </header>
 
-  <label for="customer_id">Müşteri ID</label>
-  <input type="number" id="customer_id" placeholder="Müşteri ID girin" required />
+    <div class="container">
+        <div class="card">
+            <h1>Yeni Sipariş Ekle</h1>
 
-  <label for="store_id">Mağaza ID</label>
-  <input type="number" id="store_id" placeholder="Mağaza ID girin" required />
+            <div class="form-group">
+                <label for="customer_id">Müşteri ID</label>
+                <input type="number" id="customer_id" placeholder="Müşteri ID girin" required />
+            </div>
 
-  <div id="items-container">
-    <h3>Ürünler</h3>
-    <div class="item-row">
-      <label>Ürün ID</label>
-      <input type="number" class="product_id" required />
-      <label>Miktar</label>
-      <input type="number" class="quantity" min="1" value="1" required />
-      <label>Birim Fiyat</label>
-      <input type="number" class="unit_price" min="0" step="0.01" value="0.00" required />
-      <button type="button" class="remove-item-btn" title="Ürünü kaldır">Sil</button>
+            <div class="form-group">
+                <label for="store_id">Mağaza ID</label>
+                <input type="number" id="store_id" placeholder="Mağaza ID girin" required />
+            </div>
+
+            <div id="items-container" class="items-container">
+                <h3>Ürünler</h3>
+                <div class="item-row">
+                    <div class="form-group">
+                        <label>Ürün ID</label>
+                        <input type="number" class="product_id" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Miktar</label>
+                        <input type="number" class="quantity" min="1" value="1" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Birim Fiyat</label>
+                        <input type="number" class="unit_price" min="0" step="0.01" value="0.00" required />
+                    </div>
+                    <button type="button" class="remove-item-btn btn btn-danger" title="Ürünü kaldır">Sil</button>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button id="add-item-btn" type="button" class="btn btn-primary">+ Ürün Ekle</button>
+                <button id="submit-btn" type="button" class="btn btn-success">Siparişi Gönder</button>
+            </div>
+
+            <div id="msg" class="message"></div>
+        </div>
     </div>
-  </div>
 
-  <button id="add-item-btn" type="button">+ Ürün Ekle</button>
-  <button id="submit-btn" type="button">Siparişi Gönder</button>
+    <footer>
+        <div class="footer-content">
+            <p>&copy; 2025 Sipariş Sistemi</p>
+            <div class="footer-links">
+                <a href="#">Gizlilik</a>
+                <a href="#">Şartlar</a>
+            </div>
+        </div>
+    </footer>
 
-  <div id="msg"></div>
+    <script>
+        const itemsContainer = document.getElementById('items-container');
+        const addItemBtn = document.getElementById('add-item-btn');
+        const submitBtn = document.getElementById('submit-btn');
+        const msgDiv = document.getElementById('msg');
+        const storeIdInput = document.getElementById('store_id');
 
-  <script>
-    const itemsContainer = document.getElementById('items-container');
-    const addItemBtn = document.getElementById('add-item-btn');
-    const submitBtn = document.getElementById('submit-btn');
-    const msgDiv = document.getElementById('msg');
-    const storeIdInput = document.getElementById('store_id');
-
-    // Ürün satırı ekleme fonksiyonu
-    function createItemRow() {
-      const itemDiv = document.createElement('div');
-      itemDiv.classList.add('item-row');
-      itemDiv.innerHTML = `
-        <label>Ürün ID</label>
-        <input type="number" class="product_id" required />
-        <label>Miktar</label>
-        <input type="number" class="quantity" min="1" value="1" required />
-        <label>Birim Fiyat</label>
-        <input type="number" class="unit_price" min="0" step="0.01" value="0.00" required />
-        <button type="button" class="remove-item-btn" title="Ürünü kaldır">Sil</button>
-      `;
-      return itemDiv;
-    }
-
-    addItemBtn.addEventListener('click', () => {
-      const newItem = createItemRow();
-      itemsContainer.appendChild(newItem);
-    });
-
-    // Sil butonu için event delegation
-    itemsContainer.addEventListener('click', (e) => {
-      if (e.target.classList.contains('remove-item-btn')) {
-        const itemRow = e.target.closest('.item-row');
-        if (itemRow) {
-          itemRow.remove();
-          updateSubmitButtonState();
-          msgDiv.textContent = '';
-        }
-      }
-    });
-
-    // Sipariş gönderme işlemi
-    submitBtn.addEventListener('click', () => {
-      msgDiv.textContent = '';
-
-      const customerId = document.getElementById('customer_id').value;
-      const storeId = storeIdInput.value;
-
-      if (!customerId || !storeId) {
-        msgDiv.textContent = 'Müşteri ID ve Mağaza ID zorunludur.';
-        msgDiv.style.color = 'red';
-        return;
-      }
-
-      const productIds = [...document.querySelectorAll('.product_id')];
-      const quantities = [...document.querySelectorAll('.quantity')];
-      const unitPrices = [...document.querySelectorAll('.unit_price')];
-
-      if(productIds.length === 0) {
-        msgDiv.textContent = 'En az bir ürün ekleyin.';
-        msgDiv.style.color = 'red';
-        return;
-      }
-
-      let items = [];
-      for (let i = 0; i < productIds.length; i++) {
-        const pid = productIds[i].value;
-        const qty = quantities[i].value;
-        const price = unitPrices[i].value;
-
-        if (!pid || !qty || !price) {
-          msgDiv.textContent = 'Ürün bilgileri eksik.';
-          msgDiv.style.color = 'red';
-          return;
+        // Ürün satırı ekleme fonksiyonu
+        function createItemRow() {
+            const itemDiv = document.createElement('div');
+            itemDiv.classList.add('item-row');
+            itemDiv.innerHTML = `
+                <div class="form-group">
+                    <label>Ürün ID</label>
+                    <input type="number" class="product_id" required />
+                </div>
+                <div class="form-group">
+                    <label>Miktar</label>
+                    <input type="number" class="quantity" min="1" value="1" required />
+                </div>
+                <div class="form-group">
+                    <label>Birim Fiyat</label>
+                    <input type="number" class="unit_price" min="0" step="0.01" value="0.00" required />
+                </div>
+                <button type="button" class="remove-item-btn btn btn-danger" title="Ürünü kaldır">Sil</button>
+            `;
+            return itemDiv;
         }
 
-        items.push({
-          product_id: parseInt(pid),
-          quantity: parseInt(qty),
-          unit_price: parseFloat(price)
+        addItemBtn.addEventListener('click', () => {
+            const newItem = createItemRow();
+            itemsContainer.appendChild(newItem);
         });
-      }
 
-      const payload = {
-        customer_id: parseInt(customerId),
-        store_id: parseInt(storeId),
-        items: items
-      };
-
-      fetch('/orders/add', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify(payload)
-      })
-      .then(response => response.json())
-      .then(data => {
-        if(data.status === 'success') {
-          msgDiv.textContent = `Sipariş başarıyla oluşturuldu! Sipariş ID: ${data.order_id}`;
-          msgDiv.style.color = 'green';
-          // İstersen formu temizleyebilirsin:
-          // resetForm();
-        } else {
-          msgDiv.textContent = `Hata: ${data.message}`;
-          msgDiv.style.color = 'red';
-        }
-      })
-      .catch(() => {
-        msgDiv.textContent = 'Sunucu ile bağlantı kurulamadı.';
-        msgDiv.style.color = 'red';
-      });
-    });
-
-    // Ürün ID değişince fiyatı getir
-    document.addEventListener('input', async function (e) {
-      if (e.target.classList.contains('product_id')) {
-        const productId = e.target.value;
-        const itemRow = e.target.closest('.item-row');
-        const priceInput = itemRow.querySelector('.unit_price');
-
-        if (productId) {
-          try {
-            const res = await fetch(`/inventory/get_price/${productId}`);
-            const data = await res.json();
-
-            if (data.status === 'success') {
-              priceInput.value = data.unit_price.toFixed(2);
-            } else {
-              priceInput.value = '0.00';
+        // Sil butonu için event delegation
+        itemsContainer.addEventListener('click', (e) => {
+            if (e.target.classList.contains('remove-item-btn')) {
+                const itemRow = e.target.closest('.item-row');
+                if (itemRow) {
+                    itemRow.remove();
+                    updateSubmitButtonState();
+                    msgDiv.textContent = '';
+                }
             }
-          } catch {
-            priceInput.value = '0.00';
-          }
-        }
-        updateProductInfo(itemRow);
-      }
-    });
+        });
 
-    // Store ID veya miktar değişince stok ve fiyat güncelle
-    itemsContainer.addEventListener('input', (e) => {
-      if (e.target.classList.contains('quantity') || e.target.id === 'store_id' || e.target.classList.contains('product_id')) {
-        const itemRows = itemsContainer.querySelectorAll('.item-row');
-        itemRows.forEach(row => updateProductInfo(row));
-        updateSubmitButtonState();
-      }
-    });
+        // Sipariş gönderme işlemi
+        submitBtn.addEventListener('click', () => {
+            msgDiv.textContent = '';
+            msgDiv.className = 'message';
 
-    storeIdInput.addEventListener('input', () => {
-      const itemRows = itemsContainer.querySelectorAll('.item-row');
-      itemRows.forEach(row => updateProductInfo(row));
-      updateSubmitButtonState();
-    });
+            const customerId = document.getElementById('customer_id').value;
+            const storeId = storeIdInput.value;
 
-    // Ürün stok ve fiyat bilgisini güncelleyen fonksiyon
-    function updateProductInfo(itemRow) {
-      const storeId = storeIdInput.value;
-      const productIdInput = itemRow.querySelector('.product_id');
-      const unitPriceInput = itemRow.querySelector('.unit_price');
-      const quantityInput = itemRow.querySelector('.quantity');
-
-      const productId = productIdInput.value;
-
-      if (storeId && productId) {
-        fetch(`/inventory/get_product_info/${storeId}/${productId}`)
-          .then(res => res.json())
-          .then(data => {
-            let stockInfo = itemRow.querySelector('.stock-info');
-            if(!stockInfo) {
-              stockInfo = document.createElement('div');
-              stockInfo.classList.add('stock-info');
-              stockInfo.style.marginTop = '0.3rem';
-              itemRow.appendChild(stockInfo);
+            if (!customerId || !storeId) {
+                msgDiv.textContent = 'Müşteri ID ve Mağaza ID zorunludur.';
+                msgDiv.classList.add('error');
+                return;
             }
 
-            if(data.status === 'success') {
-              unitPriceInput.value = data.unit_price.toFixed(2);
-              stockInfo.textContent = `Stokta: ${data.quantity}`;
+            const productIds = [...document.querySelectorAll('.product_id')];
+            const quantities = [...document.querySelectorAll('.quantity')];
+            const unitPrices = [...document.querySelectorAll('.unit_price')];
 
-              if(parseInt(quantityInput.value) > data.quantity) {
-                stockInfo.style.color = 'red';
-                stockInfo.textContent += ' - Yeterli stok yok!';
-              } else {
-                stockInfo.style.color = 'green';
-              }
-            } else {
-              stockInfo.style.color = 'red';
-              stockInfo.textContent = 'Envanterde ürün yok!';
-              unitPriceInput.value = '0.00';
+            if(productIds.length === 0) {
+                msgDiv.textContent = 'En az bir ürün ekleyin.';
+                msgDiv.classList.add('error');
+                return;
             }
+
+            let items = [];
+            for (let i = 0; i < productIds.length; i++) {
+                const pid = productIds[i].value;
+                const qty = quantities[i].value;
+                const price = unitPrices[i].value;
+
+                if (!pid || !qty || !price) {
+                    msgDiv.textContent = 'Ürün bilgileri eksik.';
+                    msgDiv.classList.add('error');
+                    return;
+                }
+
+                items.push({
+                    product_id: parseInt(pid),
+                    quantity: parseInt(qty),
+                    unit_price: parseFloat(price)
+                });
+            }
+
+            const payload = {
+                customer_id: parseInt(customerId),
+                store_id: parseInt(storeId),
+                items: items
+            };
+
+            fetch('/orders/add', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(payload)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if(data.status === 'success') {
+                    msgDiv.textContent = `Sipariş başarıyla oluşturuldu! Sipariş ID: ${data.order_id}`;
+                    msgDiv.classList.add('success');
+                } else {
+                    msgDiv.textContent = `Hata: ${data.message}`;
+                    msgDiv.classList.add('error');
+                }
+            })
+            .catch(() => {
+                msgDiv.textContent = 'Sunucu ile bağlantı kurulamadı.';
+                msgDiv.classList.add('error');
+            });
+        });
+
+        // Ürün ID değişince fiyatı getir
+        document.addEventListener('input', async function (e) {
+            if (e.target.classList.contains('product_id')) {
+                const productId = e.target.value;
+                const itemRow = e.target.closest('.item-row');
+                const priceInput = itemRow.querySelector('.unit_price');
+
+                if (productId) {
+                    try {
+                        const res = await fetch(`/inventory/get_price/${productId}`);
+                        const data = await res.json();
+
+                        if (data.status === 'success') {
+                            priceInput.value = data.unit_price.toFixed(2);
+                        } else {
+                            priceInput.value = '0.00';
+                        }
+                    } catch {
+                        priceInput.value = '0.00';
+                    }
+                }
+                updateProductInfo(itemRow);
+            }
+        });
+
+        // Store ID veya miktar değişince stok ve fiyat güncelle
+        itemsContainer.addEventListener('input', (e) => {
+            if (e.target.classList.contains('quantity') || e.target.id === 'store_id' || e.target.classList.contains('product_id')) {
+                const itemRows = itemsContainer.querySelectorAll('.item-row');
+                itemRows.forEach(row => updateProductInfo(row));
+                updateSubmitButtonState();
+            }
+        });
+
+        storeIdInput.addEventListener('input', () => {
+            const itemRows = itemsContainer.querySelectorAll('.item-row');
+            itemRows.forEach(row => updateProductInfo(row));
             updateSubmitButtonState();
-          })
-          .catch(() => {
-            msgDiv.textContent = 'Sunucu ile bağlantı kurulamadı.';
-            msgDiv.style.color = 'red';
-          });
-      }
-    }
+        });
 
-    // Gönder butonunun aktifliğini stok durumuna ve satır varlığına göre ayarlar
-    function updateSubmitButtonState() {
-      const itemRows = itemsContainer.querySelectorAll('.item-row');
-      if(itemRows.length === 0) {
-        submitBtn.disabled = true;
-        return;
-      }
+        // Ürün stok ve fiyat bilgisini güncelleyen fonksiyon
+        function updateProductInfo(itemRow) {
+            const storeId = storeIdInput.value;
+            const productIdInput = itemRow.querySelector('.product_id');
+            const unitPriceInput = itemRow.querySelector('.unit_price');
+            const quantityInput = itemRow.querySelector('.quantity');
 
-      let canSubmit = true;
-      itemRows.forEach(row => {
-        const stockInfo = row.querySelector('.stock-info');
-        if(stockInfo && stockInfo.style.color === 'red') {
-          canSubmit = false;
+            const productId = productIdInput.value;
+
+            if (storeId && productId) {
+                fetch(`/inventory/get_product_info/${storeId}/${productId}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        let stockInfo = itemRow.querySelector('.stock-info');
+                        if(!stockInfo) {
+                            stockInfo = document.createElement('div');
+                            stockInfo.classList.add('stock-info');
+                            itemRow.appendChild(stockInfo);
+                        }
+
+                        if(data.status === 'success') {
+                            unitPriceInput.value = data.unit_price.toFixed(2);
+                            stockInfo.textContent = `Stokta: ${data.quantity}`;
+
+                            if(parseInt(quantityInput.value) > data.quantity) {
+                                stockInfo.classList.add('stock-danger');
+                                stockInfo.textContent += ' - Yeterli stok yok!';
+                            } else {
+                                stockInfo.classList.add('stock-success');
+                            }
+                        } else {
+                            stockInfo.classList.add('stock-danger');
+                            stockInfo.textContent = 'Envanterde ürün yok!';
+                            unitPriceInput.value = '0.00';
+                        }
+                        updateSubmitButtonState();
+                    })
+                    .catch(() => {
+                        msgDiv.textContent = 'Sunucu ile bağlantı kurulamadı.';
+                        msgDiv.classList.add('error');
+                    });
+            }
         }
-      });
-      submitBtn.disabled = !canSubmit;
-    }
 
-    // Sayfa açılırken buton durumu kontrolü
-    updateSubmitButtonState();
+        // Gönder butonunun aktifliğini stok durumuna ve satır varlığına göre ayarlar
+        function updateSubmitButtonState() {
+            const itemRows = itemsContainer.querySelectorAll('.item-row');
+            if(itemRows.length === 0) {
+                submitBtn.disabled = true;
+                return;
+            }
 
-  </script>
+            let canSubmit = true;
+            itemRows.forEach(row => {
+                const stockInfo = row.querySelector('.stock-info');
+                if(stockInfo && stockInfo.classList.contains('stock-danger')) {
+                    canSubmit = false;
+                }
+            });
+            submitBtn.disabled = !canSubmit;
+        }
+
+        // Sayfa açılırken buton durumu kontrolü
+        updateSubmitButtonState();
+    </script>
 </body>
 </html>

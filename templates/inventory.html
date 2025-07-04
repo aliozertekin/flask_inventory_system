@@ -6,69 +6,101 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-  <h1>Envanter</h1>
+    <header>
+        <div class="header-container">
+            <div class="logo">Envanter Yönetimi</div>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="/inventory">Envanter</a></li>
+                    <li><a href="/orders">Siparişler</a></li>
+                    <li><a href="/customers">Müşteriler</a></li>
+                    <li><a href="/orders/add">Yeni Sipariş</a></li>
+                </ul>
+            </nav>
+            <div class="user-info">
+                <span>Kullanıcı</span>
+            </div>
+        </div>
+    </header>
 
-<!-- Arama formu - method GET olmalı -->
-<form method="GET" action="{{ url_for('inventory.list_orders') }}" class="search-form">
-    <input type="text" name="search" placeholder="Ara..." value="{{ search_term or '' }}">
-    <button type="submit">Ara</button>
-</form>
+    <div class="container">
+        <div class="page-header">
+            <h1 class="page-title">Envanter</h1>
+        </div>
 
-  <div class="pagination">
-    {% if page > 1 %}
-    <a href="{{ url_for('inventory.list_orders', page=page-1, search=search_term) }}">Önceki</a>
-    {% endif %}
-    
-    <span>Sayfa {{ page }} (Toplam {{ (total/per_page)|round(0, 'ceil')|int }} sayfa)</span>
-    
-    {% if page * per_page < total %}
-    <a href="{{ url_for('inventory.list_orders', page=page+1, search=search_term) }}">Sonraki</a>
-    {% endif %}
-</div>
+        <div class="card">
+            <form method="GET" action="{{ url_for('inventory.list_orders') }}" class="search-form">
+                <input type="text" name="search" placeholder="Ara..." value="{{ search_term or '' }}">
+                <button type="submit" class="btn btn-primary">Ara</button>
+            </form>
 
-  <table>
-    <thead>
-      <tr>
-        <th>Envanter ID</th>
-        <th>Mağaza ID</th>
-        <th>Mağaza Adı</th>
-        <th>Ürün ID</th>
-        <th>Ürün Adı</th>
-        <th>Ürün Fiyatı</th>  <!-- Yeni sütun -->
-        <th>Envanterdeki Miktar</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for inv in inventory %}
-      <tr>
-        <td>{{ inv[0] }}</td>
-        <td>{{ inv[1] }}</td>
-        <td>{{ inv[2] }}</td>
-        <td>{{ inv[3] }}</td>
-        <td>{{ inv[4] }}</td>
-        <td>{{ inv[5] }}</td>
-        <td>{{ inv[6] }}</td>
-      </tr>
-      {% else %}
-      <tr><td colspan="6">Envanter bulunamadı.</td></tr>
-      {% endfor %}
-    </tbody>
-  </table>
+            <div class="pagination">
+                {% if page > 1 %}
+                <a href="{{ url_for('inventory.list_orders', page=page-1, search=search_term) }}" class="btn btn-light">Önceki</a>
+                {% endif %}
+                
+                <span class="pagination-info">Sayfa {{ page }} (Toplam {{ (total/per_page)|round(0, 'ceil')|int }} sayfa)</span>
+                
+                {% if page * per_page < total %}
+                <a href="{{ url_for('inventory.list_orders', page=page+1, search=search_term) }}" class="btn btn-light">Sonraki</a>
+                {% endif %}
+            </div>
 
-  <div class="pagination">
-    {% if page > 1 %}
-    <a href="{{ url_for('inventory.list_orders', page=page-1, search=search_term) }}">Önceki</a>
-    {% endif %}
-    
-    <span>Sayfa {{ page }} (Toplam {{ (total/per_page)|round(0, 'ceil')|int }} sayfa)</span>
-    
-    {% if page * per_page < total %}
-    <a href="{{ url_for('inventory.list_orders', page=page+1, search=search_term) }}">Sonraki</a>
-    {% endif %}
-</div>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Envanter ID</th>
+                            <th>Mağaza ID</th>
+                            <th>Mağaza Adı</th>
+                            <th>Ürün ID</th>
+                            <th>Ürün Adı</th>
+                            <th>Ürün Fiyatı</th>
+                            <th>Envanterdeki Miktar</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for inv in inventory %}
+                        <tr>
+                            <td>{{ inv[0] }}</td>
+                            <td>{{ inv[1] }}</td>
+                            <td>{{ inv[2] }}</td>
+                            <td>{{ inv[3] }}</td>
+                            <td>{{ inv[4] }}</td>
+                            <td>{{ inv[5] }}</td>
+                            <td>{{ inv[6] }}</td>
+                        </tr>
+                        {% else %}
+                        <tr><td colspan="7">Envanter bulunamadı.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
 
-    <!-- JavaScript dosyasını ekle -->
-  <script src="{{ url_for('static', filename='scripts/search.js') }}"></script>
+            <div class="pagination">
+                {% if page > 1 %}
+                <a href="{{ url_for('inventory.list_orders', page=page-1, search=search_term) }}" class="btn btn-light">Önceki</a>
+                {% endif %}
+                
+                <span class="pagination-info">Sayfa {{ page }} (Toplam {{ (total/per_page)|round(0, 'ceil')|int }} sayfa)</span>
+                
+                {% if page * per_page < total %}
+                <a href="{{ url_for('inventory.list_orders', page=page+1, search=search_term) }}" class="btn btn-light">Sonraki</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
 
+    <footer>
+        <div class="footer-content">
+            <p>&copy; 2025 Envanter Yönetim Sistemi</p>
+            <div class="footer-links">
+                <a href="#">Gizlilik</a>
+                <a href="#">Şartlar</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="{{ url_for('static', filename='scripts/search.js') }}"></script>
 </body>
 </html>

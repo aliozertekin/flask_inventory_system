@@ -6,63 +6,104 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <h2>Müşteri Ekle</h2>
-    <form method="POST" action="{{ url_for('customer_bp.add_customer') }}">
-        <input type="text" name="name" placeholder="Ad Soyad" required>
-        <input type="email" name="email" placeholder="E-posta" required>
-        <button type="submit">Ekle</button>
-    </form>
+    <header>
+        <div class="header-container">
+            <div class="logo">Müşteri Yönetimi</div>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="/inventory">Envanter</a></li>
+                    <li><a href="/orders">Siparişler</a></li>
+                    <li><a href="/customers">Müşteriler</a></li>
+                    <li><a href="/orders/add">Yeni Sipariş</a></li>
+                </ul>
+            </nav>
+            <div class="user-info">
+                <span>Kullanıcı</span>
+            </div>
+        </div>
+    </header>
 
-    <h2>Müşteri Listesi</h2>
+    <div class="container">
+        <div class="card">
+            <h2>Müşteri Ekle</h2>
+            <form method="POST" action="{{ url_for('customer_bp.add_customer') }}" class="customer-form">
+                <div class="form-group">
+                    <input type="text" name="name" placeholder="Ad Soyad" required>
+                </div>
+                <div class="form-group">
+                    <input type="email" name="email" placeholder="E-posta" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Ekle</button>
+            </form>
+        </div>
 
-    <form method="GET" action="{{ url_for('customer_bp.list_customers') }}" class="search-form">
-        <input type="text" name="search" placeholder="Ara..." value="{{ search_term or '' }}">
-        <button type="submit">Ara</button>
-    </form>
+        <div class="card">
+            <div class="page-header">
+                <h2>Müşteri Listesi</h2>
+            </div>
 
-        <div class="pagination">
-        {% if page > 1 %}
-        <a href="{{ url_for('customer_bp.list_customers', page=page-1, search=search_term) }}">Önceki</a>
-        {% endif %}
+            <form method="GET" action="{{ url_for('customer_bp.list_customers') }}" class="search-form">
+                <input type="text" name="search" placeholder="Ara..." value="{{ search_term or '' }}">
+                <button type="submit" class="btn btn-primary">Ara</button>
+            </form>
 
-        <span>Sayfa {{ page }} (Toplam {{ (total/per_page)|round(0, 'ceil')|int }} sayfa)</span>
+            <div class="pagination">
+                {% if page > 1 %}
+                <a href="{{ url_for('customer_bp.list_customers', page=page-1, search=search_term) }}" class="btn btn-light">Önceki</a>
+                {% endif %}
+                
+                <span class="pagination-info">Sayfa {{ page }} (Toplam {{ (total/per_page)|round(0, 'ceil')|int }} sayfa)</span>
+                
+                {% if page * per_page < total %}
+                <a href="{{ url_for('customer_bp.list_customers', page=page+1, search=search_term) }}" class="btn btn-light">Sonraki</a>
+                {% endif %}
+            </div>
 
-        {% if page * per_page < total %}
-        <a href="{{ url_for('customer_bp.list_customers', page=page+1, search=search_term) }}">Sonraki</a>
-        {% endif %}
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Müşteri ID</th>
+                            <th>Ad Soyad</th>
+                            <th>E-posta</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for customer in customers %}
+                        <tr>
+                            <td>{{ customer[0] }}</td>
+                            <td>{{ customer[1] }}</td>
+                            <td>{{ customer[2] }}</td>
+                        </tr>
+                        {% else %}
+                        <tr><td colspan="3">Müşteri bulunamadı.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="pagination">
+                {% if page > 1 %}
+                <a href="{{ url_for('customer_bp.list_customers', page=page-1, search=search_term) }}" class="btn btn-light">Önceki</a>
+                {% endif %}
+                
+                <span class="pagination-info">Sayfa {{ page }} (Toplam {{ (total/per_page)|round(0, 'ceil')|int }} sayfa)</span>
+                
+                {% if page * per_page < total %}
+                <a href="{{ url_for('customer_bp.list_customers', page=page+1, search=search_term) }}" class="btn btn-light">Sonraki</a>
+                {% endif %}
+            </div>
+        </div>
     </div>
-    
-    <table>
-        <thead>
-            <tr>
-                <th>Müşteri ID</th>
-                <th>Ad Soyad</th>
-                <th>E-posta</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for customer in customers %}
-            <tr>
-                <td>{{ customer[0] }}</td>
-                <td>{{ customer[1] }}</td>
-                <td>{{ customer[2] }}</td>
-            </tr>
-            {% else %}
-            <tr><td colspan="3">Müşteri bulunamadı.</td></tr>
-            {% endfor %}
-        </tbody>
-    </table>
 
-    <div class="pagination">
-        {% if page > 1 %}
-        <a href="{{ url_for('customer_bp.list_customers', page=page-1, search=search_term) }}">Önceki</a>
-        {% endif %}
-
-        <span>Sayfa {{ page }} (Toplam {{ (total/per_page)|round(0, 'ceil')|int }} sayfa)</span>
-
-        {% if page * per_page < total %}
-        <a href="{{ url_for('customer_bp.list_customers', page=page+1, search=search_term) }}">Sonraki</a>
-        {% endif %}
-    </div>
+    <footer>
+        <div class="footer-content">
+            <p>&copy; 2025 Müşteri Yönetim Sistemi</p>
+            <div class="footer-links">
+                <a href="#">Gizlilik</a>
+                <a href="#">Şartlar</a>
+            </div>
+        </div>
+    </footer>
 </body>
 </html>

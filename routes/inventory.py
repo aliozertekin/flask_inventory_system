@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, jsonify
+from flask import Blueprint, render_template, request, redirect, url_for, jsonify, flash
 from db.connection import conn
 import cx_Oracle
 
@@ -66,6 +66,46 @@ def list_orders():
     finally:
         cursor.close()
 
+@inventory_bp.route('/add', methods=['GET', 'POST'])
+def add_inventory():
+    if request.method == 'POST':
+        try:
+            store_id = int(request.form['store_id'])
+            product_id = int(request.form['product_id'])
+            amount = int(request.form['quantity'])
+
+            cursor = conn.cursor()
+            old_amount = cursor.var(cx_Oracle.NUMBER)
+            new_amount = cursor.var(cx_Oracle.NUMBER)
+
+            cursor.callproc("ADD_INVENTORY", [store_id, product_id, amount, old_amount, new_amount])
+            conn.commit()
+
+            flash(f"Ürün başarıyla eklendi. Önceki stok: {int(old_amount.getvalue())}, Yeni stok: {int(new_amount.getvalue())}", "success")
+
+        except Exception as e:
+            conn.rollback()
+            flash(f"Hata oluştu: {str(e)}", "error")
+            print("Form verisi:", request.form)
+
+    return render_template("inventory_add.html")
+
+@inventory_bp.route('/log')
+def inventory_log():
+    cursor = conn.cursor()
+    try:
+        cursor.execute("""
+            SELECT log_id, inventory_id, store_id, product_id, change_amount, old_quantity, new_quantity, action, TO_CHAR(changed_at, 'YYYY-MM-DD HH24:MI:SS'), changed_by
+            FROM inventory_log
+            ORDER BY changed_at DESC
+            FETCH FIRST 100 ROWS ONLY
+        """)
+        logs = cursor.fetchall()
+        return render_template('inventory_log.html', logs=logs)
+    finally:
+        cursor.close()
+
+
 @inventory_bp.route('/get_price/<int:product_id>')
 def get_price(product_id):
     cursor = conn.cursor()
@@ -80,8 +120,6 @@ def get_price(product_id):
         return jsonify({'status': 'error', 'message': str(e)}), 500
     finally:
         cursor.close()
-
-from flask import jsonify, request
 
 @inventory_bp.route('/get_product_info/<int:store_id>/<int:product_id>')
 def get_product_info(store_id, product_id):

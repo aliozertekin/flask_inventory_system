@@ -6,73 +6,103 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-  <h1>Siparişler</h1>
+    <header>
+        <div class="header-container">
+            <div class="logo">Sipariş Yönetimi</div>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="/inventory">Envanter</a></li>
+                    <li><a href="/orders">Siparişler</a></li>
+                    <li><a href="/customers">Müşteriler</a></li>
+                    <li><a href="/orders/add">Yeni Sipariş</a></li>
+                </ul>
+            </nav>
+            <div class="user-info">
+                <span>Kullanıcı</span>
+            </div>
+        </div>
+    </header>
 
-  <!-- Arama Formu -->
-  <form method="GET" action="{{ url_for('orders.list_orders') }}" class="search-form">
-    <input type="text" name="search" placeholder="Ara..." value="{{ search_term or '' }}">
-    <button type="submit">Ara</button>
-  </form>
+    <div class="container">
+        <div class="page-header">
+            <h1 class="page-title">Siparişler</h1>
+        </div>
 
-  <!-- Sayfalama -->
-  <div class="pagination">
-    {% if page > 1 %}
-      <a href="{{ url_for('orders.list_orders', page=page-1, search=search_term) }}">Önceki</a>
-    {% endif %}
+        <div class="card">
+            <form method="GET" action="{{ url_for('orders.list_orders') }}" class="search-form">
+                <input type="text" name="search" placeholder="Ara..." value="{{ search_term or '' }}">
+                <button type="submit" class="btn btn-primary">Ara</button>
+            </form>
 
-    <span>Sayfa {{ page }} (Toplam {{ (total/per_page)|round(0, 'ceil')|int }} sayfa)</span>
+            <div class="pagination">
+                {% if page > 1 %}
+                <a href="{{ url_for('orders.list_orders', page=page-1, search=search_term) }}" class="btn btn-light">Önceki</a>
+                {% endif %}
+                
+                <span class="pagination-info">Sayfa {{ page }} (Toplam {{ (total/per_page)|round(0, 'ceil')|int }} sayfa)</span>
+                
+                {% if page * per_page < total %}
+                <a href="{{ url_for('orders.list_orders', page=page+1, search=search_term) }}" class="btn btn-light">Sonraki</a>
+                {% endif %}
+            </div>
 
-    {% if page * per_page < total %}
-      <a href="{{ url_for('orders.list_orders', page=page+1, search=search_term) }}">Sonraki</a>
-    {% endif %}
-  </div>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Sipariş ID</th>
+                            <th>Tarih</th>
+                            <th>Durum</th>
+                            <th>Müşteri</th>
+                            <th>Mağaza</th>
+                            <th>İşlem</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for order in orders %}
+                        <tr>
+                            <td>{{ order[0] }}</td>
+                            <td>{{ order[1] }}</td>
+                            <td>{{ order[2] }}</td>
+                            <td>{{ order[3] }}</td>
+                            <td>{{ order[4] }}</td>
+                            <td>
+                                {% if order[2] in ['OPEN', 'PAID', 'SHIPPED'] %}
+                                <a href="{{ url_for('orders.update_order_status', order_id=order[0]) }}" class="btn btn-primary">Durumu Güncelle</a>
+                                {% else %}
+                                -
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr><td colspan="6">Sipariş bulunamadı.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
 
-  <table>
-    <thead>
-      <tr>
-        <th>Sipariş ID</th>
-        <th>Tarih</th>
-        <th>Durum</th>
-        <th>Müşteri</th>
-        <th>Mağaza</th>
-        <th>İşlem</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for order in orders %}
-      <tr>
-        <td>{{ order[0] }}</td>
-        <td>{{ order[1] }}</td>
-        <td>{{ order[2] }}</td>
-        <td>{{ order[3] }}</td>
-        <td>{{ order[4] }}</td>
-        <td>
-          {% if order[2] == 'OPEN' %}
-          <a href="{{ url_for('orders.update_order_status', order_id=order[0]) }}">
-            <button>Durumu Güncelle</button>
-          </a>
-          {% else %}
-          -
-          {% endif %}
-        </td>
-      </tr>
-      {% else %}
-      <tr><td colspan="6">Sipariş bulunamadı.</td></tr>
-      {% endfor %}
-    </tbody>
-  </table>
+            <div class="pagination">
+                {% if page > 1 %}
+                <a href="{{ url_for('orders.list_orders', page=page-1, search=search_term) }}" class="btn btn-light">Önceki</a>
+                {% endif %}
+                
+                <span class="pagination-info">Sayfa {{ page }} (Toplam {{ (total/per_page)|round(0, 'ceil')|int }} sayfa)</span>
+                
+                {% if page * per_page < total %}
+                <a href="{{ url_for('orders.list_orders', page=page+1, search=search_term) }}" class="btn btn-light">Sonraki</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
 
-  <!-- Sayfalama -->
-  <div class="pagination">
-    {% if page > 1 %}
-      <a href="{{ url_for('orders.list_orders', page=page-1, search=search_term) }}">Önceki</a>
-    {% endif %}
-
-    <span>Sayfa {{ page }} (Toplam {{ (total/per_page)|round(0, 'ceil')|int }} sayfa)</span>
-
-    {% if page * per_page < total %}
-      <a href="{{ url_for('orders.list_orders', page=page+1, search=search_term) }}">Sonraki</a>
-    {% endif %}
-  </div>
+    <footer>
+        <div class="footer-content">
+            <p>&copy; 2025 Sipariş Yönetim Sistemi</p>
+            <div class="footer-links">
+                <a href="#">Gizlilik</a>
+                <a href="#">Şartlar</a>
+            </div>
+        </div>
+    </footer>
 </body>
 </html>
