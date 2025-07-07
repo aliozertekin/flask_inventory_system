@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <title>Gizlilik Politikası</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    /* Özel stiller */
+    .policy-container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 40px;
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+    
+    .policy-header {
+      text-align: center;
+      margin-bottom: 40px;
+      padding-bottom: 20px;
+      border-bottom: 2px solid #f0f4f8;
+    }
+    
+    .policy-header h1 {
+      font-size: 2.5rem;
+      color: #2c3e50;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+    }
+    
+    .last-updated {
+      color: #7f8c8d;
+      font-size: 0.95rem;
+    }
+    
+    .policy-content {
+      line-height: 1.8;
+      color: #2c3e50;
+    }
+    
+    .section {
+      margin-bottom: 35px;
+    }
+    
+    .section h2 {
+      color: #3498db;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #ecf0f1;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .section p {
+      margin-bottom: 15px;
+    }
+    
+    .section ul {
+      margin: 15px 0;
+      padding-left: 25px;
+    }
+    
+    .section li {
+      margin-bottom: 10px;
+    }
+    
+    .contact-info {
+      background: #f8f9fa;
+      padding: 25px;
+      border-radius: 10px;
+      margin-top: 30px;
+      border-left: 4px solid #3498db;
+    }
+    
+    .contact-info h3 {
+      color: #3498db;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 30px;
+      padding: 12px 25px;
+      background: #3498db;
+      color: white;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+    
+    .back-btn:hover {
+      background: #2980b9;
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    @media (max-width: 768px) {
+      .policy-container {
+        padding: 25px;
+      }
+      
+      .policy-header h1 {
+        font-size: 2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-container">
+      <div class="logo">Gizlilik Politikası</div>
+      <nav>
+        <ul class="nav-links">
+          <li><a href="/">Ana Sayfa</a></li>
+          <li><a href="/inventory">Envanter</a></li>
+          <li><a href="/orders">Siparişler</a></li>
+          <li><a href="/log">Kayıtlar</a></li>
+          <li><a href="/product">Ürünler</a></li>
+          <li><a href="/customers">Müşteriler</a></li>
+        </ul>
+      </nav>
+      <div class="user-info">
+        <span>Kullanıcı</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="policy-container">
+      <div class="policy-header">
+        <h1><i class="fas fa-shield-alt"></i> Gizlilik Politikası</h1>
+        <p class="last-updated">Son güncelleme: 15 Temmuz 2025</p>
+      </div>
+      
+      <div class="policy-content">
+        <div class="section">
+          <h2><i class="fas fa-info-circle"></i> Genel Bilgiler</h2>
+          <p>Envanter Yönetim Sistemi ("Biz", "Bize" veya "Bizim"), gizliliğinize büyük önem vermekteyiz. Bu Gizlilik Politikası, kişisel bilgilerinizi nasıl topladığımızı, kullandığımızı, paylaştığımızı ve koruduğumuzu açıklamaktadır.</p>
+          <p>Bu politika, web sitemizi ziyaret ettiğinizde veya hizmetlerimizi kullandığınızda geçerlidir. Hizmetlerimizi kullanarak, bu politikada açıklanan uygulamalara rıza gösterdiğinizi kabul etmiş olursunuz.</p>
+        </div>
+        
+        <div class="section">
+          <h2><i class="fas fa-database"></i> Toplanan Bilgiler</h2>
+          <p>Hizmetlerimizi sağlamak için aşağıdaki türde bilgileri toplayabiliriz:</p>
+          <ul>
+            <li><strong>Kişisel Bilgiler:</strong> Ad, e-posta adresi, telefon numarası, iş unvanı gibi sizinle doğrudan ilişkilendirilebilen bilgiler.</li>
+            <li><strong>Kullanım Bilgileri:</strong> Sistemimizi nasıl kullandığınıza dair bilgiler, IP adresi, tarayıcı türü, cihaz bilgileri ve erişim zamanları.</li>
+            <li><strong>İşlem Bilgileri:</strong> Yaptığınız siparişler, satın almalar ve diğer işlemlerle ilgili bilgiler.</li>
+          </ul>
+        </div>
+        
+        <div class="section">
+          <h2><i class="fas fa-lock"></i> Bilgilerin Kullanımı</h2>
+          <p>Topladığımız bilgileri aşağıdaki amaçlarla kullanırız:</p>
+          <ul>
+            <li>Hizmetlerimizi sağlamak, sürdürmek ve iyileştirmek</li>
+            <li>Müşteri desteği sağlamak ve sorularınıza yanıt vermek</li>
+            <li>Kullanıcı deneyiminizi kişiselleştirmek</li>
+            <li>Güvenlik, dolandırıcılık tespiti ve uyumluluk amacıyla</li>
+            <li>Yeni ürün, hizmet ve özellikler hakkında bilgilendirme yapmak</li>
+          </ul>
+        </div>
+        
+        <div class="section">
+          <h2><i class="fas fa-share-alt"></i> Bilgilerin Paylaşımı</h2>
+          <p>Kişisel bilgilerinizi aşağıdaki durumlarda üçüncü taraflarla paylaşabiliriz:</p>
+          <ul>
+            <li>Hizmet sağlayıcılarımız (örneğin, barındırma, analiz ve ödeme işleme hizmetleri)</li>
+            <li>Yasal gereklilikler veya bir mahkeme kararı doğrultusunda</li>
+            <li>Şirket birleşmesi, satın alma veya varlık transferi durumunda</li>
+            <li>Sizin açık rızanızla</li>
+          </ul>
+        </div>
+        
+        <div class="section">
+          <h2><i class="fas fa-shield-alt"></i> Güvenlik</h2>
+          <p>Bilgilerinizin güvenliğini sağlamak için uygun teknik ve organizasyonel önlemleri alıyoruz. Ancak, hiçbir internet iletiminin veya elektronik depolama yönteminin %100 güvenli olmadığını unutmayın.</p>
+        </div>
+        
+        <div class="section">
+          <h2><i class="fas fa-cookie-bite"></i> Çerezler</h2>
+          <p>Web sitemiz, deneyiminizi geliştirmek için çerezler kullanır. Çerezler, tarayıcınız aracılığıyla bilgisayarınıza yerleştirilen küçük veri dosyalarıdır. Çerez tercihlerinizi tarayıcı ayarlarınızdan yönetebilirsiniz.</p>
+        </div>
+        
+        <div class="contact-info">
+          <h3><i class="fas fa-envelope"></i> İletişim</h3>
+          <p>Gizlilik Politikamızla ilgili herhangi bir sorunuz varsa, lütfen bizimle iletişime geçin:</p>
+          <p>E-posta: gizlilik@envanterpro.com</p>
+          <p>Telefon: +90 212 123 45 67</p>
+          <p>Adres: Teknoloji Geliştirme Bölgesi, No: 123, İstanbul, Türkiye</p>
+        </div>
+        
+        <a href="/" class="back-btn">
+          <i class="fas fa-arrow-left"></i> Ana Sayfaya Dön
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-content">
+      <p>&copy; 2025 Envanter Yönetim Sistemi - Tüm hakları saklıdır</p>
+      <div class="footer-links">
+        <a href="/privacy">Gizlilik Politikası</a>
+        <a href="/terms">Kullanım Şartları</a>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

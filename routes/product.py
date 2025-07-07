@@ -247,3 +247,16 @@ def delete_product(product_id):
     finally:
         cursor.close()
     return redirect(url_for('product.list_products'))
+
+@product_bp.route('/delete_image/<int:product_id>', methods=['POST'])
+def delete_product_image(product_id):
+    cursor = conn.cursor()
+    try:
+        cursor.callproc("DELETE_PRODUCT_IMAGE", [product_id])
+        flash("Ürün resmi başarıyla silindi.", "success")
+    except Exception as e:
+        conn.rollback()
+        flash(f"Resim silme hatası: {str(e)}", "error")
+    finally:
+        cursor.close()
+    return redirect(url_for('product.product_details', product_id=product_id))

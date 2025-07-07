@@ -206,12 +206,11 @@
       <div class="logo">İşlem Logları</div>
       <nav>
         <ul class="nav-links">
+          <li><a href="/">Ana Sayfa</a></li>
           <li><a href="/inventory">Envanter</a></li>
           <li><a href="/orders">Siparişler</a></li>
           <li><a href="/customers">Müşteriler</a></li>
           <li><a href="/product">Ürünler</a></li>
-          <li><a href="/inventory/log">Envanter Logları</a></li>
-          <li><a href="/logs">İşlem Logları</a></li>
         </ul>
       </nav>
       <div class="user-info">
@@ -305,22 +304,6 @@
           </tbody>
         </table>
       </div>
-      
-      <div class="pagination-container">
-        <div class="pagination">
-          <a href="#" class="btn btn-light">
-            <i class="fas fa-chevron-left"></i> Önceki
-          </a>
-          <a href="#" class="btn btn-light">1</a>
-          <a href="#" class="btn btn-light">2</a>
-          <a href="#" class="btn btn-light">3</a>
-          <span>...</span>
-          <a href="#" class="btn btn-light">10</a>
-          <a href="#" class="btn btn-light">
-            Sonraki <i class="fas fa-chevron-right"></i>
-          </a>
-        </div>
-      </div>
       {% else %}
         <div class="no-logs">
           <i class="fas fa-file-alt" style="font-size: 3rem; margin-bottom: 15px;"></i>
@@ -335,9 +318,8 @@
     <div class="footer-content">
       <p>&copy; 2025 İşlem Logları Yönetimi</p>
       <div class="footer-links">
-        <a href="#">Gizlilik</a>
-        <a href="#">Şartlar</a>
-        <a href="#">Yardım</a>
+        <a href="/privacy">Gizlilik</a>
+        <a href="/terms">Şartlar</a>
       </div>
     </div>
   </footer>

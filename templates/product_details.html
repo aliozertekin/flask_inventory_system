@@ -227,7 +227,6 @@
               <input type="file" id="product_image" name="product_image" 
                      accept="image/*" class="form-control">
             </div>
-            
             <div class="btn-container">
               <button type="submit" class="btn-update">
                 <i class="fas fa-save"></i> Güncelle
@@ -237,14 +236,22 @@
               </a>
             </div>
           </form>
+          <div class="btn-container" style="display: flex; gap: 15px; margin-top: 20px;">
+            <!-- Ürünü Sil Butonu -->
+            <form method="POST" action="{{ url_for('product.delete_product', product_id=product.id) }}" style="margin: 0; display: inline-block;"
+                  onsubmit="return confirm('Ürünü silmek istediğinize emin misiniz?');">
+              <button type="submit" class="btn-delete" style="min-width: 270px;">
+                <i class="fas fa-trash-alt"></i> Ürünü Sil
+              </button>
+            </form>
           
-          <form method="POST" action="{{ url_for('product.delete_product', product_id=product.id) }}" 
-                onsubmit="return confirm('Ürünü silmek istediğinize emin misiniz?');" 
-                style="margin-top: 20px;">
-            <button type="submit" class="btn-delete">
-              <i class="fas fa-trash-alt"></i> Ürünü Sil
-            </button>
-          </form>
+            <!-- Resmi Sil Butonu -->
+            <form action="{{ url_for('product.delete_product_image', product_id=product.id) }}" method="post" style="margin: 0; display: inline-block;">
+              <button type="submit" class="btn-delete" style="min-width: 270px;">
+                <i class="fas fa-trash"></i> Resmi Sil
+              </button>
+            </form>
+          </div>
         </div>
       </div>
     </div>
@@ -254,8 +261,8 @@
     <div class="footer-content">
       <p>&copy; 2025 Ürün Yönetim Sistemi</p>
       <div class="footer-links">
-        <a href="#">Gizlilik</a>
-        <a href="#">Şartlar</a>
+        <a href="/privacy">Gizlilik</a>
+        <a href="/terms">Şartlar</a>
       </div>
     </div>
   </footer>

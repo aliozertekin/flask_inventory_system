@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <title>Kullanım Şartları</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    /* Özel stiller */
+    .terms-container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 40px;
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+    
+    .terms-header {
+      text-align: center;
+      margin-bottom: 40px;
+      padding-bottom: 20px;
+      border-bottom: 2px solid #f0f4f8;
+    }
+    
+    .terms-header h1 {
+      font-size: 2.5rem;
+      color: #2c3e50;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+    }
+    
+    .last-updated {
+      color: #7f8c8d;
+      font-size: 0.95rem;
+    }
+    
+    .terms-content {
+      line-height: 1.8;
+      color: #2c3e50;
+    }
+    
+    .section {
+      margin-bottom: 35px;
+    }
+    
+    .section h2 {
+      color: #3498db;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #ecf0f1;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .section p {
+      margin-bottom: 15px;
+    }
+    
+    .section ol {
+      margin: 15px 0;
+      padding-left: 25px;
+    }
+    
+    .section li {
+      margin-bottom: 10px;
+      padding-left: 10px;
+    }
+    
+    .important-note {
+      background: #f8f9fa;
+      padding: 25px;
+      border-radius: 10px;
+      margin: 30px 0;
+      border-left: 4px solid #e74c3c;
+    }
+    
+    .important-note h3 {
+      color: #e74c3c;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 30px;
+      padding: 12px 25px;
+      background: #3498db;
+      color: white;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+    
+    .back-btn:hover {
+      background: #2980b9;
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    @media (max-width: 768px) {
+      .terms-container {
+        padding: 25px;
+      }
+      
+      .terms-header h1 {
+        font-size: 2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-container">
+      <div class="logo">Kullanım Şartları</div>
+      <nav>
+        <ul class="nav-links">
+          <li><a href="/">Ana Sayfa</a></li>
+          <li><a href="/inventory">Envanter</a></li>
+          <li><a href="/orders">Siparişler</a></li>
+          <li><a href="/log">Kayıtlar</a></li>
+          <li><a href="/product">Ürünler</a></li>
+          <li><a href="/customers">Müşteriler</a></li>
+        </ul>
+      </nav>
+      <div class="user-info">
+        <span>Kullanıcı</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="terms-container">
+      <div class="terms-header">
+        <h1><i class="fas fa-file-contract"></i> Kullanım Şartları</h1>
+        <p class="last-updated">Son güncelleme: 15 Temmuz 2025</p>
+      </div>
+      
+      <div class="terms-content">
+        <div class="section">
+          <h2><i class="fas fa-info-circle"></i> Giriş</h2>
+          <p>Envanter Yönetim Sistemi ("Platform") web sitesine erişiminiz ve kullanımınız, aşağıdaki Kullanım Şartları ("Şartlar") ile yönetilir. Platformu kullanarak, bu Şartları kabul etmiş sayılırsınız. Lütfen dikkatlice okuyunuz.</p>
+        </div>
+        
+        <div class="section">
+          <h2><i class="fas fa-user-check"></i> Hesap Sorumlulukları</h2>
+          <p>Platforma erişmek için bir hesap oluşturmanız gerekebilir. Hesap bilgilerinizin doğru, güncel ve eksiksiz olmasından siz sorumlusunuz. Hesap bilgilerinizin gizliliğini sağlamak ve hesabınız altında gerçekleşen tüm faaliyetlerden sorumlusunuz.</p>
+        </div>
+        
+        <div class="section">
+          <h2><i class="fas fa-ban"></i> Yasaklı Faaliyetler</h2>
+          <p>Platformu kullanırken aşağıdaki faaliyetlerde bulunamazsınız:</p>
+          <ol>
+            <li>Yasa dışı amaçlarla veya yasa dışı faaliyetleri teşvik etmek için kullanmak</li>
+            <li>Başkalarının haklarını ihlal etmek veya zarar vermek</li>
+            <li>Virüs veya diğer kötü amaçlı kodlar yaymak</li>
+            <li>Sistemin güvenliğini veya bütünlüğünü ihlal etmeye çalışmak</li>
+            <li>Platformun normal işleyişini bozmak veya engellemek</li>
+            <li>Başkalarının kişisel bilgilerini izinsiz toplamak</li>
+          </ol>
+        </div>
+        
+        <div class="section">
+          <h2><i class="fas fa-gavel"></i> Fikri Mülkiyet</h2>
+          <p>Platform ve orijinal içeriği (kaynak kodu, veritabanı, işlevsellik, yazılım, web sitesi tasarımı, ses, video, metin, fotoğraf ve grafikler dahil ancak bunlarla sınırlı olmamak üzere), bizim ve lisans verenlerimizin mülkiyetindedir ve telif hakkı, ticari marka, patent, ticaret sırrı ve diğer fikri mülkiyet yasaları tarafından korunmaktadır.</p>
+        </div>
+        
+        <div class="section">
+          <h2><i class="fas fa-exclamation-triangle"></i> Sorumluluk Reddi</h2>
+          <p>Platform "olduğu gibi" ve "mevcut olduğu şekliyle" sağlanmaktadır. Platformun kullanımından doğan herhangi bir zarardan sorumlu değiliz. Platformun kesintisiz, güvenli veya hatasız olacağını garanti etmiyoruz.</p>
+        </div>
+        
+        <div class="section">
+          <h2><i class="fas fa-link"></i> Üçüncü Taraf Bağlantıları</h2>
+          <p>Platform, üçüncü taraf web sitelerine veya hizmetlerine bağlantılar içerebilir. Bu bağlantıların içeriği, gizlilik uygulamaları veya politikaları üzerinde herhangi bir kontrolümüz yoktur ve sorumluluk kabul etmiyoruz.</p>
+        </div>
+        
+        <div class="section">
+          <h2><i class="fas fa-sync-alt"></i> Değişiklikler</h2>
+          <p>Bu Şartları zaman zaman güncelleme hakkını saklı tutarız. Güncellemeleri bu sayfada yayınlayarak bildiririz. Değişiklikler yayınlandıktan sonra Platformu kullanmaya devam etmeniz, revize edilmiş Şartları kabul ettiğiniz anlamına gelir.</p>
+        </div>
+        
+        <div class="important-note">
+          <h3><i class="fas fa-exclamation-circle"></i> Önemli Not</h3>
+          <p>Bu Şartlar, Platform kullanımınızla ilgili sizinle aramızdaki tüm anlaşmaları kapsar ve önceki sözlü veya yazılı anlaşmaların yerine geçer.</p>
+        </div>
+        
+        <a href="/" class="back-btn">
+          <i class="fas fa-arrow-left"></i> Ana Sayfaya Dön
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-content">
+      <p>&copy; 2025 Envanter Yönetim Sistemi - Tüm hakları saklıdır</p>
+      <div class="footer-links">
+        <a href="/privacy">Gizlilik Politikası</a>
+        <a href="/terms">Kullanım Şartları</a>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

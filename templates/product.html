@@ -152,13 +152,15 @@
   <header>
     <div class="header-container">
       <div class="logo">Ürün Yönetimi</div>
-      <nav>
+      <nav> 
         <ul class="nav-links">
+          <li><a href="/">Ana Sayfa</a></li>
           <li><a href="/inventory">Envanter</a></li>
           <li><a href="/orders">Siparişler</a></li>
           <li><a href="/customers">Müşteriler</a></li>
           <li><a href="/product">Ürünler</a></li>
-          <li><a href="/orders/add">Yeni Sipariş</a></li>
+          <li><a href="/log">Kayıtlar</a></li>
+          <li><a href="/product/add">Yeni Ürün</a></li>
         </ul>
       </nav>
       <div class="user-info">
@@ -233,12 +235,13 @@
                      class="btn btn-info btn-sm" title="Detaylar">
                     <i class="fas fa-info-circle"></i>
                   </a>
-                  <a href="{{ url_for('product.delete_product', product_id=product.id) }}" 
-                     class="btn btn-danger btn-sm" 
-                     onclick="return confirm('Silmek istediğinize emin misiniz?')"
-                     title="Sil">
-                    <i class="fas fa-trash-alt"></i>
-                  </a>
+                    <form method="POST" action="{{ url_for('product.delete_product', product_id=product.id) }}" 
+                          style="display: inline;" 
+                          onsubmit="return confirm('Silmek istediğinize emin misiniz?');">
+                      <button type="submit" class="btn btn-danger btn-sm" title="Sil">
+                        <i class="fas fa-trash-alt"></i>
+                      </button>
+                    </form>
                 </div>
               </td>
             </tr>
@@ -260,8 +263,8 @@
     <div class="footer-content">
       <p>&copy; 2025 Ürün Yönetim Sistemi</p>
       <div class="footer-links">
-        <a href="#">Gizlilik</a>
-        <a href="#">Şartlar</a>
+        <a href="/privacy">Gizlilik</a>
+        <a href="/terms">Şartlar</a>
       </div>
     </div>
   </footer>

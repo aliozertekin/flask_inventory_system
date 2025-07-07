@@ -193,12 +193,15 @@
         <div class="header-container">
             <div class="logo">Sipariş Detayı</div>
             <nav>
-                <ul class="nav-links">
-                    <li><a href="/inventory">Envanter</a></li>
-                    <li><a href="/orders">Siparişler</a></li>
-                    <li><a href="/customers">Müşteriler</a></li>
-                    <li><a href="/orders/add">Yeni Sipariş</a></li>
-                </ul>
+        <ul class="nav-links">
+          <li><a href="/">Ana Sayfa</a></li>
+          <li><a href="/inventory">Envanter</a></li>
+          <li><a href="/orders">Siparişler</a></li>
+          <li><a href="/orders/add">Sipariş Ekle</a></li>
+          <li><a href="/customers">Müşteriler</a></li>
+          <li><a href="/log">Kayıtlar</a></li>
+          <li><a href="/product">Ürünler</a></li>
+        </ul>
             </nav>
             <div class="user-info">
                 <span>Kullanıcı</span>
@@ -235,7 +238,7 @@
                     </div>
                 </div>
 
-                {% if order.order_status == 'OPEN' %}
+                {% if order.order_status in ['OPEN', 'PAID', 'SHIPPED'] %}
                 <div class="status-update">
                     <label for="status">
                         <i class="fas fa-sync-alt icon"></i>Durum Güncelle
@@ -285,8 +288,8 @@
         <div class="footer-content">
             <p>&copy; 2025 Sipariş Sistemi</p>
             <div class="footer-links">
-                <a href="#">Gizlilik</a>
-                <a href="#">Şartlar</a>
+                <a href="/privacy">Gizlilik</a>
+                <a href="/terms">Şartlar</a>
             </div>
         </div>
     </footer>
