@@ -1,39 +1,75 @@
 # Flask Inventory & Order Management System
 
-A professional-grade inventory and order management system built with **Flask** and **Oracle PL/SQL**. This system allows managing customers, inventory, and orders with a focus on database procedures and performance via PL/SQL integration.
+A professional-grade inventory and order management system built using **Flask** and **Oracle PL/SQL**. This application allows seamless tracking and management of customers, products, orders, and stock levels across stores, backed by robust PL/SQL stored procedures.
 
-## 🔧 Features
+---
 
-- 📦 **Customer Management** – Add, view, and list customer records.
-- 🏬 **Inventory Control** – Track product stock per store.
-- 🛒 **Order Processing** – Place orders and automatically:
-  - Check stock availability
-  - Deduct stock upon order
-  - Save order details and line items
-- 🔁 **Order Status Management** – Update order statuses (`OPEN`, `PAID`, `SHIPPED`, `COMPLETE`, `CANCELLED`, `REFUNDED`) via the UI or API.
-- 📊 **Oracle Integration** – Uses PL/SQL stored procedures and user-defined types for advanced backend processing.
-- 💡 **Modern UI** – Clean and user-friendly interface with responsive design.
+## Features
 
-## ⚙️ Technologies Used
+- Customer Management  
+  Add, edit, and view customers.
+
+- Inventory Management  
+  Add and track inventory per store. View inventory logs.
+
+- Order Processing  
+  Create new orders with automatic inventory checks and deduction. Supports multi-item orders via Oracle user-defined types.
+
+- Product Management  
+  Add, view, and edit product listings.
+
+- Order Status Management  
+  Supports order statuses: `OPEN`, `PAID`, `SHIPPED`, `COMPLETE`, `CANCELLED`, `REFUNDED`.
+
+- Order Details View  
+  Includes line item breakdown and order history.
+
+- Oracle Integration  
+  Uses stored procedures, packages, and views written in PL/SQL for backend logic.
+
+- Modern UI  
+  Built with HTML templates, CSS styling, and JavaScript enhancements.
+
+---
+
+## Technologies Used
 
 - Python 3.13+
-- Flask (Routing, Templates)
+- Flask
+- cx_Oracle
 - Oracle Database 21c+
-- cx_Oracle (Python–Oracle DB API)
-- HTML, CSS (Frontend)
+- HTML, CSS, JavaScript
 
-## 🧠 Key Database Concepts
+### Key Database Concepts
 
-- **PL/SQL Stored Procedures**:
-  - `ADD_ORDER` – Adds a new order, checks and updates inventory.
-- **User-defined Types**:
-  - `ORDER_ITEM_REC`, `ORDER_ITEM_TABLE` – Used to pass structured order item data to stored procedures.
-- **Views**:
-  - `ORDERS_VIEW` – Combines order data with customer and store info for frontend use.
+- User-defined types: `ORDER_ITEM_REC`, `ORDER_ITEM_TABLE`
+- Stored procedure: `ADD_ORDER`
+- View: `ORDERS_VIEW`
 
-## ▶️ Running the Project
+---
 
-### 1. Clone and set up
+## Project Structure
+
+```
+flask_inventory_system/
+│
+├── app.py                      # Main application entry point
+├── db/
+│   ├── connection.py           # Oracle DB connection setup
+│   └── sql/                    # SQL scripts for schema and logic
+│
+├── routes/                     # Flask route handlers
+├── templates/                  # HTML templates
+├── static/                     # CSS and JavaScript
+├── LICENSE
+└── README.md
+```
+
+---
+
+## Installation and Setup
+
+### 1. Clone the repository
 
 ```bash
 git clone https://github.com/your-username/flask_inventory_system.git
@@ -46,30 +82,35 @@ cd flask_inventory_system
 pip install flask cx_Oracle
 ```
 
-### 3. Configure Oracle Connection
+### 3. Configure Oracle connection
 
-Update `db/connection.py`:
+Edit `db/connection.py`:
 
 ```python
 import cx_Oracle
 
-dsn = cx_Oracle.makedsn("localhost", 1521, service_name="FREE")  # Or your custom name
-conn = cx_Oracle.connect("your_username", "your_password", dsn=dsn)
+dsn = cx_Oracle.makedsn("localhost", 1521, service_name="FREE")
+conn = cx_Oracle.connect("your_user", "your_password", dsn=dsn)
 ```
 
-### 4. Start the server
+### 4. Start the application
 
 ```bash
 python app.py
 ```
 
-Visit: [http://127.0.0.1:5000](http://127.0.0.1:5000)
+Open your browser and go to [http://localhost:5000](http://localhost:5000)
 
-## 🧪 Sample API: Add Order
+---
 
-`POST /orders/add`
+## Sample API Usage
 
-**Payload:**
+### Add Order
+
+**POST** `/orders/add`
+
+#### Request Body
+
 ```json
 {
   "customer_id": 1,
@@ -89,24 +130,33 @@ Visit: [http://127.0.0.1:5000](http://127.0.0.1:5000)
 }
 ```
 
-## 📌 Notes
+---
 
-- All order processing logic is handled via Oracle procedures for consistency and performance.
-- Order IDs are generated via a sequence in the database.
-- Orders can only be updated if their status is `OPEN`.
+## Included SQL Scripts
 
-## 📎 Future Improvements
+Located in `db/sql/`:
 
-- Authentication and user roles (admin/operator)
-- Product/category management
-- RESTful API expansion
-- Search & filtering
-- Unit tests and logging
-
-## 📄 License
-
-MIT License
+- `co_create.sql` – Create schema and base objects
+- `co_install.sql` – Create procedures, types, packages, views
+- `co_populate.sql` – Sample data population
+- `methods/` – Modular scripts for database setup
 
 ---
 
-**Built with ❤️ using Flask & Oracle.**
+## Future Improvements
+
+- User authentication and role-based access
+- Product categorization
+- Search and filtering capabilities
+- Full REST API support
+- Unit tests and logging
+
+---
+
+## License
+
+This project is licensed under the MIT License.
+
+---
+
+Built with Flask and Oracle PL/SQL
