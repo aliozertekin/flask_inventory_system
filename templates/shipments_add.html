@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8" />
+    <title>Yeni Kargo Ekle</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <!-- Statik CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+    <style>
+        /* Container */
+        .shipment-form-container {
+            max-width: 700px;
+            margin: 40px auto;
+            background: var(--white, #fff);
+            padding: 30px 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        /* Header */
+        .form-header {
+            margin-bottom: 30px;
+            border-bottom: 2px solid #f0f4f8;
+            padding-bottom: 15px;
+            text-align: center;
+            color: var(--primary, #2c3e50);
+            font-weight: 700;
+            font-size: 1.8rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+        /* Form Groups */
+        .form-group {
+            margin-bottom: 22px;
+        }
+        label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 8px;
+        }
+        input.form-control, select.form-control {
+            width: 100%;
+            padding: 12px 15px;
+            font-size: 1rem;
+            border: 1.5px solid #ccc;
+            border-radius: 8px;
+            transition: 0.3s;
+        }
+        input.form-control:focus, select.form-control:focus {
+            outline: none;
+            border-color: var(--secondary, #2980b9);
+            box-shadow: 0 0 6px rgba(41, 128, 185, 0.4);
+        }
+        /* Buttons */
+        .form-actions {
+            margin-top: 30px;
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+        button.btn-primary {
+            background: linear-gradient(90deg, #3498db, #2980b9);
+            color: #fff;
+            border: none;
+            padding: 14px 30px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: background 0.3s ease;
+        }
+        button.btn-primary:hover {
+            background: linear-gradient(90deg, #2980b9, #2471a3);
+        }
+        a.btn-secondary {
+            background: #95a5a6;
+            color: white;
+            padding: 14px 30px;
+            border-radius: 8px;
+            font-weight: 600;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: background 0.3s ease;
+        }
+        a.btn-secondary:hover {
+            background: #7f8c8d;
+        }
+        /* Responsive */
+        @media (max-width: 640px) {
+            .shipment-form-container {
+                padding: 20px;
+                margin: 20px 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <div class="logo">
+                <i class="fas fa-truck-fast"></i> Yeni Kargo Ekle
+            </div>
+            <nav>
+                <ul class="nav-links">
+ <li><a href="/"><i class="fa fa-home"></i> Ana Sayfa</a></li>
+  <li><a href="/inventory"><i class="fa fa-boxes-stacked"></i> Envanter</a></li>  
+
+  <li><a href="/orders"><i class="fa fa-receipt"></i> Siparişler</a></li>
+  <li><a href="/customers"><i class="fa fa-user"></i> Müşteriler</a></li>
+  <li><a href="/log"><i class="fa fa-clock-rotate-left"></i> Kayıtlar</a></li>
+  <li><a href="/product"><i class="fa fa-cube"></i> Ürünler</a></li>
+  <li><a href="/store"><i class="fa fa-store"></i> Mağazalar</a></li>
+  <li><a href="/shipments"><i class="fa fa-truck"></i> Kargolar</a></li>
+                </ul>
+            </nav>
+            <div class="user-info">
+                <i class="fa fa-user-circle"></i> <span>Kullanıcı</span>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <div class="shipment-form-container">
+                <div class="form-header">
+                    <h1><i class="fas fa-plus"></i> Yeni Kargo Ekle</h1>
+                </div>
+
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }}">
+                                <i class="fa-solid fa-info-circle"></i> {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+
+                <form method="POST" action="{{ url_for('shipments.add_shipment') }}">
+                    <div class="form-group">
+                        <label for="store_id"><i class="fa fa-store"></i> Mağaza ID</label>
+                        <input type="number" id="store_id" name="store_id" class="form-control" placeholder="Mağaza numarasını girin" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="customer_id"><i class="fa fa-user"></i> Müşteri ID</label>
+                        <input type="number" id="customer_id" name="customer_id" class="form-control" placeholder="Müşteri numarasını girin" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="delivery_address"><i class="fa fa-location-dot"></i> Teslimat Adresi</label>
+                        <input type="text" id="delivery_address" name="delivery_address" class="form-control" placeholder="Açık adres giriniz" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="shipment_status"><i class="fa fa-truck-fast"></i> Kargo Durumu</label>
+                        <select id="shipment_status" name="shipment_status" class="form-control" required>
+                            <option value="">Durum Seçiniz</option>
+                            <option value="CREATED" {{ 'selected' if shipment_status == 'CREATED' else '' }}>CREATED</option>
+                            <option value="SHIPPED" {{ 'selected' if shipment_status == 'SHIPPED' else '' }}>SHIPPED</option>
+                            <option value="IN-TRANSIT" {{ 'selected' if shipment_status == 'IN-TRANSIT' else '' }}>IN-TRANSIT</option>
+                            <option value="DELIVERED" {{ 'selected' if shipment_status == 'DELIVERED' else '' }}>DELIVERED</option>
+                        </select>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary">
+                            <i class="fa fa-check"></i> Kaydet
+                        </button>
+                        <a href="{{ url_for('shipments.list_shipments') }}" class="btn-secondary">
+                            <i class="fa fa-xmark"></i> İptal
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-content" style="text-align:center; padding: 20px 0; color:#777;">
+            &copy; 2025 Envanter Yönetim Sistemi
+        </div>
+    </footer>
+</body>
+</html>

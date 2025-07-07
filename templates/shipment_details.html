@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Kargo Detayları</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+    <!-- Harici CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <!-- HEADER -->
+    <header>
+        <div class="header-container">
+            <div class="logo"><i class="fa-solid fa-box"></i> Kargo Detayları</div>
+            <nav>
+                <ul class="nav-links">
+ <li><a href="/"><i class="fa fa-home"></i> Ana Sayfa</a></li>
+  <li><a href="/inventory"><i class="fa fa-boxes-stacked"></i> Envanter</a></li>  
+
+  <li><a href="/orders"><i class="fa fa-receipt"></i> Siparişler</a></li>
+  <li><a href="/customers"><i class="fa fa-user"></i> Müşteriler</a></li>
+  <li><a href="/log"><i class="fa fa-clock-rotate-left"></i> Kayıtlar</a></li>
+  <li><a href="/product"><i class="fa fa-cube"></i> Ürünler</a></li>
+  <li><a href="/store"><i class="fa fa-store"></i> Mağazalar</a></li>
+  <li><a href="/shipments"><i class="fa fa-truck"></i> Kargolar</a></li>
+                </ul>
+            </nav>
+            <div class="user-info">
+                <i class="fa fa-user-circle"></i> <span>Kullanıcı</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <div class="container">
+        <div class="card">
+            <div class="page-header">
+                <h1 class="page-title"><i class="fa-solid fa-truck"></i> Kargo Detayları</h1>
+            </div>
+
+            <!-- Kargo Bilgileri -->
+            <div class="detail-content">
+                <div class="detail-row"><strong><i class="fa fa-hashtag"></i> ID: </strong> {{ shipment.id }}</div>
+                <div class="detail-row"><strong><i class="fa fa-store"></i> Mağaza ID: </strong> {{ shipment.store_id }}</div>
+                <div class="detail-row"><strong><i class="fa fa-user"></i> Müşteri ID: </strong> {{ shipment.customer_id }}</div>
+                <div class="detail-row"><strong><i class="fa fa-location-dot"></i> Adres: </strong> {{ shipment.address }}</div>
+                <div class="detail-row">
+                    <strong><i class="fa fa-circle-info"></i> Durum:</strong>
+                    <span class="status-badge status-{{ shipment.status|lower|replace(' ', '-') }}">
+                        {{ shipment.status }}
+                    </span>
+                </div>
+            </div>
+
+            <!-- Buton -->
+            <div class="form-actions">
+                <a href="{{ url_for('shipments.list_shipments') }}" class="btn btn-secondary">
+                    <i class="fa fa-arrow-left"></i> Kargo Listesine Dön
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="footer-content">
+            <p>&copy; 2025 Envanter Yönetim Sistemi</p>
+            <div class="footer-links">
+                <a href="/privacy">Gizlilik</a>
+                <a href="/terms">Şartlar</a>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

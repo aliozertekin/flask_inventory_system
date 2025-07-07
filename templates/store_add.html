@@ -2,18 +2,19 @@
 <html lang="tr">
 <head>
   <meta charset="UTF-8">
-  <title>Müşteri Düzenle</title>
+  <title>Yeni Mağaza Ekle</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
   <style>
     /* Özel stiller */
-    .customer-form-container {
-      max-width: 600px;
+    .store-form-container {
+      max-width: 700px;
       margin: 0 auto;
       padding: 30px;
       background-color: var(--white);
-      border-radius: var(--border-radius);
-      box-shadow: var(--shadow);
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
     }
     
     .form-header {
@@ -23,7 +24,7 @@
       border-bottom: 2px solid #f0f4f8;
     }
     
-    .form-header h2 {
+    .form-header h1 {
       font-size: 1.8rem;
       color: var(--primary);
       display: flex;
@@ -111,45 +112,46 @@
       box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
     }
     
-    .customer-info {
-      background: #f9fbfd;
-      border-radius: 8px;
-      padding: 20px;
-      margin-bottom: 25px;
-      border-left: 4px solid var(--secondary);
+    .location-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
     }
     
-    .info-item {
-      display: flex;
-      margin-bottom: 12px;
+    .optional-label {
+      font-size: 0.85rem;
+      color: #7f8c8d;
+      font-weight: normal;
+      margin-left: 5px;
     }
     
-    .info-label {
-      font-weight: 600;
-      min-width: 120px;
-      color: #555;
-    }
-    
-    .info-value {
-      flex: 1;
+    @media (max-width: 768px) {
+      .store-form-container {
+        padding: 25px;
+      }
+      
+      .location-group {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
 <body>
   <header>
     <div class="header-container">
-      <div class="logo">Müşteri Düzenle</div>
+      <div class="logo">Yeni Mağaza Ekle</div>
       <nav>
-<ul class="nav-links">
-  <li><a href="/"><i class="fa fa-home"></i> Ana Sayfa</a></li>
-  <li><a href="/inventory"><i class="fa fa-boxes-stacked"></i> Envanter</a></li>
+        <ul class="nav-links">
+ <li><a href="/"><i class="fa fa-home"></i> Ana Sayfa</a></li>
+  <li><a href="/inventory"><i class="fa fa-boxes-stacked"></i> Envanter</a></li>  
+
   <li><a href="/orders"><i class="fa fa-receipt"></i> Siparişler</a></li>
   <li><a href="/customers"><i class="fa fa-user"></i> Müşteriler</a></li>
   <li><a href="/log"><i class="fa fa-clock-rotate-left"></i> Kayıtlar</a></li>
   <li><a href="/product"><i class="fa fa-cube"></i> Ürünler</a></li>
   <li><a href="/store"><i class="fa fa-store"></i> Mağazalar</a></li>
   <li><a href="/shipments"><i class="fa fa-truck"></i> Kargolar</a></li>
-</ul>
+        </ul>
       </nav>
       <div class="user-info">
         <span>Kullanıcı</span>
@@ -158,18 +160,11 @@
   </header>
 
   <div class="container">
-    <div class="customer-form-container">
+    <div class="store-form-container">
       <div class="form-header">
-        <h2>
-          <i class="fas fa-user-edit"></i> Müşteri Bilgilerini Güncelle
-        </h2>
-      </div>
-      
-      <div class="customer-info">
-        <div class="info-item">
-          <div class="info-label">Müşteri ID:</div>
-          <div class="info-value">{{ customer[0] }}</div>
-        </div>
+        <h1>
+          <i class="fas fa-store"></i> Yeni Mağaza Ekle
+        </h1>
       </div>
 
       {% with messages = get_flashed_messages(with_categories=true) %}
@@ -180,28 +175,52 @@
         {% endif %}
       {% endwith %}
 
-      <form method="POST" action="{{ url_for('customer_bp.edit_customer', customer_id=customer[0]) }}">
+      <form method="POST">
         <div class="form-group">
           <label for="name">
-            <i class="fas fa-user"></i> Ad Soyad
+            <i class="fas fa-signature"></i> Mağaza Adı
           </label>
-          <input type="text" id="name" name="name" class="form-control" 
-                 value="{{ customer[1] }}" required>
+          <input type="text" id="name" name="name" class="form-control" required>
         </div>
         
         <div class="form-group">
-          <label for="email">
-            <i class="fas fa-envelope"></i> E-posta
+          <label for="web_address">
+            <i class="fas fa-globe"></i> Web Adresi
+            <span class="optional-label">(Opsiyonel)</span>
           </label>
-          <input type="email" id="email" name="email" class="form-control" 
-                 value="{{ customer[2] }}" required>
+          <input type="text" id="web_address" name="web_address" class="form-control" placeholder="https://">
+        </div>
+        
+        <div class="form-group">
+          <label for="physical_address">
+            <i class="fas fa-map-marker-alt"></i> Fiziksel Adres
+          </label>
+          <input type="text" id="physical_address" name="physical_address" class="form-control" required>
+        </div>
+        
+        <div class="location-group">
+          <div class="form-group">
+            <label for="latitude">
+              <i class="fas fa-map-pin"></i> Enlem
+              <span class="optional-label">(Opsiyonel)</span>
+            </label>
+            <input type="text" id="latitude" name="latitude" class="form-control" placeholder="40.7128">
+          </div>
+          
+          <div class="form-group">
+            <label for="longitude">
+              <i class="fas fa-map-pin"></i> Boylam
+              <span class="optional-label">(Opsiyonel)</span>
+            </label>
+            <input type="text" id="longitude" name="longitude" class="form-control" placeholder="-74.0060">
+          </div>
         </div>
         
         <div class="form-actions">
           <button type="submit" class="btn btn-primary">
-            <i class="fas fa-save"></i> Güncelle
+            <i class="fas fa-plus-circle"></i> Mağaza Ekle
           </button>
-          <a href="{{ url_for('customer_bp.list_customers') }}" class="btn btn-secondary">
+          <a href="{{ url_for('store.list_stores') }}" class="btn btn-secondary">
             <i class="fas fa-times"></i> İptal
           </a>
         </div>
@@ -211,10 +230,10 @@
 
   <footer>
     <div class="footer-content">
-      <p>&copy; 2025 Müşteri Yönetim Sistemi</p>
+      <p>&copy; 2025 Mağaza Yönetim Sistemi</p>
       <div class="footer-links">
-        <a href="/privacy">Gizlilik</a>
-        <a href="/terms">Şartlar</a>
+        <a href="#">Gizlilik</a>
+        <a href="#">Şartlar</a>
       </div>
     </div>
   </footer>

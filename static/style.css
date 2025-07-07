@@ -32,19 +32,20 @@ body {
 header {
       background: linear-gradient(135deg, var(--primary), var(--dark));
       color: var(--white);
-      padding: 1rem 2rem;
       box-shadow: var(--shadow);
       position: sticky;
       top: 0;
       z-index: 100;
+      padding: 15px 30px;
 }
 .header-container {
-      max-width: 1400px;
-      margin: 0 auto;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        flex-wrap: wrap; /* Küçük ekranlarda alt alta yazar */
 }
 .logo {
       display: flex;
@@ -53,47 +54,49 @@ header {
       font-size: 1.8rem;
       font-weight: 700;
 }
-.logo i {
-      color: var(--secondary);
-}
-nav ul {
-      display: flex;
-      list-style: none;
-      gap: 1.5rem;
+.logo {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--secondary);
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
-nav a {
-      color: #ffffff;
-      text-decoration: none;
-      font-weight: 600;
-      padding: 0.5rem 1rem;
-      border-radius: var(--border-radius);
-      transition: var(--transition);
-      display: flex;
-      align-items: center;
-      gap: 8px;
+nav {
+  flex-grow: 1;
 }
 
 .nav-links {
   display: flex;
-  justify-content: center;
-  gap: 1rem;
   flex-wrap: wrap;
+  gap: 15px;
+  justify-content: center;
+  padding: 0;
+  margin: 0;
+  list-style: none;
 }
 
-.nav-links a {
-  background: #3498db;
-  color: #ffffff;
-  padding: 0.5rem 1rem;
-  text-decoration: none;
-  border-radius: var(--border-radius);
+.nav-links li a {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: white;
   font-weight: 600;
-  transition: transform 0.3s ease;
+  text-decoration: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+  transition: background-color 0.25s ease;
 }
 
-.nav-links a:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+.nav-links li a:hover {
+  background-color: rgba(255,255,255,0.15);
+}
+
+.user-info {
+  color: white;
+  font-weight: 600;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .user-info {
@@ -271,6 +274,193 @@ input:focus, select:focus, textarea:focus {
       flex: 1;
       max-width: 400px;
 }
+
+/* Shipment Specific Styles */
+.details-container {
+  padding: 20px;
+}
+
+.detail-card {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  margin-bottom: 20px;
+  overflow: hidden;
+}
+
+.detail-header {
+  padding: 15px 20px;
+  background: #f8f9fa;
+  border-bottom: 1px solid #eee;
+}
+
+.detail-header h2 {
+  font-size: 1.2rem;
+  color: #2c3e50;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.detail-content {
+  padding: 20px;
+}
+
+.detail-row {
+  display: flex;
+  margin-bottom: 15px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #f5f5f5;
+}
+
+.detail-row:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.detail-label {
+  font-weight: 600;
+  color: #7f8c8d;
+  width: 150px;
+}
+
+.detail-value {
+  flex: 1;
+  color: #2c3e50;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.status-hazırlanıyor {
+  background-color: #f39c12;
+  color: white;
+}
+
+.status-yolda {
+  background-color: #3498db;
+  color: white;
+}
+
+.status-teslim-edildi {
+  background-color: #27ae60;
+  color: white;
+}
+
+.status-iptal-edildi {
+  background-color: #e74c3c;
+  color: white;
+}
+
+.action-buttons {
+  margin-top: 20px;
+  display: flex;
+  gap: 10px;
+}
+
+/* Form Styles */
+.form-container {
+  padding: 20px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: #2c3e50;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.form-control {
+  width: 100%;
+  padding: 10px 15px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+  transition: border-color 0.3s;
+}
+
+.form-control:focus {
+  border-color: #3498db;
+  outline: none;
+}
+
+.form-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 30px;
+}
+
+/* Table Styles */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.data-table th {
+  background: #f8f9fa;
+  padding: 12px 15px;
+  text-align: left;
+  font-weight: 600;
+  color: #7f8c8d;
+  border-bottom: 2px solid #eee;
+}
+
+.data-table td {
+  padding: 12px 15px;
+  border-bottom: 1px solid #eee;
+  vertical-align: middle;
+}
+
+.data-table tr:last-child td {
+  border-bottom: none;
+}
+
+.data-table tr:hover td {
+  background-color: #f9fbff;
+}
+
+.actions {
+  display: flex;
+  gap: 5px;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  margin: 20px 0;
+}
+
+.empty-state i {
+  font-size: 3rem;
+  color: #bdc3c7;
+  margin-bottom: 15px;
+}
+
+.empty-state h3 {
+  color: #2c3e50;
+  margin-bottom: 10px;
+}
+
+.empty-state p {
+  color: #7f8c8d;
+  margin-bottom: 0;
+}
 /* === Ürün Satırları === */
 .item-row {
       margin-top: 1rem;
@@ -417,8 +607,13 @@ footer {
     }
 
     .header-container {
-          flex-direction: column;
-          align-items: flex-start;
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            flex-wrap: wrap; /* Küçük ekranlarda alt alta yazar */
     }
 }
 @media (max-width: 768px) {

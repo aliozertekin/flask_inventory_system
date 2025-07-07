@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <title>Mağaza Listesi</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+  <style>
+    /* Özel stiller */
+    .store-list-container {
+      margin-top: 25px;
+    }
+    
+    .store-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
+      padding-bottom: 15px;
+      border-bottom: 2px solid #f0f4f8;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+    
+    .store-title {
+      font-size: 1.8rem;
+      color: #1a2a6c;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    
+    .add-store-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: linear-gradient(to right, #2ecc71, #27ae60);
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+    }
+    
+    .add-store-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .store-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    
+    .store-table th {
+      background: linear-gradient(to right, #1a2a6c, #2c3e50);
+      color: white;
+      padding: 15px;
+      text-align: left;
+      font-weight: 600;
+    }
+    
+    .store-table td {
+      padding: 12px 15px;
+      border-bottom: 1px solid #f0f4f8;
+      vertical-align: middle;
+    }
+    
+    .store-table tr:last-child td {
+      border-bottom: none;
+    }
+    
+    .store-table tr:hover {
+      background-color: #f9fbff;
+    }
+    
+    .action-btns {
+      display: flex;
+      gap: 8px;
+    }
+    
+    .btn-sm {
+      padding: 6px 12px;
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    
+    .no-stores {
+      text-align: center;
+      padding: 40px;
+      background: #f8f9fa;
+      border-radius: 10px;
+      margin: 20px 0;
+      color: #6c757d;
+    }
+    
+    .address-info {
+      max-width: 300px;
+      white-space: normal;
+      line-height: 1.5;
+    }
+    
+    .web-address {
+      color: #3498db;
+      text-decoration: none;
+    }
+    
+    .web-address:hover {
+      text-decoration: underline;
+    }
+    
+    @media (max-width: 768px) {
+      .store-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      
+      .store-table {
+        display: block;
+        overflow-x: auto;
+      }
+      
+      .action-btns {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-container">
+      <div class="logo">Mağaza Yönetimi</div>
+      <nav>
+        <ul class="nav-links">
+ <li><a href="/"><i class="fa fa-home"></i> Ana Sayfa</a></li>
+  <li><a href="/inventory"><i class="fa fa-boxes-stacked"></i> Envanter</a></li>  
+
+  <li><a href="/orders"><i class="fa fa-receipt"></i> Siparişler</a></li>
+  <li><a href="/customers"><i class="fa fa-user"></i> Müşteriler</a></li>
+  <li><a href="/log"><i class="fa fa-clock-rotate-left"></i> Kayıtlar</a></li>
+  <li><a href="/product"><i class="fa fa-cube"></i> Ürünler</a></li>
+  <li><a href="/store/add"><i class="fa fa-store"></i> Mağaza Ekle</a></li>
+  <li><a href="/shipments"><i class="fa fa-truck"></i> Kargolar</a></li>
+        </ul>
+      </nav>
+      <div class="user-info">
+        <span>Kullanıcı</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="card">
+      <div class="store-header">
+        <h1 class="store-title">
+          <i class="fas fa-store"></i> Mağaza Listesi
+        </h1>
+        <a href="{{ url_for('store.add_store') }}" class="add-store-btn">
+          <i class="fas fa-plus-circle"></i> Yeni Mağaza
+        </a>
+      </div>
+
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, message in messages %}
+            <div class="alert alert-{{ category }}">{{ message }}</div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+
+      {% if stores %}
+      <div class="table-responsive">
+        <table class="store-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>İsim</th>
+              <th>Web Adresi</th>
+              <th>Fiziksel Adres</th>
+              <th>İşlemler</th>
+            </tr>
+          </thead>
+<tbody>
+  {% for store in stores %}
+  <tr>
+    <td>{{ store.id }}</td>
+    <td>{{ store.name }}</td>
+    <td>
+      {% if store.web_address %}
+      <a href="{{ store.web_address }}" class="web-address" target="_blank">
+        {{ store.web_address }}
+      </a>
+      {% else %}
+      -
+      {% endif %}
+    </td>
+    <td class="address-info">{{ store.physical_address }}</td>
+    <td>
+      <div class="action-btns">
+        <form action="{{ url_for('store.delete_store', store_id=store.id) }}" method="POST" onsubmit="return confirm('Bu mağazayı silmek istediğinize emin misiniz?');">
+          <button type="submit" class="btn btn-danger btn-sm">
+            <i class="fas fa-trash-alt"></i> Sil
+          </button>
+        </form>
+      </div>
+    </td>
+  </tr>
+  {% endfor %}
+</tbody>
+
+        </table>
+      </div>
+      {% else %}
+        <div class="no-stores">
+          <i class="fas fa-store-slash" style="font-size: 3rem; margin-bottom: 15px;"></i>
+          <h3>Mağaza bulunamadı</h3>
+          <p>Yeni mağaza eklemek için "Yeni Mağaza" butonunu kullanabilirsiniz</p>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-content">
+      <p>&copy; 2025 Mağaza Yönetim Sistemi</p>
+      <div class="footer-links">
+        <a href="#">Gizlilik</a>
+        <a href="#">Şartlar</a>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

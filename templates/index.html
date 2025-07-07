@@ -370,12 +370,12 @@
         <h3>Ürünler</h3>
         <p>Ürün kataloğunu görüntüleyin ve yönetin</p>
       </a>
-      <a href="#" class="nav-card">
+      <a href="{{ url_for('store.list_stores') }}" class="nav-card">
         <i class="fas fa-store"></i>
         <h3>Mağazalar</h3>
         <p>Mağaza bilgilerini görüntüleyin ve yönetin</p>
       </a>
-      <a href="#" class="nav-card">
+      <a href="{{ url_for('shipments.list_shipments') }}" class="nav-card">
         <i class="fas fa-truck"></i>
         <h3>Kargolar</h3>
         <p>Kargo firmalarını ve sevkiyatları yönetin</p>
