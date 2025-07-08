@@ -3,7 +3,7 @@
 
 This project is a complete **Inventory, Order, and Shipment Management System** built on **Oracle SQL and PL/SQL** with a **Flask** frontend. It manages product stocks, orders, shipments, customers, and stores using relational database structures with triggers, sequences, views, stored procedures, and audit logging.
 
-Created by **aliozertekin** on **8 July 2025**.
+Created by **aliozertekin**.
 
 ---
 
@@ -195,26 +195,34 @@ Created by **aliozertekin** on **8 July 2025**.
    ```
 3. Install Python dependencies:
    ```bash
-   pip install flask cx_Oracle
+   pip install -r requirements.txt
    ```
-4. Configure Oracle connection in `db/connection.py`:
+   If you don’t want a separate file, you can also install them directly with:
+   ```bash
+   pip install flask cx_Oracle reportlab python-dotenv wtforms flask-wtf email-validator
+   ```
+5. Configure Oracle connection in `db/connection.py`:
    ```python
    import cx_Oracle
 
    dsn = cx_Oracle.makedsn("localhost", 1521, service_name="FREE")
    conn = cx_Oracle.connect("your_user", "your_password", dsn=dsn)
    ```
-5. Run the SQL scripts in `db/sql/` folder (in order) to create schema, procedures, views, and populate sample data. Example:
+6. Run the SQL scripts in `db/sql/` folder (in order) to create schema, procedures, views, and populate sample data. Example:
    ```sql
    @co_create.sql
    @co_install.sql
    @co_populate.sql
    ```
-6. Start the Flask application:
+5. Run the SQL script all_queries in `db/sql/methods` folder to create user defined schema, procedures, views. Example:
+   ```sql
+   @all_queries.sql
+   ```
+7. Start the Flask application:
    ```bash
    python app.py
    ```
-7. Open [http://localhost:5000](http://localhost:5000) in your browser.
+8. Open [http://localhost:5000](http://localhost:5000) in your browser.
 
 ---
 
@@ -245,18 +253,6 @@ Created by **aliozertekin** on **8 July 2025**.
 }
 ```
 
----
-
-## Future Improvements
-
-- User authentication and role-based access control  
-- Product categorization and tagging  
-- Search and filter capabilities  
-- Full REST API implementation  
-- Unit testing and logging enhancements  
-
----
-
 ## Project Structure
 
 ```
@@ -267,6 +263,8 @@ flask_inventory_system/
 │   ├── connection.py           # Oracle DB connection setup
 │   └── sql/                    # SQL scripts for schema and logic
 │
+├── images/                     # Images of the website
+├── modules/                    # Modules for easier handling
 ├── routes/                     # Flask route handlers
 ├── templates/                  # HTML templates
 ├── static/                     # CSS and JavaScript assets
