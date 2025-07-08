@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Mağaza Düzenle - {{ store.name }}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    .store-details {
+      max-width: 700px;
+      margin: 40px auto;
+      background: #fff;
+      padding: 25px;
+      border-radius: 8px;
+      box-shadow: 0 8px 16px rgb(0 0 0 / 0.1);
+    }
+    .store-details h1 {
+      margin-bottom: 20px;
+      color: #1a2a6c;
+    }
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: 600;
+      color: #444;
+    }
+    input[type="text"],
+    input[type="url"],
+    input[type="number"] {
+      width: 100%;
+      padding: 8px 10px;
+      margin-top: 6px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 1rem;
+      box-sizing: border-box;
+    }
+    .form-actions {
+      margin-top: 25px;
+      display: flex;
+      gap: 15px;
+    }
+    button, .btn-cancel {
+      padding: 10px 25px;
+      border-radius: 5px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      font-size: 1rem;
+    }
+    button {
+      background: linear-gradient(to right, #2ecc71, #27ae60);
+      color: white;
+      transition: background 0.3s ease;
+    }
+    button:hover {
+      background: linear-gradient(to right, #27ae60, #2ecc71);
+    }
+    .btn-cancel {
+      background: #bbb;
+      color: #333;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .btn-cancel:hover {
+      background: #999;
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-container">
+      <div class="logo"><i class="fas fa-store"></i>Mağaza Yönetimi</div>
+      <nav>
+        <ul class="nav-links">
+          <li><a href="/"><i class="fa fa-home"></i> Ana Sayfa</a></li>
+          <li><a href="/inventory"><i class="fa fa-boxes-stacked"></i> Envanter</a></li>  
+          <li><a href="/orders"><i class="fa fa-receipt"></i> Siparişler</a></li>
+          <li><a href="/customers"><i class="fa fa-user"></i> Müşteriler</a></li>
+          <li><a href="/log"><i class="fa fa-clock-rotate-left"></i> Kayıtlar</a></li>
+          <li><a href="/product"><i class="fa fa-cube"></i> Ürünler</a></li>
+          <li><a href="/store"><i class="fa fa-store"></i> Mağazalar</a></li>
+          <li><a href="/store/add"><i class="fa fa-plus"></i> Mağaza Ekle</a></li>
+          <li><a href="/shipments"><i class="fa fa-truck"></i> Kargolar</a></li>
+        </ul>
+      </nav>
+      <div class="user-info">
+        <span>Kullanıcı</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="store-details">
+      <h1><i class="fas fa-store"></i> Mağaza Düzenle - {{ store.name }}</h1>
+
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, message in messages %}
+            <div class="alert alert-{{ category }}">{{ message }}</div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+
+      <form method="POST">
+        <label for="name">Mağaza Adı *</label>
+        <input type="text" id="name" name="name" required value="{{ store.name }}">
+
+        <label for="web_address">Web Adresi</label>
+        <input type="url" id="web_address" name="web_address" value="{{ store.web_address or '' }}">
+
+        <label for="physical_address">Fiziksel Adres *</label>
+        <input type="text" id="physical_address" name="physical_address" required value="{{ store.physical_address or '' }}">
+
+        <label for="latitude">Enlem (Latitude)</label>
+        <input type="number" step="any" id="latitude" name="latitude" value="{{ store.latitude or '' }}">
+
+        <label for="longitude">Boylam (Longitude)</label>
+        <input type="number" step="any" id="longitude" name="longitude" value="{{ store.longitude or '' }}">
+
+        <div class="form-actions">
+          <button type="submit"><i class="fas fa-save"></i> Kaydet</button>
+          <a href="{{ url_for('store.list_stores') }}" class="btn-cancel"><i class="fas fa-times"></i> İptal</a>
+        </div>
+      </form>
+    </div>
+  </main>
+
+  <footer>
+    <div class="footer-content">
+      <p>&copy; 2025 Mağaza Yönetim Sistemi</p>
+      <div class="footer-links">
+        <a href="#">Gizlilik</a>
+        <a href="#">Şartlar</a>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

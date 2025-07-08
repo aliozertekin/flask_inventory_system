@@ -152,7 +152,7 @@
 <body>
   <header>
     <div class="header-container">
-      <div class="logo">Ürün Yönetimi</div>
+      <div class="logo"><i class="fa fa-boxes-stacked"></i>Ürün Yönetimi</div>
       <nav> 
         <ul class="nav-links">
  <li><a href="/"><i class="fa fa-home"></i> Ana Sayfa</a></li>
@@ -188,9 +188,6 @@
             <i class="fas fa-search"></i> Ara
           </button>
         </form>
-        <a href="{{ url_for('product.add_product') }}" class="add-product-btn">
-          <i class="fas fa-plus-circle"></i> Yeni Ürün
-        </a>
       </div>
 
       {% with messages = get_flashed_messages(with_categories=true) %}

@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for
+from flask import Blueprint, render_template, request, redirect, url_for, flash
 from db.connection import conn
 
 customer_bp = Blueprint('customer_bp', __name__, url_prefix='/customers')
@@ -52,13 +52,22 @@ def list_customers():
     finally:
         cursor.close()
 
-@customer_bp.route('/add', methods=['POST'])
+@customer_bp.route('/add', methods=['GET', 'POST'])
 def add_customer():
-    name = request.form['name']
-    email = request.form['email']
-    cursor = conn.cursor()
-    cursor.callproc("add_customer", [email, name])
-    return redirect(url_for('customer_bp.list_customers'))
+    if request.method == 'POST':
+        name = request.form['name']
+        email = request.form['email']
+        cursor = conn.cursor()
+        try:
+            cursor.callproc("add_customer", [email, name])
+            flash('Müşteri başarıyla eklendi', 'success')
+            return redirect(url_for('customer_bp.list_customers'))
+        except Exception as e:
+            flash(f'Müşteri eklenirken hata oluştu: {str(e)}', 'error')
+        finally:
+            cursor.close()
+    
+    return render_template('customer_add.html')
 
 @customer_bp.route('/edit/<int:customer_id>', methods=['GET', 'POST'])
 def edit_customer(customer_id):
@@ -66,25 +75,41 @@ def edit_customer(customer_id):
     if request.method == 'POST':
         name = request.form.get('name')
         email = request.form.get('email')
-        cursor.execute("""
-            UPDATE customers SET full_name = :name, email_address = :email
-            WHERE customer_id = :cid
-        """, {'name': name, 'email': email, 'cid': customer_id})
-        conn.commit()
-        return redirect(url_for('customer_bp.list_customers'))
+        try:
+            cursor.execute("""
+                UPDATE customers SET full_name = :name, email_address = :email
+                WHERE customer_id = :cid
+            """, {'name': name, 'email': email, 'cid': customer_id})
+            conn.commit()
+            flash('Müşteri başarıyla güncellendi', 'success')
+            return redirect(url_for('customer_bp.list_customers'))
+        except Exception as e:
+            flash(f'Güncelleme sırasında hata oluştu: {str(e)}', 'error')
+        finally:
+            cursor.close()
 
-    cursor.execute("SELECT customer_id, full_name, email_address FROM customers WHERE customer_id = :cid",
-                   {'cid': customer_id})
-    customer = cursor.fetchone()
-    cursor.close()
-    return render_template('customer_edit.html', customer=customer)
+    try:
+        cursor.execute("SELECT customer_id, full_name, email_address FROM customers WHERE customer_id = :cid",
+                    {'cid': customer_id})
+        customer = cursor.fetchone()
+        if not customer:
+            flash('Müşteri bulunamadı', 'error')
+            return redirect(url_for('customer_bp.list_customers'))
+        return render_template('customer_edit.html', customer=customer)
+    finally:
+        cursor.close()
 
-@customer_bp.route('/customers/delete/<int:customer_id>', methods=['POST'])
+@customer_bp.route('/delete/<int:customer_id>', methods=['POST'])
 def delete_customer(customer_id):
     cursor = conn.cursor()
-    cursor.execute("DELETE FROM customers WHERE customer_id = :cid", {'cid': customer_id})
-    conn.commit()
-    cursor.close()
+    try:
+        cursor.execute("DELETE FROM customers WHERE customer_id = :cid", {'cid': customer_id})
+        conn.commit()
+        flash('Müşteri başarıyla silindi', 'success')
+    except Exception as e:
+        flash(f'Silme işlemi sırasında hata oluştu: {str(e)}', 'error')
+    finally:
+        cursor.close()
     return redirect(url_for('customer_bp.list_customers'))
 
 @customer_bp.route('/logs')
@@ -99,8 +124,9 @@ def customers_log():
         """)
         columns = [col[0].lower() for col in cursor.description]
         rows = cursor.fetchall()
-        logs = [dict(zip(columns, row)) for row in rows]  # dict listesi
-        for log in logs:  log['table_name'] = 'CUSTOMERS'  
+        logs = [dict(zip(columns, row)) for row in rows]
+        for log in logs:  
+            log['table_name'] = 'CUSTOMERS'  
         return render_template('log_generic.html', logs=logs, log_type='customers')
     finally:
         cursor.close()

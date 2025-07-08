@@ -126,3 +126,81 @@ def stores_log():
         return render_template('log_generic.html', logs=logs, log_type='stores')
     finally:
         cursor.close()
+
+@store_bp.route('/details/<int:store_id>', methods=['GET', 'POST'])
+def store_details(store_id):
+    cursor = conn.cursor()
+    if request.method == 'POST':
+        # Formdan gelen verileri al
+        name = request.form.get('name')
+        web = request.form.get('web_address')
+        address = request.form.get('physical_address')
+        latitude = to_float_or_none(request.form.get('latitude'))
+        longitude = to_float_or_none(request.form.get('longitude'))
+
+        # Zorunlu alan kontrolü
+        if not name or not address:
+            flash("Mağaza adı ve fiziksel adres zorunludur.", "error")
+            return redirect(url_for('store.store_details', store_id=store_id))
+
+        try:
+            # Veritabanında güncelle
+            cursor.execute("""
+                UPDATE stores
+                SET store_name = :name,
+                    web_address = :web,
+                    physical_address = :address,
+                    latitude = :lat,
+                    longitude = :lon
+                WHERE store_id = :id
+            """, {
+                'name': name,
+                'web': web,
+                'address': address,
+                'lat': latitude,
+                'lon': longitude,
+                'id': store_id
+            })
+            conn.commit()
+            flash("Mağaza bilgileri başarıyla güncellendi.", "success")
+            return redirect(url_for('store.store_details', store_id=store_id))
+        except Exception as e:
+            conn.rollback()
+            flash(f"Güncelleme hatası: {str(e)}", "error")
+            return redirect(url_for('store.store_details', store_id=store_id))
+        finally:
+            cursor.close()
+
+    # GET isteği ise mevcut mağaza verisini çek ve göster
+    try:
+        cursor.execute("""
+            SELECT store_id, store_name, web_address, physical_address, latitude, longitude
+            FROM stores
+            WHERE store_id = :id
+        """, id=store_id)
+        row = cursor.fetchone()
+        if not row:
+            flash("Mağaza bulunamadı.", "error")
+            return redirect(url_for('store.list_stores'))
+        
+        store = {
+            'id': row[0],
+            'name': row[1],
+            'web_address': row[2],
+            'physical_address': row[3],
+            'latitude': row[4],
+            'longitude': row[5]
+        }
+        return render_template('store_details.html', store=store)
+    except Exception as e:
+        flash(f"Hata oluştu: {str(e)}", "error")
+        return redirect(url_for('store.list_stores'))
+    finally:
+        cursor.close()
+
+
+def to_float_or_none(val):
+    try:
+        return float(val)
+    except (TypeError, ValueError):
+        return None

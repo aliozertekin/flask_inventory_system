@@ -14,22 +14,39 @@ def api_dashboard():
     cursor = conn.cursor()
     
     try:
+        # Get dashboard stats
         stats_cursor = cursor.callfunc('dashboard_pkg.get_dashboard_stats', cx_Oracle.CURSOR)
         stats = stats_cursor.fetchone()
-
+        
+        # Get monthly changes
         changes_cursor = cursor.callfunc('dashboard_pkg.get_monthly_changes', cx_Oracle.CURSOR)
         changes = changes_cursor.fetchall()
 
         return jsonify({
-            'user_count': stats[0],
+            # Top section stats
+            'store_count': stats[0],
             'product_count': stats[1],
-            'inventory_value': float(stats[2]),
+            'customer_count': stats[2],
             'order_count': stats[3],
-            'order_value': float(stats[4]),
-            'low_stock_items': stats[5],
+            'shipment_count': stats[4],
+            'inventory_value': float(stats[5] or 0),
+            'total_sales': float(stats[6] or 0),
+            'low_stock_items': stats[7],
+            
+            # Bottom section stats
+            'avg_order_value': float(stats[8] or 0),
+            'avg_customer_spending': float(stats[9] or 0),
+            'max_order_value': float(stats[10] or 0),
+            'total_stock': float(stats[11] or 0),
+            'active_customers': stats[12],
+            'delivered_shipments': stats[13],
+            'in_transit_shipments': stats[14],
+            'preparing_shipments': stats[15],
+            
+            # Monthly changes
             'monthly_changes': [
                 {
-                    'month': row[0],  # zaten string, strftime'e gerek yok
+                    'month': row[0],
                     'order_change_pct': float(row[4] or 0),
                     'value_change_pct': float(row[5] or 0),
                     'user_change_pct': float(row[6] or 0)

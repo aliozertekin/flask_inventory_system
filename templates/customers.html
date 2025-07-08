@@ -2,73 +2,68 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <title>Müşteri Yönetimi</title>
+    <title>Müşteri Listesi</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 </head>
 <body>
     <header>
         <div class="header-container">
-            <div class="logo">Müşteri Yönetimi</div>
-            <nav>
+            <div class="logo">
+                <i class="fas fa-users"></i>
+                <span>Müşteri Yönetimi</span>
+            </div>
+            <nav>   
                 <ul class="nav-links">
-                  <li><a href="/"><i class="fa fa-home"></i> Ana Sayfa</a></li>
-                  <li><a href="/inventory"><i class="fa fa-boxes-stacked"></i> Envanter</a></li>
-                  <li><a href="/orders"><i class="fa fa-receipt"></i> Siparişler</a></li>
-                  <li><a href="/customers"><i class="fa fa-user"></i> Müşteriler</a></li>
-                  <li><a href="/log"><i class="fa fa-clock-rotate-left"></i> Kayıtlar</a></li>
-                  <li><a href="/product"><i class="fa fa-cube"></i> Ürünler</a></li>
-                  <li><a href="/store"><i class="fa fa-store"></i> Mağazalar</a></li>
-                  <li><a href="/shipments"><i class="fa fa-truck"></i> Kargolar</a></li>
+                    <li><a href="/"><i class="fa fa-home"></i> Ana Sayfa</a></li>
+                    <li><a href="/inventory"><i class="fa fa-boxes-stacked"></i> Envanter</a></li>
+                    <li><a href="/orders"><i class="fa fa-receipt"></i> Siparişler</a></li>
+                    <li><a href="/customers/add"><i class="fa fa-user"></i> Müşteri Ekle</a></li>
+                    <li><a href="/log"><i class="fa fa-clock-rotate-left"></i> Kayıtlar</a></li>
+                    <li><a href="/product"><i class="fa fa-cube"></i> Ürünler</a></li>
+                    <li><a href="/store"><i class="fa fa-store"></i> Mağazalar</a></li>
+                    <li><a href="/shipments"><i class="fa fa-truck"></i> Kargolar</a></li>
                 </ul>
             </nav>
             <div class="user-info">
-                <span><i class="fa fa-user-circle"></i> Kullanıcı</span>
+                <i class="fas fa-user-circle"></i>
+                <span>Yönetici</span>
             </div>
         </div>
     </header>
 
     <div class="container">
         <div class="card">
-            <h2>Müşteri Ekle</h2>
-            <form method="POST" action="{{ url_for('customer_bp.add_customer') }}" class="customer-form">
-                <div class="form-group">
-                    <input type="text" name="name" placeholder="Ad Soyad" required>
-                </div>
-                <div class="form-group">
-                    <input type="email" name="email" placeholder="E-posta" required>
-                </div>
-                <button type="submit" class="btn btn-primary">Ekle</button>
-            </form>
-        </div>
-
-        <div class="card">
             <div class="page-header">
-                <h2>Müşteri Listesi</h2>
+                <h1 class="page-title">
+                    <i class="fas fa-user-friends"></i> Müşteri Listesi
+                </h1>
             </div>
+
+            <!-- Flash messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        <i class="fas fa-{{ 'check-circle' if category == 'success' else 'exclamation-circle' }}"></i>
+                        {{ message }}
+                    </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
 
             <form method="GET" action="{{ url_for('customer_bp.list_customers') }}" class="search-form">
-                <input type="text" name="search" placeholder="Ara..." value="{{ search_term or '' }}">
-                <button type="submit" class="btn btn-primary">Ara</button>
+                <input type="text" name="search" placeholder="Müşteri adı veya e-posta ile ara..." value="{{ search_term or '' }}">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-search"></i> Ara
+                </button>
             </form>
-
-            <div class="pagination">
-                {% if page > 1 %}
-                <a href="{{ url_for('customer_bp.list_customers', page=page-1, search=search_term) }}" class="btn btn-light">Önceki</a>
-                {% endif %}
-                
-                <span class="pagination-info">Sayfa {{ page }} (Toplam {{ (total/per_page)|round(0, 'ceil')|int }} sayfa)</span>
-                
-                {% if page * per_page < total %}
-                <a href="{{ url_for('customer_bp.list_customers', page=page+1, search=search_term) }}" class="btn btn-light">Sonraki</a>
-                {% endif %}
-            </div>
 
             <div class="table-responsive">
                 <table>
                     <thead>
                         <tr>
-                            <th>Müşteri ID</th>
+                            <th>ID</th>
                             <th>Ad Soyad</th>
                             <th>E-posta</th>
                             <th>İşlemler</th>
@@ -81,19 +76,28 @@
                             <td>{{ customer[1] }}</td>
                             <td>{{ customer[2] }}</td>
                             <td>
-                                <div style="display:flex; gap:10px;">
+                                <div class="actions">
                                     <a href="{{ url_for('customer_bp.edit_customer', customer_id=customer[0]) }}" 
-                                       class="btn btn-sm btn-warning">Düzenle</a>
+                                       class="btn btn-sm btn-warning">
+                                        <i class="fas fa-edit"></i> Düzenle
+                                    </a>
                                 
                                     <form method="POST" action="{{ url_for('customer_bp.delete_customer', customer_id=customer[0]) }}" 
-                                          onsubmit="return confirm('Silmek istediğinize emin misiniz?')">
-                                        <button type="submit" class="btn btn-sm btn-danger">Sil</button>
+                                          onsubmit="return confirm('Bu müşteriyi silmek istediğinize emin misiniz?')">
+                                        <button type="submit" class="btn btn-sm btn-danger">
+                                            <i class="fas fa-trash"></i> Sil
+                                        </button>
                                     </form>
                                 </div>
                             </td>
                         </tr>
                         {% else %}
-                        <tr><td colspan="4">Müşteri bulunamadı.</td></tr>
+                        <tr>
+                            <td colspan="4" style="text-align: center; padding: 20px;">
+                                <i class="fas fa-user-slash" style="font-size: 3rem; color: #bdc3c7; margin-bottom: 10px;"></i>
+                                <p>Müşteri bulunamadı</p>
+                            </td>
+                        </tr>
                         {% endfor %}
                     </tbody>
                 </table>
@@ -101,13 +105,17 @@
 
             <div class="pagination">
                 {% if page > 1 %}
-                <a href="{{ url_for('customer_bp.list_customers', page=page-1, search=search_term) }}" class="btn btn-light">Önceki</a>
+                <a href="{{ url_for('customer_bp.list_customers', page=page-1, search=search_term) }}" class="btn btn-light">
+                    <i class="fas fa-arrow-left"></i> Önceki
+                </a>
                 {% endif %}
                 
-                <span class="pagination-info">Sayfa {{ page }} (Toplam {{ (total/per_page)|round(0, 'ceil')|int }} sayfa)</span>
+                <span class="pagination-info">Sayfa {{ page }} / {{ (total/per_page)|round(0, 'ceil')|int }}</span>
                 
                 {% if page * per_page < total %}
-                <a href="{{ url_for('customer_bp.list_customers', page=page+1, search=search_term) }}" class="btn btn-light">Sonraki</a>
+                <a href="{{ url_for('customer_bp.list_customers', page=page+1, search=search_term) }}" class="btn btn-light">
+                    Sonraki <i class="fas fa-arrow-right"></i>
+                </a>
                 {% endif %}
             </div>
         </div>
@@ -117,8 +125,8 @@
         <div class="footer-content">
             <p>&copy; 2025 Müşteri Yönetim Sistemi</p>
             <div class="footer-links">
-                <a href="/privacy">Gizlilik</a>
-                <a href="/terms">Şartlar</a>
+                <a href="/privacy"><i class="fas fa-lock"></i> Gizlilik</a>
+                <a href="/terms"><i class="fas fa-file-contract"></i> Şartlar</a>
             </div>
         </div>
     </footer>

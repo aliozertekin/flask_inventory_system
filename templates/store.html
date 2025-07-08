@@ -140,7 +140,7 @@
 <body>
   <header>
     <div class="header-container">
-      <div class="logo">Mağaza Yönetimi</div>
+      <div class="logo"><i class="fas fa-store"></i>Mağaza Yönetimi</div>
       <nav>
         <ul class="nav-links">
  <li><a href="/"><i class="fa fa-home"></i> Ana Sayfa</a></li>
@@ -166,9 +166,6 @@
         <h1 class="store-title">
           <i class="fas fa-store"></i> Mağaza Listesi
         </h1>
-        <a href="{{ url_for('store.add_store') }}" class="add-store-btn">
-          <i class="fas fa-plus-circle"></i> Yeni Mağaza
-        </a>
       </div>
 
       {% with messages = get_flashed_messages(with_categories=true) %}
@@ -208,13 +205,17 @@
     <td class="address-info">{{ store.physical_address }}</td>
     <td>
       <div class="action-btns">
-        <form action="{{ url_for('store.delete_store', store_id=store.id) }}" method="POST" onsubmit="return confirm('Bu mağazayı silmek istediğinize emin misiniz?');">
-          <button type="submit" class="btn btn-danger btn-sm">
-            <i class="fas fa-trash-alt"></i> Sil
-          </button>
-        </form>
-      </div>
-    </td>
+        <a href="{{ url_for('store.store_details', store_id=store.id) }}" class="btn btn-info btn-sm" title="Detaylar">
+          <i class="fas fa-info-circle"></i> Detay
+        </a>
+      <form action="{{ url_for('store.delete_store', store_id=store.id) }}" method="POST" onsubmit="return confirm('Bu mağazayı silmek istediğinize emin misiniz?');">
+        <button type="submit" class="btn btn-danger btn-sm">
+          <i class="fas fa-trash-alt"></i> Sil
+        </button>
+      </form>
+  </div>
+</td>
+
   </tr>
   {% endfor %}
 </tbody>

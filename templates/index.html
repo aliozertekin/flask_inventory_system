@@ -13,6 +13,8 @@
       --warning: #f39c12;
       --danger: #e74c3c;
       --info: #9b59b6;
+      --purple: #8e44ad;
+      --pink: #e84393;
       --light: #ecf0f1;
       --dark: #34495e;
       --white: #ffffff;
@@ -89,12 +91,20 @@
       font-size: 1.1rem;
     }
 
+    .section-title {
+      font-size: 1.5rem;
+      color: var(--dark);
+      margin: 2rem 0 1.5rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid var(--light);
+    }
+
     /* Stats Grid */
     .stats-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
       gap: 1.5rem;
-      margin-bottom: 3rem;
+      margin-bottom: 2rem;
     }
 
     .stat-card {
@@ -104,13 +114,16 @@
       padding: 1.5rem;
       transition: transform 0.3s ease;
       border-top: 4px solid;
+      display: flex;
+      flex-direction: column;
     }
 
     .stat-card:hover {
       transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
     }
 
-    .stat-card.users {
+    .stat-card.stores {
       border-top-color: var(--info);
     }
 
@@ -118,16 +131,60 @@
       border-top-color: var(--success);
     }
 
-    .stat-card.value {
-      border-top-color: var(--warning);
+    .stat-card.customers {
+      border-top-color: var(--purple);
     }
 
     .stat-card.orders {
       border-top-color: var(--secondary);
     }
 
-    .stat-card.cost {
+    .stat-card.shipments {
+      border-top-color: var(--pink);
+    }
+
+    .stat-card.value {
+      border-top-color: var(--warning);
+    }
+
+    .stat-card.sales {
+      border-top-color: #27ae60;
+    }
+
+    .stat-card.low-stock {
       border-top-color: var(--danger);
+    }
+
+    .stat-card.avg-order {
+      border-top-color: #3498db;
+    }
+
+    .stat-card.avg-customer {
+      border-top-color: #9b59b6;
+    }
+
+    .stat-card.max-order {
+      border-top-color: #f1c40f;
+    }
+
+    .stat-card.min-order {
+      border-top-color: #1abc9c;
+    }
+
+    .stat-card.active-customers {
+      border-top-color: #e67e22;
+    }
+
+    .stat-card.delivered {
+      border-top-color: #27ae60;
+    }
+
+    .stat-card.in-transit {
+      border-top-color: #3498db;
+    }
+
+    .stat-card.preparing {
+      border-top-color: #f39c12;
     }
 
     .stat-card-header {
@@ -147,7 +204,7 @@
       font-size: 1.5rem;
     }
 
-    .stat-card.users .stat-icon {
+    .stat-card.stores .stat-icon {
       background-color: rgba(155, 89, 182, 0.15);
       color: var(--info);
     }
@@ -157,9 +214,9 @@
       color: var(--success);
     }
 
-    .stat-card.value .stat-icon {
-      background-color: rgba(243, 156, 18, 0.15);
-      color: var(--warning);
+    .stat-card.customers .stat-icon {
+      background-color: rgba(142, 68, 173, 0.15);
+      color: var(--purple);
     }
 
     .stat-card.orders .stat-icon {
@@ -167,9 +224,64 @@
       color: var(--secondary);
     }
 
-    .stat-card.cost .stat-icon {
+    .stat-card.shipments .stat-icon {
+      background-color: rgba(232, 67, 147, 0.15);
+      color: var(--pink);
+    }
+
+    .stat-card.value .stat-icon {
+      background-color: rgba(243, 156, 18, 0.15);
+      color: var(--warning);
+    }
+
+    .stat-card.sales .stat-icon {
+      background-color: rgba(46, 204, 113, 0.15);
+      color: #27ae60;
+    }
+
+    .stat-card.low-stock .stat-icon {
       background-color: rgba(231, 76, 60, 0.15);
       color: var(--danger);
+    }
+
+    .stat-card.avg-order .stat-icon {
+      background-color: rgba(52, 152, 219, 0.15);
+      color: var(--secondary);
+    }
+
+    .stat-card.avg-customer .stat-icon {
+      background-color: rgba(155, 89, 182, 0.15);
+      color: var(--info);
+    }
+
+    .stat-card.max-order .stat-icon {
+      background-color: rgba(241, 196, 15, 0.15);
+      color: #f1c40f;
+    }
+
+    .stat-card.min-order .stat-icon {
+      background-color: rgba(26, 188, 156, 0.15);
+      color: #1abc9c;
+    }
+
+    .stat-card.active-customers .stat-icon {
+      background-color: rgba(230, 126, 34, 0.15);
+      color: #e67e22;
+    }
+
+    .stat-card.delivered .stat-icon {
+      background-color: rgba(39, 174, 96, 0.15);
+      color: var(--success);
+    }
+
+    .stat-card.in-transit .stat-icon {
+      background-color: rgba(52, 152, 219, 0.15);
+      color: var(--secondary);
+    }
+
+    .stat-card.preparing .stat-icon {
+      background-color: rgba(243, 156, 18, 0.15);
+      color: var(--warning);
     }
 
     .stat-value {
@@ -184,12 +296,18 @@
       margin-bottom: 0.5rem;
     }
 
+    .stat-subtitle {
+      color: #7f8c8d;
+      font-size: 0.9rem;
+      margin-top: 0.5rem;
+    }
+
     /* Navigation */
     .nav-links {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
       gap: 1.5rem;
-      margin-top: 2rem;
+      margin-top: 3rem;
     }
 
     .nav-card {
@@ -286,70 +404,20 @@
       <p>Oracle PL/SQL veritabanı ile entegre müşteri, sipariş ve envanter yönetim sistemi</p>
     </div>
 
-    <!-- Stats Grid -->
-    <div class="stats-grid">
-      <div class="stat-card users">
-        <div class="stat-card-header">
-          <div>
-            <div class="stat-title">Kullanıcı Sayısı</div>
-          </div>
-          <div class="stat-icon">
-            <i class="fas fa-users"></i>
-          </div>
-        </div>
-        <div class="stat-value">Yükleniyor...</div>
-      </div>
+    <!-- Top Stats Section -->
+    <h2 class="section-title">Temel İstatistikler</h2>
+    <div class="stats-grid" id="top-stats">
+      <!-- Stats will be populated by JavaScript -->
+    </div>
 
-      <div class="stat-card products">
-        <div class="stat-card-header">
-          <div>
-            <div class="stat-title">Depodaki Ürün Miktarı</div>
-          </div>
-          <div class="stat-icon">
-            <i class="fas fa-boxes"></i>
-          </div>
-        </div>
-        <div class="stat-value">Yükleniyor...</div>
-      </div>
-
-      <div class="stat-card value">
-        <div class="stat-card-header">
-          <div>
-            <div class="stat-title">Ürünlerin Toplam Değeri</div>
-          </div>
-          <div class="stat-icon">
-            <i class="fas fa-coins"></i>
-          </div>
-        </div>
-        <div class="stat-value">Yükleniyor...</div>
-      </div>
-
-      <div class="stat-card orders">
-        <div class="stat-card-header">
-          <div>
-            <div class="stat-title">Toplam Sipariş Sayısı</div>
-          </div>
-          <div class="stat-icon">
-            <i class="fas fa-shopping-cart"></i>
-          </div>
-        </div>
-        <div class="stat-value">Yükleniyor...</div>
-      </div>
-
-      <div class="stat-card cost">
-        <div class="stat-card-header">
-          <div>
-            <div class="stat-title">Siparişlerin Toplam Maliyeti</div>
-          </div>
-          <div class="stat-icon">
-            <i class="fas fa-money-bill-wave"></i>
-          </div>
-        </div>
-        <div class="stat-value">Yükleniyor...</div>
-      </div>
+    <!-- Bottom Stats Section -->
+    <h2 class="section-title">Detaylı Metrikler</h2>
+    <div class="stats-grid" id="bottom-stats">
+      <!-- Stats will be populated by JavaScript -->
     </div>
 
     <!-- Navigation Cards -->
+    <h2 class="section-title">Hızlı Linkler</h2>
     <div class="nav-links">
       <a href="{{ url_for('customer_bp.list_customers') }}" class="nav-card">
         <i class="fas fa-users"></i>
@@ -365,6 +433,7 @@
         <i class="fas fa-warehouse"></i>
         <h3>Envanter</h3>
         <p>Depo envanterini görüntüleyin ve yönetin</p>
+      </a>
       <a href="{{ url_for('product.list_products') }}" class="nav-card">
         <i class="fas fa-box-open"></i>
         <h3>Ürünler</h3>
@@ -385,7 +454,6 @@
         <h3>İşlem Kayıtları</h3>
         <p>İşlem Kayıtlarını görüntüleyin ve yönetin</p>
       </a>
-      </a>
     </div>
   </div>
 
@@ -400,16 +468,51 @@
       fetch('/api/dashboard')
         .then(res => res.json())
         .then(data => {
-          // Sayısal verileri yaz
-          document.querySelector('.stat-card.users .stat-value').textContent = data.user_count;
-          document.querySelector('.stat-card.products .stat-value').textContent = data.product_count.toLocaleString('tr-TR');
-          document.querySelector('.stat-card.value .stat-value').textContent = `$${data.inventory_value.toLocaleString('tr-TR')}`;
-          document.querySelector('.stat-card.orders .stat-value').textContent = data.order_count.toLocaleString('tr-TR');
-          document.querySelector('.stat-card.cost .stat-value').textContent = `$${data.order_value.toLocaleString('tr-TR')}`;
+          // Top section stats
+          populateStatCard('top-stats', 'stores', 'Mağaza Sayısı', 'fas fa-store', data.store_count);
+          populateStatCard('top-stats', 'products', 'Ürün Sayısı', 'fas fa-box', data.product_count);
+          populateStatCard('top-stats', 'customers', 'Müşteri Sayısı', 'fas fa-users', data.customer_count);
+          populateStatCard('top-stats', 'orders', 'Sipariş Sayısı', 'fas fa-shopping-cart', data.order_count);
+          populateStatCard('top-stats', 'shipments', 'Kargo Sayısı', 'fas fa-truck', data.shipment_count);
+          populateStatCard('top-stats', 'value', 'Envanter Değeri', 'fas fa-coins', `$${data.inventory_value.toLocaleString('tr-TR')}`);
+          populateStatCard('top-stats', 'sales', 'Toplam Satış', 'fas fa-money-bill-wave', `$${data.total_sales.toLocaleString('tr-TR')}`);
+          populateStatCard('top-stats', 'low-stock', 'Düşük Stoklu Ürünler', 'fas fa-exclamation-triangle', data.low_stock_items);
+
+          // Bottom section stats
+          populateStatCard('bottom-stats', 'avg-order', 'Ortalama Sipariş Değeri', 'fas fa-chart-line', `$${data.avg_order_value.toFixed(2)}`);
+          populateStatCard('bottom-stats', 'avg-customer', 'Ortalama Müşteri Harcaması', 'fas fa-user-tag', `$${data.avg_customer_spending.toFixed(2)}`);
+          populateStatCard('bottom-stats', 'max-order', 'En Yüksek Sipariş', 'fas fa-arrow-up', `$${data.max_order_value.toLocaleString('tr-TR')}`);
+          populateStatCard('bottom-stats', 'total_stock', 'Stoktaki Ürün Miktarı', 'fas fa-box', `${data.total_stock.toLocaleString('tr-TR')}`);
+          populateStatCard('bottom-stats', 'active-customers', 'Aktif Müşteriler (Son 1 Ay)', 'fas fa-user-check', data.active_customers);
+          populateStatCard('bottom-stats', 'delivered', 'Teslim Edilen Kargolar', 'fas fa-check-circle', data.delivered_shipments);
+          populateStatCard('bottom-stats', 'in-transit', 'Yoldaki Kargolar', 'fas fa-shipping-fast', data.in_transit_shipments);
+          populateStatCard('bottom-stats', 'preparing', 'Hazırlanan Kargolar', 'fas fa-cog', data.preparing_shipments);
         })
         .catch(err => {
           console.error("Dashboard verileri alınırken hata oluştu:", err);
+          // Show error in all cards
+          document.querySelectorAll('.stat-value').forEach(el => {
+            el.textContent = 'Hata';
+          });
         });
+
+      function populateStatCard(sectionId, type, title, icon, value) {
+        const section = document.getElementById(sectionId);
+        const card = document.createElement('div');
+        card.className = `stat-card ${type}`;
+        card.innerHTML = `
+          <div class="stat-card-header">
+            <div>
+              <div class="stat-title">${title}</div>
+            </div>
+            <div class="stat-icon">
+              <i class="${icon}"></i>
+            </div>
+          </div>
+          <div class="stat-value">${value}</div>
+        `;
+        section.appendChild(card);
+      }
     });
   </script>
 </body>
