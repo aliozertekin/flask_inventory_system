@@ -272,7 +272,9 @@
                     </li>
                     {% endfor %}
                 </ul>
-                
+                <a href="/orders/{{ order.order_id }}/invoice" class="btn btn-primary" target="_blank">
+                    <i class="fa fa-file-pdf"></i> Faturayı İndir
+                </a>
                 <div class="total-section">
                     <span class="total-label">Toplam Tutar:</span>
                     <span class="total-value">

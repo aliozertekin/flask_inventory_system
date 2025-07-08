@@ -260,3 +260,21 @@ def delete_product_image(product_id):
     finally:
         cursor.close()
     return redirect(url_for('product.product_details', product_id=product_id))
+
+@product_bp.route('/logs')
+def products_log():
+    cursor = conn.cursor()
+    try:
+        cursor.execute("""
+            SELECT log_id, product_id, operation, changed_by, changed_at, old_data, new_data
+            FROM product_log
+            ORDER BY changed_at DESC
+            FETCH FIRST 100 ROWS ONLY
+        """)
+        columns = [col[0].lower() for col in cursor.description]
+        rows = cursor.fetchall()
+        logs = [dict(zip(columns, row)) for row in rows]  # dict listesi
+        for log in logs:  log['table_name'] = 'PRODUCTS'  
+        return render_template('log_generic.html', logs=logs, log_type='products')
+    finally:
+        cursor.close()

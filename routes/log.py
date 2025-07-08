@@ -11,7 +11,7 @@ def show_logs():
             SELECT log_id, table_name, operation, changed_by, changed_at, old_data, new_data
             FROM audit_log
             ORDER BY changed_at DESC
-            FETCH FIRST 100 ROWS ONLY
+            FETCH FIRST 500 ROWS ONLY
         """)
         logs = cursor.fetchall()
         logs_list = []

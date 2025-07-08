@@ -1,10 +1,11 @@
 from flask import Blueprint, render_template, request, redirect, url_for
 from db.connection import conn
 
-customer_bp = Blueprint('customer_bp', __name__)
+customer_bp = Blueprint('customer_bp', __name__, url_prefix='/customers')
+
 PER_PAGE = 20
 
-@customer_bp.route('/customers')
+@customer_bp.route('/')
 def list_customers():
     cursor = conn.cursor()
     search_term = request.args.get('search', '').strip()
@@ -30,7 +31,7 @@ def list_customers():
             ) a
             WHERE ROWNUM <= :end_row
         )
-        WHERE rnum > :start_row
+        WHERE rnum > :start_row 
         """
         params = {
             'end_row': page * PER_PAGE,
@@ -51,7 +52,7 @@ def list_customers():
     finally:
         cursor.close()
 
-@customer_bp.route('/customers/add', methods=['POST'])
+@customer_bp.route('/add', methods=['POST'])
 def add_customer():
     name = request.form['name']
     email = request.form['email']
@@ -59,7 +60,7 @@ def add_customer():
     cursor.callproc("add_customer", [email, name])
     return redirect(url_for('customer_bp.list_customers'))
 
-@customer_bp.route('/customers/edit/<int:customer_id>', methods=['GET', 'POST'])
+@customer_bp.route('/edit/<int:customer_id>', methods=['GET', 'POST'])
 def edit_customer(customer_id):
     cursor = conn.cursor()
     if request.method == 'POST':
@@ -85,3 +86,21 @@ def delete_customer(customer_id):
     conn.commit()
     cursor.close()
     return redirect(url_for('customer_bp.list_customers'))
+
+@customer_bp.route('/logs')
+def customers_log():
+    cursor = conn.cursor()
+    try:
+        cursor.execute("""
+            SELECT log_id, customer_id, operation, changed_by, changed_at, old_data, new_data
+            FROM customer_log
+            ORDER BY changed_at DESC
+            FETCH FIRST 100 ROWS ONLY
+        """)
+        columns = [col[0].lower() for col in cursor.description]
+        rows = cursor.fetchall()
+        logs = [dict(zip(columns, row)) for row in rows]  # dict listesi
+        for log in logs:  log['table_name'] = 'CUSTOMERS'  
+        return render_template('log_generic.html', logs=logs, log_type='customers')
+    finally:
+        cursor.close()

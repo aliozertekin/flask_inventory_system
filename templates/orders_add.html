@@ -10,12 +10,11 @@
 <body>
     <header>
         <div class="header-container">
-            <div class="logo">Yeni Sipariş</div>
+            <div class="logo">Yeni Sipariş Ekle</div>
             <nav>
         <ul class="nav-links">
  <li><a href="/"><i class="fa fa-home"></i> Ana Sayfa</a></li>
   <li><a href="/inventory"><i class="fa fa-boxes-stacked"></i> Envanter</a></li>  
-
   <li><a href="/orders"><i class="fa fa-receipt"></i> Siparişler</a></li>
   <li><a href="/customers"><i class="fa fa-user"></i> Müşteriler</a></li>
   <li><a href="/log"><i class="fa fa-clock-rotate-left"></i> Kayıtlar</a></li>
@@ -42,6 +41,11 @@
             <div class="form-group">
                 <label for="store_id">Mağaza ID</label>
                 <input type="number" id="store_id" placeholder="Mağaza ID girin" required />
+            </div>
+            
+            <div class="form-group">
+                <label for="delivery_address">Teslimat Adresi</label>
+                <input type="text" id="delivery_address" name="delivery_address" required>
             </div>
 
             <div id="items-container" class="items-container">
@@ -132,7 +136,8 @@
         submitBtn.addEventListener('click', () => {
             msgDiv.textContent = '';
             msgDiv.className = 'message';
-
+            
+            const deliveryAddress = document.getElementById('delivery_address').value.trim();
             const customerId = document.getElementById('customer_id').value;
             const storeId = storeIdInput.value;
 
@@ -174,6 +179,7 @@
             const payload = {
                 customer_id: parseInt(customerId),
                 store_id: parseInt(storeId),
+                delivery_address: deliveryAddress,
                 items: items
             };
 
@@ -187,14 +193,24 @@
                 if(data.status === 'success') {
                     msgDiv.textContent = `Sipariş başarıyla oluşturuldu! Sipariş ID: ${data.order_id}`;
                     msgDiv.classList.add('success');
+                
+                    document.getElementById('customer_id').value = '';
+                    document.getElementById('store_id').value = '';
+                    document.getElementById('delivery_address').value = '';
+                    itemsContainer.innerHTML = ''; // tüm ürün satırlarını temizle
+                    itemsContainer.appendChild(createItemRow()); // bir tane boş ürün satırı bırak
+                    updateSubmitButtonState();
                 } else {
                     msgDiv.textContent = `Hata: ${data.message}`;
                     msgDiv.classList.add('error');
+                
+                    submitBtn.disabled = false;
                 }
             })
             .catch(() => {
                 msgDiv.textContent = 'Sunucu ile bağlantı kurulamadı.';
                 msgDiv.classList.add('error');
+                submitBtn.disabled = false;  // ✅ önemli
             });
         });
 
@@ -261,7 +277,10 @@
                         if(data.status === 'success') {
                             unitPriceInput.value = data.unit_price.toFixed(2);
                             stockInfo.textContent = `Stokta: ${data.quantity}`;
-
+                        
+                            // Önce eski sınıfları temizle
+                            stockInfo.classList.remove('stock-danger', 'stock-success');
+                        
                             if(parseInt(quantityInput.value) > data.quantity) {
                                 stockInfo.classList.add('stock-danger');
                                 stockInfo.textContent += ' - Yeterli stok yok!';

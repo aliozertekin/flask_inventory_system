@@ -1,15 +1,230 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-    <meta charset="UTF-8">
-    <title>Hata Oluştu</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <meta charset="UTF-8">
+  <title>Hata Oluştu - Envanter Yönetim Sistemi</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    /* Error Page Specific Styles */
+    .error-container {
+      max-width: 800px;
+      margin: 2rem auto;
+      padding: 40px;
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+    
+    .error-header {
+      margin-bottom: 30px;
+      padding-bottom: 20px;
+      border-bottom: 2px solid #f0f4f8;
+    }
+    
+    .error-header h1 {
+      font-size: 2.5rem;
+      color: #e74c3c;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+    }
+    
+    .error-icon {
+      font-size: 5rem;
+      color: #e74c3c;
+      margin-bottom: 20px;
+      animation: pulse 2s infinite;
+    }
+    
+    .error-content {
+      line-height: 1.8;
+      color: #2c3e50;
+      margin-bottom: 30px;
+    }
+    
+    .error-code {
+      background: #f8f9fa;
+      padding: 10px 15px;
+      border-radius: 5px;
+      display: inline-block;
+      margin: 15px 0;
+      font-family: monospace;
+      color: #7f8c8d;
+    }
+    
+    .error-actions {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-top: 30px;
+      flex-wrap: wrap;
+    }
+    
+    .btn-error {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 25px;
+      border-radius: 8px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      text-decoration: none;
+    }
+    
+    .btn-primary {
+      background: #3498db;
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      background: #2980b9;
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .btn-secondary {
+      background: #f8f9fa;
+      color: #2c3e50;
+      border: 1px solid #ddd;
+    }
+    
+    .btn-secondary:hover {
+      background: #ecf0f1;
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .technical-details {
+      margin-top: 40px;
+      text-align: left;
+      background: #f8f9fa;
+      padding: 20px;
+      border-radius: 8px;
+      border-left: 4px solid #e74c3c;
+    }
+    
+    .technical-details summary {
+      font-weight: 600;
+      color: #e74c3c;
+      cursor: pointer;
+      margin-bottom: 10px;
+    }
+    
+    .technical-details pre {
+      background: white;
+      padding: 15px;
+      border-radius: 5px;
+      overflow-x: auto;
+      font-family: monospace;
+      color: #7f8c8d;
+    }
+    
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); }
+    }
+    
+    @media (max-width: 768px) {
+      .error-container {
+        padding: 25px;
+      }
+      
+      .error-header h1 {
+        font-size: 2rem;
+      }
+      
+      .error-actions {
+        flex-direction: column;
+        gap: 10px;
+      }
+      
+      .btn-error {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+  </style>
 </head>
 <body>
-    <div class="error-container">
-        <h1>Hata Oluştu</h1>
-        <p>{{ error_message }}</p>
-        <a href="{{ url_for('inventory.list_orders') }}" class="btn">Ana Sayfaya Dön</a>
+  <header>
+    <div class="header-container">
+      <div class="logo">Hata Bildirimi</div>
+      <nav>
+        <ul class="nav-links">
+          <li><a href="/"><i class="fa fa-home"></i> Ana Sayfa</a></li>
+          <li><a href="/inventory"><i class="fa fa-boxes-stacked"></i> Envanter</a></li>  
+          <li><a href="/orders"><i class="fa fa-receipt"></i> Siparişler</a></li>
+          <li><a href="/customers"><i class="fa fa-user"></i> Müşteriler</a></li>
+          <li><a href="/log"><i class="fa fa-clock-rotate-left"></i> Kayıtlar</a></li>
+          <li><a href="/product"><i class="fa fa-cube"></i> Ürünler</a></li>
+          <li><a href="/store"><i class="fa fa-store"></i> Mağazalar</a></li>
+          <li><a href="/shipments"><i class="fa fa-truck"></i> Kargolar</a></li>
+        </ul>
+      </nav>
+      <div class="user-info">
+        <span>Kullanıcı</span>
+      </div>
     </div>
+  </header>
+
+  <div class="container">
+    <div class="error-container">
+      <div class="error-icon">
+        <i class="fas fa-exclamation-triangle"></i>
+      </div>
+      
+      <div class="error-header">
+        <h1><i class="fas fa-bug"></i> Bir Hata Oluştu</h1>
+      </div>
+      
+      <div class="error-content">
+        <p>Üzgünüz, işleminiz sırasında beklenmeyen bir hata oluştu. Lütfen aşağıdaki seçenekleri deneyin:</p>
+        
+        <div class="error-code">
+          Hata Kodu: {{ error_code if error_code else "ERR-000" }}
+        </div>
+        
+        <p>Eğer bu hatayı sürekli alıyorsanız, lütfen sistem yöneticinizle iletişime geçin.</p>
+      </div>
+      
+      <div class="error-actions">
+        <a href="/" class="btn-error btn-primary">
+          <i class="fas fa-home"></i> Ana Sayfaya Dön
+        </a>
+        <a href="mailto:destek@envanterpro.com" class="btn-error btn-secondary">
+          <i class="fas fa-envelope"></i> Destek Ekibine Ulaşın
+        </a>
+        <button onclick="window.history.back()" class="btn-error btn-secondary">
+          <i class="fas fa-arrow-left"></i> Önceki Sayfaya Dön
+        </button>
+      </div>
+      
+      {% if show_details and error_details %}
+      <div class="technical-details">
+        <details>
+          <summary>
+            <i class="fas fa-code"></i> Teknik Detaylar (Yöneticiler İçin)
+          </summary>
+          <pre>{{ error_details }}</pre>
+        </details>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-content">
+      <p>&copy; 2025 Envanter Yönetim Sistemi - Tüm hakları saklıdır</p>
+      <div class="footer-links">
+        <a href="/privacy">Gizlilik Politikası</a>
+        <a href="/terms">Kullanım Şartları</a>
+      </div>
+    </div>
+  </footer>
 </body>
 </html>

@@ -1,6 +1,14 @@
-from flask import Blueprint, render_template, request, jsonify
+from flask import Blueprint, render_template, request, jsonify, send_file, request
 from db.connection import conn  # cx_Oracle bağlantısı
-import cx_Oracle
+from reportlab.pdfgen import canvas
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
+from reportlab.pdfbase import ttfonts
+from reportlab.lib.pagesizes import A4, letter
+from modules.utilities import get_font_path
+from datetime import datetime
+from io import BytesIO
+import cx_Oracle, os
 
 order_bp = Blueprint('orders', __name__, url_prefix='/orders')
 ORDERS_VIEW = "orders_view"
@@ -70,7 +78,9 @@ def add_order():
         customer_id = data.get('customer_id')
         store_id = data.get('store_id')
         items = data.get('items')
-
+        delivery_address = data.get('delivery_address')
+        if not delivery_address:
+            return jsonify({'status': 'error', 'message': 'Teslimat adresi gerekli'}), 400
         if not customer_id or not store_id or not items:
             return jsonify({'status': 'error', 'message': 'Eksik parametre'}), 400
 
@@ -109,7 +119,7 @@ def add_order():
         order_id_var = cursor.var(cx_Oracle.NUMBER)
 
         try:
-            cursor.callproc('ADD_ORDER', [customer_id, store_id, order_items_obj, order_id_var])
+            cursor.callproc('ADD_ORDER', [customer_id, store_id, order_items_obj, delivery_address, order_id_var])
             conn.commit()
             return jsonify({'status': 'success', 'order_id': int(order_id_var.getvalue())})
         except Exception as e:
@@ -214,3 +224,155 @@ def update_order_status(order_id):
         except Exception as e:
             conn.rollback()
             return jsonify({'status': 'error', 'message': str(e)})
+
+font_path = get_font_path()
+pdfmetrics.registerFont(TTFont('DejaVuSans', font_path))
+
+@order_bp.route('/<int:order_id>/invoice')
+def generate_invoice(order_id):
+    cursor = conn.cursor()
+    try:
+        # DejaVuSans.ttf fontunu kaydet ve kullanıma hazırla
+        font_path = "static/fonts/DejaVuSans.ttf"  # font dosyanın gerçek yolu
+        pdfmetrics.registerFont(TTFont('DejaVuSans', font_path))
+
+        # Veri sorgusu
+        cursor.execute("""
+            SELECT 
+                o.order_id,
+                o.order_tms,
+                o.order_status,
+                
+                c.customer_id,
+                c.full_name,
+                c.email_address,
+                
+                s.store_id,
+                s.store_name,
+                s.physical_address,
+                
+                sh.delivery_address,
+                sh.shipment_status,
+                
+                oi.line_item_id,
+                p.product_name,
+                oi.quantity,
+                oi.unit_price,
+                (oi.quantity * oi.unit_price) AS line_total
+
+            FROM orders o
+            JOIN customers c ON o.customer_id = c.customer_id
+            JOIN stores s ON o.store_id = s.store_id
+            JOIN order_items oi ON o.order_id = oi.order_id
+            JOIN products p ON oi.product_id = p.product_id
+            LEFT JOIN shipments sh ON sh.shipment_id = oi.shipment_id
+
+            WHERE o.order_id = :order_id
+            ORDER BY oi.line_item_id
+        """, {'order_id': order_id})
+
+        rows = cursor.fetchall()
+        if not rows:
+            return "Sipariş bulunamadı", 404
+
+        # PDF başlat
+        buffer = BytesIO()
+        pdf = canvas.Canvas(buffer, pagesize=letter)
+        pdf.setTitle(f"Fatura - Sipariş {order_id}")
+
+        y = 750
+        pdf.setFont("DejaVuSans", 16)
+        pdf.drawString(50, y, f"Fatura - Sipariş #{order_id}")
+        y -= 30
+
+        # Genel bilgiler
+        row = rows[0]
+        order_date = row[1].strftime('%Y-%m-%d %H:%M:%S')
+        pdf.setFont("DejaVuSans", 12)
+        pdf.drawString(50, y, f"Tarih: {order_date}")
+        y -= 20
+        pdf.drawString(50, y, f"Durum: {row[2]}")
+        y -= 30
+
+        # Müşteri Bilgileri
+        pdf.setFont("DejaVuSans", 12)
+        pdf.drawString(50, y, "Müşteri Bilgileri:")
+        y -= 20
+        pdf.drawString(60, y, f"Ad Soyad: {row[4]}")
+        y -= 20
+        pdf.drawString(60, y, f"E-posta: {row[5]}")
+        y -= 30
+
+        # Mağaza Bilgileri
+        pdf.drawString(50, y, "Mağaza Bilgileri:")
+        y -= 20
+        pdf.drawString(60, y, f"Mağaza: {row[7]}")
+        y -= 20
+        pdf.drawString(60, y, f"Adres: {row[8]}")
+        y -= 30
+
+        # Teslimat Bilgileri
+        pdf.drawString(50, y, "Teslimat Bilgileri:")
+        y -= 20
+        pdf.drawString(60, y, f"Adres: {row[9] or 'Bilinmiyor'}")
+        y -= 20
+        pdf.drawString(60, y, f"Durum: {row[10] or 'Belirsiz'}")
+        y -= 30
+
+        # Ürünler
+        pdf.drawString(50, y, "Ürünler:")
+        y -= 20
+
+        total = 0
+        for r in rows:
+            pname = r[12]
+            quantity = r[13]
+            unit_price = float(r[14])
+            line_total = float(r[15])
+            total += line_total
+
+            pdf.drawString(60, y, f"{pname} - Adet: {quantity}, Birim Fiyat: {unit_price:.2f} ₺, Toplam: {line_total:.2f} ₺")
+            y -= 20
+
+            if y < 100:
+                pdf.showPage()
+                pdf.setFont("DejaVuSans", 12)
+                y = 750
+
+        # Genel Toplam
+        y -= 10
+        pdf.setFont("DejaVuSans", 12)
+        pdf.drawString(50, y, f"Genel Toplam: {total:.2f} ₺")
+
+        pdf.showPage()
+        pdf.save()
+        buffer.seek(0)
+
+        return send_file(
+            buffer,
+            as_attachment=True,
+            download_name=f"fatura_{order_id}.pdf",
+            mimetype='application/pdf'
+        )
+
+    finally:
+        cursor.close()
+
+@order_bp.route('/logs')
+def orders_log():
+    cursor = conn.cursor()
+    try:
+        cursor.execute("""
+            SELECT log_id, order_id, operation, changed_by, changed_at, old_data, new_data
+            FROM order_log
+            ORDER BY changed_at DESC
+            FETCH FIRST 100 ROWS ONLY
+        """)
+        columns = [col[0].lower() for col in cursor.description]
+        rows = cursor.fetchall()
+        logs = [dict(zip(columns, row)) for row in rows]  # dict listesi
+        for log in logs:  log['table_name'] = 'ORDERS'  
+        return render_template('log_generic.html', logs=logs, log_type='orders')
+    finally:
+        cursor.close()
+

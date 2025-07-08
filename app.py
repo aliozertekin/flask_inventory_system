@@ -1,4 +1,5 @@
-from flask import Flask
+from flask import Flask, render_template
+from modules.utilities import get_secret
 from routes.orders import order_bp
 from routes.customers import customer_bp
 from routes.index import index_bp
@@ -9,15 +10,27 @@ from routes.terms import terms_bp
 from routes.privacy import privacy_bp
 from routes.store import store_bp
 from routes.shipments import shipments_bp
-
-
-import secrets
-
+from routes.order_items import order_items_bp
 
 app = Flask(__name__)
 
+# Genel 500 Internal Server Error için
+@app.errorhandler(500)
+def internal_server_error(e):
+    return render_template('error.html', error_code=500, show_details=True, error_details=str(e)), 500
 
-app.secret_key = secrets.token_hex(16) # Gizli anahtar oluştur.
+# 404 Not Found için
+@app.errorhandler(404)
+def not_found_error(e):
+    return render_template('error.html', error_code=404, show_details=False), 404
+
+@app.errorhandler(Exception)
+def handle_exception(e):
+    # Geliştirme modunda detay göster, değilse gösterme
+    show_details = app.debug
+    return render_template('error.html', error_code="ERR", show_details=show_details, error_details=str(e)), 500
+
+app.secret_key = get_secret()
 
 app.register_blueprint(order_bp)
 app.register_blueprint(customer_bp)
@@ -29,6 +42,7 @@ app.register_blueprint(terms_bp)
 app.register_blueprint(privacy_bp)
 app.register_blueprint(store_bp)
 app.register_blueprint(shipments_bp)
+app.register_blueprint(order_items_bp)
 
 if __name__ == "__main__":
     app.run(debug=True)

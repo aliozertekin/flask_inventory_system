@@ -55,7 +55,25 @@
                 </div>
             </div>
 
-            <!-- Buton -->
+            <!-- Aksiyonlar -->
+            <div class="detail-actions">
+                <h3 class="section-title"><i class="fa fa-cogs"></i> İşlemler</h3>
+
+                <!-- Kargo Durumu Güncelleme -->
+                <form method="post" action="{{ url_for('shipments.update_shipment_status', shipment_id=shipment.id) }}">
+                    <div class="form-group">
+                        <label for="shipment_status">Durumu Güncelle</label>
+                        <select name="shipment_status" id="shipment_status" required>
+                            <option value="CREATED" {% if shipment.status == 'CREATED' %}selected{% endif %}>Oluşturuldu</option>
+                            <option value="SHIPPED" {% if shipment.status == 'SHIPPED' %}selected{% endif %}>Kargolandı</option>
+                            <option value="IN-TRANSIT" {% if shipment.status == 'IN-TRANSIT' %}selected{% endif %}>Yolda</option>
+                            <option value="DELIVERED" {% if shipment.status == 'DELIVERED' %}selected{% endif %}>Teslim Edildi</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> Güncelle</button>
+                </form>
+            </div>
+            <!-- Geri Dön Butonu -->
             <div class="form-actions">
                 <a href="{{ url_for('shipments.list_shipments') }}" class="btn btn-secondary">
                     <i class="fa fa-arrow-left"></i> Kargo Listesine Dön

@@ -90,18 +90,21 @@ def add_inventory():
 
     return render_template("inventory_add.html")
 
-@inventory_bp.route('/log')
+@inventory_bp.route('/logs')
 def inventory_log():
     cursor = conn.cursor()
     try:
         cursor.execute("""
-            SELECT log_id, inventory_id, store_id, product_id, change_amount, old_quantity, new_quantity, action, TO_CHAR(changed_at, 'YYYY-MM-DD HH24:MI:SS'), changed_by
-            FROM inventory_log
-            ORDER BY changed_at DESC
-            FETCH FIRST 100 ROWS ONLY
+        SELECT log_id, inventory_id, store_id, product_id, change_amount, old_quantity, new_quantity, operation, TO_CHAR(changed_at, 'YYYY-MM-DD HH24:MI:SS') AS changed_at, changed_by
+        FROM inventory_log
+        ORDER BY log_id DESC
+        FETCH FIRST 1000 ROWS ONLY
         """)
-        logs = cursor.fetchall()
-        return render_template('inventory_log.html', logs=logs)
+        columns = [col[0].lower() for col in cursor.description]
+        rows = cursor.fetchall()
+        logs = [dict(zip(columns, row)) for row in rows]  # dict listesi
+        for log in logs:  log['table_name'] = 'INVENTORY'  
+        return render_template('log_generic.html', logs=logs)
     finally:
         cursor.close()
 

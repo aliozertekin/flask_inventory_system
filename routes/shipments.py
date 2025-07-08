@@ -4,9 +4,7 @@ from db.connection import conn
 
 shipments_bp = Blueprint('shipments', __name__, url_prefix='/shipments')
 PER_PAGE = 20
-
-
-PER_PAGE = 20
+    
 
 @shipments_bp.route('/')
 def list_shipments():
@@ -53,7 +51,7 @@ def list_shipments():
                     SELECT shipment_id, store_id, customer_id, delivery_address, shipment_status
                     FROM shipments
                     WHERE 1=1 {base_filter}
-                    ORDER BY shipment_id
+                    ORDER BY shipment_id DESC
                 ) a WHERE ROWNUM <= :end_row
             ) WHERE rnum > :start_row
         """
@@ -161,5 +159,48 @@ def shipment_details(shipment_id):
     except Exception as e:
         flash(f"Hata oluştu: {str(e)}", "error")
         return redirect(url_for('shipments.list_shipments'))
+    finally:
+        cursor.close()
+
+@shipments_bp.route('/<int:shipment_id>/update_status', methods=['POST'])
+def update_shipment_status(shipment_id):
+    new_status = request.form.get('shipment_status')
+
+    if not new_status:
+        flash("Durum bilgisi eksik.", "error")
+        return redirect(url_for('shipments.shipment_details', shipment_id=shipment_id))
+
+    cursor = conn.cursor()
+    try:
+        cursor.execute("""
+            UPDATE shipments
+            SET shipment_status = :new_status
+            WHERE shipment_id = :shipment_id
+        """, {'new_status': new_status, 'shipment_id': shipment_id})
+        conn.commit()
+        flash("Durum başarıyla güncellendi.", "success")
+    except Exception as e:
+        conn.rollback()
+        flash(f"Durum güncellenemedi: {str(e)}", "error")
+    finally:
+        cursor.close()
+
+    return redirect(url_for('shipments.shipment_details', shipment_id=shipment_id))
+
+@shipments_bp.route('/logs')
+def shipments_log():
+    cursor = conn.cursor()
+    try:
+        cursor.execute("""
+            SELECT log_id, shipment_id, operation, changed_by, changed_at, old_data, new_data
+            FROM shipments_log
+            ORDER BY changed_at DESC
+            FETCH FIRST 100 ROWS ONLY
+        """)
+        columns = [col[0].lower() for col in cursor.description]
+        rows = cursor.fetchall()
+        logs = [dict(zip(columns, row)) for row in rows]  # dict listesi
+        for log in logs:  log['table_name'] = 'SHIPMENTS'  
+        return render_template('log_generic.html', logs=logs, log_type='shipments')
     finally:
         cursor.close()

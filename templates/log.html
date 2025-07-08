@@ -110,6 +110,10 @@
       font-size: 0.85rem;
       font-weight: 600;
     }
+    .operation-add{
+      background-color: #d4edda;
+      color: #3ebd5c;
+    }
     
     .operation-insert {
       background-color: #d4edda;
@@ -207,13 +211,13 @@
       <div class="logo">İşlem Logları</div>
       <nav>
         <ul class="nav-links">
-  <li><a href="/"><i class="fa fa-home"></i> Ana Sayfa</a></li>
-  <li><a href="/inventory"><i class="fa fa-boxes-stacked"></i> Envanter</a></li>  
-  <li><a href="/orders"><i class="fa fa-receipt"></i> Siparişler</a></li>
-  <li><a href="/customers"><i class="fa fa-user"></i> Müşteriler</a></li>
-  <li><a href="/product"><i class="fa fa-cube"></i> Ürünler</a></li>
-  <li><a href="/store"><i class="fa fa-store"></i> Mağazalar</a></li>
-  <li><a href="/shipments"><i class="fa fa-truck"></i> Kargolar</a></li>
+          <li><a href="/"><i class="fa fa-home"></i> Ana Sayfa</a></li>
+          <li><a href="/inventory"><i class="fa fa-boxes-stacked"></i> Envanter</a></li>  
+          <li><a href="/orders"><i class="fa fa-receipt"></i> Siparişler</a></li>
+          <li><a href="/customers"><i class="fa fa-user"></i> Müşteriler</a></li>
+          <li><a href="/product"><i class="fa fa-cube"></i> Ürünler</a></li>
+          <li><a href="/store"><i class="fa fa-store"></i> Mağazalar</a></li>
+          <li><a href="/shipments"><i class="fa fa-truck"></i> Kargolar</a></li>
         </ul>
       </nav>
       <div class="user-info">
@@ -221,7 +225,15 @@
       </div>
     </div>
   </header>
-
+    <div class="log-links" style="padding:10px 20px; background:#eef3fb; border-bottom: 1px solid #ccc; display:flex; gap:15px; flex-wrap: wrap; align-items:center; justify-content:center;">
+      <a href="/inventory/logs" style="color:#1a2a6c; font-weight:600; text-decoration:none;">Envanter Logları</a>
+      <a href="/orders/logs" style="color:#1a2a6c; font-weight:600; text-decoration:none;">Sipariş Logları</a>
+      <a href="/order_items/logs" style="color:#1a2a6c; font-weight:600; text-decoration:none;">Sipariş Detayı Logları</a>
+      <a href="/store/logs" style="color:#1a2a6c; font-weight:600; text-decoration:none;">Mağaza Logları</a>
+      <a href="/shipments/logs" style="color:#1a2a6c; font-weight:600; text-decoration:none;">Kargo Logları</a>
+      <a href="/customers/logs" style="color:#1a2a6c; font-weight:600; text-decoration:none;">Müşteri Logları</a>
+      <a href="/product/logs" style="color:#1a2a6c; font-weight:600; text-decoration:none;">Ürün Logları</a>
+    </div>
   <div class="container">
     <div class="card">
       <div class="logs-header">
@@ -239,6 +251,9 @@
           <select id="table-filter" class="form-control">
             <option value="">Tüm Tablolar</option>
             <option value="orders">Siparişler</option>
+            <option value="order_items">Sipariş Detayı</option>
+            <option value="stores">Mağazalar</option>
+            <option value="shipments">Kargolar</option>
             <option value="inventory">Envanter</option>
             <option value="customers">Müşteriler</option>
             <option value="products">Ürünler</option>
@@ -266,6 +281,7 @@
         </div>
       </div>
 
+      
       {% if logs %}
       <div class="table-responsive">
         <table class="logs-table">

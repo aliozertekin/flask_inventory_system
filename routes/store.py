@@ -108,3 +108,21 @@ def to_float_or_none(val):
         return float(val)
     except (TypeError, ValueError):
         return None
+    
+@store_bp.route('/logs')
+def stores_log():
+    cursor = conn.cursor()
+    try:
+        cursor.execute("""
+            SELECT log_id, store_id, operation, changed_by, changed_at, old_data, new_data
+            FROM store_log
+            ORDER BY changed_at DESC
+            FETCH FIRST 100 ROWS ONLY
+        """)
+        columns = [col[0].lower() for col in cursor.description]
+        rows = cursor.fetchall()
+        logs = [dict(zip(columns, row)) for row in rows]  # dict listesi
+        for log in logs:  log['table_name'] = 'STORES'  
+        return render_template('log_generic.html', logs=logs, log_type='stores')
+    finally:
+        cursor.close()
