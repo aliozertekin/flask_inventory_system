@@ -50,7 +50,7 @@ header {
 .logo {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 6px;
       font-size: 1.8rem;
       font-weight: 700;
 }
@@ -70,7 +70,7 @@ nav {
 .nav-links {
   display: flex;
   flex-wrap: wrap;
-  gap: 15px;
+  gap: 6px;
   justify-content: center;
   padding: 0;
   margin: 0;
@@ -81,7 +81,7 @@ nav {
 .nav-links li a {
   display: flex;
   align-items: center;
-  gap: 18px;
+  gap: 12px;
   color: white;
   font-weight: 600;
   text-decoration: none;
@@ -177,7 +177,7 @@ table tr:hover {
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      padding: 0.6rem 1.2rem;
+      padding: 0.4rem 0.9rem;
       border-radius: var(--border-radius);
       font-weight: 600;
       cursor: pointer;

@@ -1,10 +1,12 @@
 from flask import Blueprint, render_template
-from db.connection import conn
+from db.connection import get_connection
+
 
 log_bp = Blueprint('log', __name__, url_prefix='/log')
 
 @log_bp.route('/')
 def show_logs():
+    conn = get_connection()
     cursor = conn.cursor()
     try:
         cursor.execute("""

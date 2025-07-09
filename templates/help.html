@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Yardım | Sistem Adı</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #3498db;
+      --primary-dark: #2980b9;
+      --secondary: #2c3e50;
+      --success: #2ecc71;
+      --danger: #e74c3c;
+      --light: #ecf0f1;
+      --gray: #95a5a6;
+      --white: #ffffff;
+      --border-radius: 8px;
+      --shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      --transition: all 0.3s ease;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    body {
+      background: linear-gradient(135deg, #f5f7fa 0%, #e4e8eb 100%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    
+    .login-container {
+      display: flex;
+      max-width: 900px;
+      width: 100%;
+      border-radius: var(--border-radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+    
+    .login-illustration {
+      flex: 1;
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      padding: 40px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: var(--white);
+      text-align: center;
+    }
+    
+    .login-illustration img {
+      max-width: 80%;
+      margin-bottom: 30px;
+    }
+    
+    .login-illustration h2 {
+      margin-bottom: 15px;
+      font-size: 1.8rem;
+    }
+    
+    .login-illustration p {
+      opacity: 0.9;
+      line-height: 1.6;
+    }
+    
+    .login-box {
+      flex: 1;
+      background: var(--white);
+      padding: 50px 40px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    
+    .logo {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    
+    .logo i {
+      font-size: 2.5rem;
+      color: var(--primary);
+      margin-bottom: 10px;
+    }
+    
+    .logo h1 {
+      color: var(--secondary);
+      font-size: 1.8rem;
+    }
+    
+    .login-box h2 {
+      color: var(--secondary);
+      margin-bottom: 25px;
+      font-size: 1.5rem;
+      text-align: center;
+    }
+    
+    .faq-item {
+      margin-bottom: 20px;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 20px;
+    }
+    
+    .faq-question {
+      font-weight: 600;
+      color: var(--secondary);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+    }
+    
+    .faq-question i {
+      margin-right: 10px;
+      color: var(--primary);
+    }
+    
+    .faq-answer {
+      color: var(--gray);
+      line-height: 1.6;
+      padding-left: 30px;
+    }
+    
+    .contact-info {
+      margin-top: 30px;
+      padding: 20px;
+      background-color: #f8f9fa;
+      border-radius: var(--border-radius);
+    }
+    
+    .contact-info h3 {
+      color: var(--secondary);
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+    }
+    
+    .contact-info h3 i {
+      margin-right: 10px;
+    }
+    
+    .contact-method {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    
+    .contact-method i {
+      margin-right: 10px;
+      color: var(--primary);
+      width: 20px;
+    }
+    
+    .extra-links {
+      margin-top: 20px;
+      text-align: center;
+    }
+    
+    .extra-links a {
+      color: var(--gray);
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: var(--transition);
+    }
+    
+    .extra-links a:hover {
+      color: var(--primary);
+    }
+    
+    /* Responsive Tasarım */
+    @media (max-width: 768px) {
+      .login-container {
+        flex-direction: column;
+      }
+      
+      .login-illustration {
+        display: none;
+      }
+      
+      .login-box {
+        padding: 40px 30px;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .login-box {
+        padding: 30px 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <div class="login-illustration">
+      <svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"></circle>
+        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+        <line x1="12" y1="17" x2="12.01" y2="17"></line>
+      </svg>
+      <h2>Yardım Merkezi</h2>
+      <p>Sistemimizle ilgili sıkça sorulan sorular ve iletişim bilgileri.</p>
+    </div>
+    
+    <div class="login-box">
+      <div class="logo">
+        <i class="fas fa-question-circle"></i>
+        <h1>Yardım Merkezi</h1>
+      </div>
+      
+      <h2>Sıkça Sorulan Sorular</h2>
+      
+      <div class="faq-list">
+        <div class="faq-item">
+          <div class="faq-question">
+            <i class="fas fa-question"></i> Şifremi nasıl sıfırlarım?
+          </div>
+          <div class="faq-answer">
+            "Şifremi Unuttum" sayfasından e-posta adresinizi girerek şifre sıfırlama bağlantısı talep edebilirsiniz. E-postanıza gelen bağlantıyı kullanarak yeni şifrenizi belirleyebilirsiniz.
+          </div>
+        </div>
+        
+        <div class="faq-item">
+          <div class="faq-question">
+            <i class="fas fa-question"></i> Giriş yapamıyorum, ne yapmalıyım?
+          </div>
+          <div class="faq-answer">
+            Kullanıcı adı ve şifrenizin doğru olduğundan emin olun. Caps Lock tuşunun açık olmadığını kontrol edin. Sorun devam ederse sistem yöneticinizle iletişime geçin.
+          </div>
+        </div>
+        
+        <div class="faq-item">
+          <div class="faq-question">
+            <i class="fas fa-question"></i> Yeni hesap nasıl oluşturabilirim?
+          </div>
+          <div class="faq-answer">
+            Sistem yöneticinizden yeni bir hesap oluşturmasını talep edebilirsiniz. Kendi kendine kayıt özelliği şu anda aktif değildir.
+          </div>
+        </div>
+      </div>
+      
+      <div class="contact-info">
+        <h3><i class="fas fa-headset"></i> İletişim Bilgileri</h3>
+        
+        <div class="contact-method">
+          <i class="fas fa-envelope"></i>
+          <span>destek@sistemiadiniz.com</span>
+        </div>
+        
+        <div class="contact-method">
+          <i class="fas fa-phone"></i>
+          <span>0 (212) 123 45 67</span>
+        </div>
+        
+        <div class="contact-method">
+          <i class="fas fa-clock"></i>
+          <span>Pazartesi - Cuma: 09:00 - 18:00</span>
+        </div>
+      </div>
+      
+      <div class="extra-links">
+        <a href="{{ url_for('auth.login') }}"><i class="fas fa-sign-in-alt"></i> Giriş Yap</a>
+        <span> • </span>
+        <a href="{{ url_for('auth.forgot_password') }}"><i class="fas fa-key"></i> Şifremi Unuttum</a>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

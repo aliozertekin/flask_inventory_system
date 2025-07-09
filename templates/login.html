@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Giriş Yap | Sistem Adı</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #3498db;
+      --primary-dark: #2980b9;
+      --secondary: #2c3e50;
+      --success: #2ecc71;
+      --danger: #e74c3c;
+      --light: #ecf0f1;
+      --gray: #95a5a6;
+      --white: #ffffff;
+      --border-radius: 8px;
+      --shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      --transition: all 0.3s ease;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    body {
+      background: linear-gradient(135deg, #f5f7fa 0%, #e4e8eb 100%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    
+    .login-container {
+      display: flex;
+      max-width: 900px;
+      width: 100%;
+      border-radius: var(--border-radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+    
+    .login-illustration {
+      flex: 1;
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      padding: 40px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: var(--white);
+      text-align: center;
+    }
+    
+    .login-illustration img {
+      max-width: 80%;
+      margin-bottom: 30px;
+    }
+    
+    .login-illustration h2 {
+      margin-bottom: 15px;
+      font-size: 1.8rem;
+    }
+    
+    .login-illustration p {
+      opacity: 0.9;
+      line-height: 1.6;
+    }
+    
+    .login-box {
+      flex: 1;
+      background: var(--white);
+      padding: 50px 40px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    
+    .logo {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    
+    .logo i {
+      font-size: 2.5rem;
+      color: var(--primary);
+      margin-bottom: 10px;
+    }
+    
+    .logo h1 {
+      color: var(--secondary);
+      font-size: 1.8rem;
+    }
+    
+    .login-box h2 {
+      color: var(--secondary);
+      margin-bottom: 25px;
+      font-size: 1.5rem;
+      text-align: center;
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+      position: relative;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--secondary);
+      font-weight: 500;
+    }
+    
+    .input-with-icon {
+      position: relative;
+    }
+    
+    .input-with-icon i {
+      position: absolute;
+      left: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--gray);
+    }
+    
+    .form-control {
+      width: 100%;
+      padding: 12px 15px 12px 45px;
+      border: 1px solid #ddd;
+      border-radius: var(--border-radius);
+      font-size: 1rem;
+      transition: var(--transition);
+    }
+    
+    .form-control:focus {
+      border-color: var(--primary);
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+    }
+    
+    .btn {
+      width: 100%;
+      padding: 14px;
+      background-color: var(--primary);
+      color: var(--white);
+      border: none;
+      border-radius: var(--border-radius);
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      margin-top: 10px;
+    }
+    
+    .btn:hover {
+      background-color: var(--primary-dark);
+      transform: translateY(-2px);
+    }
+    
+    .btn:active {
+      transform: translateY(0);
+    }
+    
+    .extra-links {
+      margin-top: 20px;
+      text-align: center;
+    }
+    
+    .extra-links a {
+      color: var(--gray);
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: var(--transition);
+    }
+    
+    .extra-links a:hover {
+      color: var(--primary);
+    }
+    
+    .flash-messages {
+      margin-bottom: 20px;
+    }
+    
+    .flash-message {
+      padding: 12px;
+      border-radius: var(--border-radius);
+      margin-bottom: 10px;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+    }
+    
+    .flash-message.error {
+      background-color: rgba(231, 76, 60, 0.1);
+      color: var(--danger);
+    }
+    
+    .flash-message i {
+      margin-right: 10px;
+    }
+    
+    /* Responsive Tasarım */
+    @media (max-width: 768px) {
+      .login-container {
+        flex-direction: column;
+      }
+      
+      .login-illustration {
+        display: none;
+      }
+      
+      .login-box {
+        padding: 40px 30px;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .login-box {
+        padding: 30px 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <div class="login-illustration">
+      <!-- SVG veya resim eklenebilir -->
+      <svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+        <circle cx="8.5" cy="7" r="4"></circle>
+        <line x1="20" y1="8" x2="20" y2="14"></line>
+        <line x1="23" y1="11" x2="17" y2="11"></line>
+      </svg>
+      <h2>Sisteminize Hoş Geldiniz</h2>
+      <p>Lütfen hesap bilgilerinizi girerek sisteme giriş yapın. Eğer hesabınız yoksa yöneticinizle iletişime geçin.</p>
+    </div>
+    
+    <div class="login-box">
+      <div class="logo">
+        <i class="fas fa-database"></i>
+        <h1>Veritabanı Yönetimi</h1>
+      </div>
+      
+      <h2>Giriş Yap</h2>
+      
+      <div class="flash-messages">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <div class="flash-message {{ category }}">
+                <i class="fas fa-exclamation-circle"></i>
+                {{ message }}
+              </div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+      </div>
+      
+      <form method="POST">
+        <div class="form-group">
+          <label for="username">Kullanıcı Adı</label>
+          <div class="input-with-icon">
+            <i class="fas fa-user"></i>
+            <input type="text" id="username" name="username" class="form-control" placeholder="Kullanıcı adınızı girin" required>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="password">Şifre</label>
+          <div class="input-with-icon">
+            <i class="fas fa-lock"></i>
+            <input type="password" id="password" name="password" class="form-control" placeholder="Şifrenizi girin" required>
+          </div>
+        </div>
+        
+        <button type="submit" class="btn">
+          <i class="fas fa-sign-in-alt"></i> Giriş Yap
+        </button>
+        
+        <div class="extra-links">
+          <a href="/forgot_password"><i class="fas fa-key"></i> Şifremi Unuttum</a>
+          <span> • </span>
+          <a href="/help"><i class="fas fa-question-circle"></i> Yardım</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</body>
+</html>

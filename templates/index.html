@@ -253,7 +253,20 @@
       background-color: rgba(155, 89, 182, 0.15);
       color: var(--info);
     }
-
+    .btn {
+      padding: 10px 20px;
+      gap: 10px;
+      border: none;
+      border-radius: 6px;
+      font-weight: 600;
+      color: white;
+      background-color: #e74c3c;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    .btn:hover {
+      background-color: #c0392b;
+    }
     .stat-card.max-order .stat-icon {
       background-color: rgba(241, 196, 15, 0.15);
       color: #f1c40f;
@@ -392,8 +405,11 @@
       </div>
       <div class="user-info">
         <i class="fas fa-user-circle"></i>
-        <span>Yönetici</span>
+        <span> Admin</span>
       </div>
+      <a href="{{ url_for('auth.logout') }}" class="btn btn-danger">
+        <i class="fas fa-sign-out-alt"></i> Çıkış
+      </a>
     </div>
   </header>
 
@@ -402,18 +418,6 @@
     <div class="dashboard-header">
       <h1>Sistem Dashboard</h1>
       <p>Oracle PL/SQL veritabanı ile entegre müşteri, sipariş ve envanter yönetim sistemi</p>
-    </div>
-
-    <!-- Top Stats Section -->
-    <h2 class="section-title">Temel İstatistikler</h2>
-    <div class="stats-grid" id="top-stats">
-      <!-- Stats will be populated by JavaScript -->
-    </div>
-
-    <!-- Bottom Stats Section -->
-    <h2 class="section-title">Detaylı Metrikler</h2>
-    <div class="stats-grid" id="bottom-stats">
-      <!-- Stats will be populated by JavaScript -->
     </div>
 
     <!-- Navigation Cards -->
@@ -454,6 +458,18 @@
         <h3>İşlem Kayıtları</h3>
         <p>İşlem Kayıtlarını görüntüleyin ve yönetin</p>
       </a>
+    </div>
+
+    <!-- Top Stats Section -->
+    <h2 class="section-title">Temel İstatistikler</h2>
+    <div class="stats-grid" id="top-stats">
+      <!-- Stats will be populated by JavaScript -->
+    </div>
+
+    <!-- Bottom Stats Section -->
+    <h2 class="section-title">Detaylı Metrikler</h2>
+    <div class="stats-grid" id="bottom-stats">
+      <!-- Stats will be populated by JavaScript -->
     </div>
   </div>
 

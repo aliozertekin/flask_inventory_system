@@ -1,11 +1,13 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
-from db.connection import conn
+from db.connection import get_connection
 import cx_Oracle
 
 store_bp = Blueprint('store', __name__, url_prefix='/store')
 
+
 @store_bp.route('/')
 def list_stores():
+    conn = get_connection()
     cursor = conn.cursor()
     try:
         cursor.execute("""
@@ -42,6 +44,7 @@ def add_store():
             return render_template('store_add.html')
 
         try:
+            conn = get_connection()
             cursor = conn.cursor()
 
             cursor.setinputsizes(
@@ -91,6 +94,7 @@ def to_float_or_none(val):
 
 @store_bp.route('/delete/<int:store_id>', methods=['POST'])
 def delete_store(store_id):
+    conn = get_connection()
     cursor = conn.cursor()
     try:
         cursor.callproc("DELETE_STORE", [store_id])
@@ -111,6 +115,7 @@ def to_float_or_none(val):
     
 @store_bp.route('/logs')
 def stores_log():
+    conn = get_connection()
     cursor = conn.cursor()
     try:
         cursor.execute("""
@@ -129,6 +134,7 @@ def stores_log():
 
 @store_bp.route('/details/<int:store_id>', methods=['GET', 'POST'])
 def store_details(store_id):
+    conn = get_connection()
     cursor = conn.cursor()
     if request.method == 'POST':
         # Formdan gelen verileri al

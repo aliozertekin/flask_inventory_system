@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, redirect, url_for, jsonify, flash
-from db.connection import conn
+from db.connection import get_connection
 import cx_Oracle
 
 # Blueprint adını 'inventory_bp' olarak değiştiriyoruz
@@ -8,6 +8,7 @@ INVENTORY_VIEW = "inventory_view"
 
 @inventory_bp.route('/')
 def list_orders():
+    conn = get_connection()
     cursor = conn.cursor()
     search_term = request.args.get('search', '').strip()
     page = request.args.get('page', 1, type=int)
@@ -74,6 +75,7 @@ def add_inventory():
             product_id = int(request.form['product_id'])
             amount = int(request.form['quantity'])
 
+            conn = get_connection()
             cursor = conn.cursor()
             old_amount = cursor.var(cx_Oracle.NUMBER)
             new_amount = cursor.var(cx_Oracle.NUMBER)
@@ -92,6 +94,7 @@ def add_inventory():
 
 @inventory_bp.route('/logs')
 def inventory_log():
+    conn = get_connection()
     cursor = conn.cursor()
     try:
         cursor.execute("""
@@ -111,6 +114,7 @@ def inventory_log():
 
 @inventory_bp.route('/get_price/<int:product_id>')
 def get_price(product_id):
+    conn = get_connection()
     cursor = conn.cursor()
     try:
         cursor.execute("SELECT unit_price FROM inventory_view WHERE product_id = :pid FETCH FIRST 1 ROWS ONLY", {'pid': product_id})
@@ -126,6 +130,7 @@ def get_price(product_id):
 
 @inventory_bp.route('/get_product_info/<int:store_id>/<int:product_id>')
 def get_product_info(store_id, product_id):
+    conn = get_connection()
     cursor = conn.cursor()
     try:
         # Get total stock and min price

@@ -207,8 +207,11 @@
         </ul>
             </nav>
             <div class="user-info">
-                <span>Kullanıcı</span>
+                <i class="fa fa-user-circle"></i> <span> Admin</span>
             </div>
+            <a href="{{ url_for('auth.logout') }}" class="btn btn-danger">
+                <i class="fas fa-sign-out-alt"></i> Çıkış
+            </a>
         </div>
     </header>
 
@@ -268,7 +271,7 @@
                             <div><strong>Ürün ID:</strong> {{ item.product_id }}</div>
                             <div><strong>Adet:</strong> {{ item.quantity }}</div>
                         </div>
-                        <div class="product-price">{{ item.unit_price }} ₺</div>
+                        <div class="product-price">{{ item.unit_price }} $</div>
                     </li>
                     {% endfor %}
                 </ul>
@@ -282,7 +285,7 @@
                         {% for item in order['items'] %}
                             {% set _ = total.append(total.pop() + (item.quantity * item.unit_price)) if total else total.append(item.quantity * item.unit_price) %}
                         {% endfor %}
-                        {{ total[0]|round(2) }} ₺
+                        {{ total[0]|round(2) }} $
                     </span>
                 </div>
             </div>

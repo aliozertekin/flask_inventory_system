@@ -1,12 +1,14 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
-from db.connection import conn
+from db.connection import get_connection
+
 
 customer_bp = Blueprint('customer_bp', __name__, url_prefix='/customers')
-
 PER_PAGE = 20
+
 
 @customer_bp.route('/')
 def list_customers():
+    conn = get_connection()
     cursor = conn.cursor()
     search_term = request.args.get('search', '').strip()
     page = request.args.get('page', 1, type=int)
@@ -57,6 +59,7 @@ def add_customer():
     if request.method == 'POST':
         name = request.form['name']
         email = request.form['email']
+        conn = get_connection()
         cursor = conn.cursor()
         try:
             cursor.callproc("add_customer", [email, name])
@@ -71,6 +74,7 @@ def add_customer():
 
 @customer_bp.route('/edit/<int:customer_id>', methods=['GET', 'POST'])
 def edit_customer(customer_id):
+    conn = get_connection()
     cursor = conn.cursor()
     if request.method == 'POST':
         name = request.form.get('name')
@@ -101,6 +105,7 @@ def edit_customer(customer_id):
 
 @customer_bp.route('/delete/<int:customer_id>', methods=['POST'])
 def delete_customer(customer_id):
+    conn = get_connection()
     cursor = conn.cursor()
     try:
         cursor.execute("DELETE FROM customers WHERE customer_id = :cid", {'cid': customer_id})
@@ -114,6 +119,7 @@ def delete_customer(customer_id):
 
 @customer_bp.route('/logs')
 def customers_log():
+    conn = get_connection()
     cursor = conn.cursor()
     try:
         cursor.execute("""

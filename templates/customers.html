@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>Müşteri Listesi</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />  
 </head>
 <body>
     <header>
@@ -27,8 +27,11 @@
             </nav>
             <div class="user-info">
                 <i class="fas fa-user-circle"></i>
-                <span>Yönetici</span>
+                <span> Admin</span>
             </div>
+            <a href="{{ url_for('auth.logout') }}" class="btn btn-danger">
+                <i class="fas fa-sign-out-alt"></i> Çıkış
+            </a>
         </div>
     </header>
 

@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, jsonify, send_file, request
-from db.connection import conn  # cx_Oracle bağlantısı
+from db.connection import get_connection
 from reportlab.pdfgen import canvas
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
@@ -17,6 +17,7 @@ PER_PAGE = 20
 # Siparişleri listele
 @order_bp.route('/')
 def list_orders():
+    conn = get_connection()
     cursor = conn.cursor()
     search_term = request.args.get('search', '').strip()
     page = request.args.get('page', 1, type=int)
@@ -84,6 +85,7 @@ def add_order():
         if not customer_id or not store_id or not items:
             return jsonify({'status': 'error', 'message': 'Eksik parametre'}), 400
 
+        conn = get_connection()
         cursor = conn.cursor()
 
         # Her ürün için stok kontrolü
@@ -128,6 +130,7 @@ def add_order():
 
 @order_bp.route('/<int:order_id>', methods=['GET'])
 def get_order_details(order_id):
+    conn = get_connection()
     cursor = conn.cursor()
 
     # Sipariş bilgilerini, sipariş kalemlerini ve paket durumunu çek
@@ -176,6 +179,7 @@ def get_order_details(order_id):
 @order_bp.route('/<int:order_id>/update_status', methods=['GET', 'POST'])
 def update_order_status(order_id):
     if request.method == 'GET':
+        conn = get_connection()
         cursor = conn.cursor()
         cursor.execute("""
             SELECT order_id, order_tms, order_status, customer_id, store_id
@@ -215,6 +219,7 @@ def update_order_status(order_id):
             return jsonify({'status': 'error', 'message': 'Geçersiz durum'}), 400
 
         try:
+            conn = get_connection()
             cursor = conn.cursor()
             cursor.execute("""
                 UPDATE orders SET order_status = :new_status WHERE order_id = :order_id
@@ -230,6 +235,7 @@ pdfmetrics.registerFont(TTFont('DejaVuSans', font_path))
 
 @order_bp.route('/<int:order_id>/invoice')
 def generate_invoice(order_id):
+    conn = get_connection()
     cursor = conn.cursor()
     try:
         # DejaVuSans.ttf fontunu kaydet ve kullanıma hazırla
@@ -331,7 +337,7 @@ def generate_invoice(order_id):
             line_total = float(r[15])
             total += line_total
 
-            pdf.drawString(60, y, f"{pname} - Adet: {quantity}, Birim Fiyat: {unit_price:.2f} ₺, Toplam: {line_total:.2f} ₺")
+            pdf.drawString(60, y, f"{pname} - Adet: {quantity}, Birim Fiyat: {unit_price:.2f} $, Toplam: {line_total:.2f} $")
             y -= 20
 
             if y < 100:
@@ -342,7 +348,7 @@ def generate_invoice(order_id):
         # Genel Toplam
         y -= 10
         pdf.setFont("DejaVuSans", 12)
-        pdf.drawString(50, y, f"Genel Toplam: {total:.2f} ₺")
+        pdf.drawString(50, y, f"Genel Toplam: {total:.2f} $")
 
         pdf.showPage()
         pdf.save()
@@ -360,6 +366,7 @@ def generate_invoice(order_id):
 
 @order_bp.route('/logs')
 def orders_log():
+    conn = get_connection()
     cursor = conn.cursor()
     try:
         cursor.execute("""

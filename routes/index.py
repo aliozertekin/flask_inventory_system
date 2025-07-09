@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, jsonify
-from db.connection import conn
+from db.connection import get_connection
 import cx_Oracle
 
 index_bp = Blueprint('index', __name__)
@@ -11,6 +11,8 @@ def index():
 
 @index_bp.route('/api/dashboard')
 def api_dashboard():
+    conn = get_connection()
+    conn = get_connection()
     cursor = conn.cursor()
     
     try:

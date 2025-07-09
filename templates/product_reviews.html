@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ürün İncelemeleri</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <style>
+        /* Özel stil eklemeleri */
+        .rating {
+            display: inline-flex;
+            align-items: center;
+        }
+        .rating-stars {
+            color: #FFD700;
+            margin-right: 5px;
+        }
+        .review-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+        .review-content {
+            line-height: 1.6;
+        }
+        .product-info {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .product-info img {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-right: 15px;
+        }
+        .product-details h2 {
+            margin: 0;
+            color: #2c3e50;
+        }
+        .product-details .avg-rating {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #3498db;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .empty-state i {
+            font-size: 3rem;
+            color: #bdc3c7;
+            margin-bottom: 15px;
+        }
+        .empty-state h3 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <div class="logo"><i class="fa fa-boxes-stacked"></i>Envanter Yönetimi</div>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="/"><i class="fa fa-home"></i> Ana Sayfa</a></li>
+                    <li><a href="/inventory/add"><i class="fa fa-boxes-stacked"></i>Envantere Ekle</a></li>
+                    <li><a href="/orders"><i class="fa fa-receipt"></i> Siparişler</a></li>
+                    <li><a href="/customers"><i class="fa fa-user"></i> Müşteriler</a></li>
+                    <li><a href="/log"><i class="fa fa-clock-rotate-left"></i> Kayıtlar</a></li>
+                    <li><a href="/product"><i class="fa fa-cube"></i> Ürünler</a></li>
+                    <li><a href="/store"><i class="fa fa-store"></i> Mağazalar</a></li>
+                    <li><a href="/shipments"><i class="fa fa-truck"></i> Kargolar</a></li>
+                </ul>
+            </nav>
+            <div class="user-info">
+                <i class="fa fa-user-circle"></i> <span> Admin</span>
+            </div>
+            <a href="{{ url_for('auth.logout') }}" class="btn btn-danger">
+                <i class="fas fa-sign-out-alt"></i> Çıkış
+            </a>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="card">
+            <div class="page-header">
+                <h1 class="page-title"><i class="fas fa-star"></i> Ürün İncelemeleri</h1>
+                <a href="{{ url_for('product.add_review') }}" class="btn btn-success" style="margin-left: 20px;">
+                    <i class="fas fa-plus"></i> İnceleme Ekle
+                </a>
+            </div>
+
+            {% if reviews %}
+                <!-- Ürün bilgisi ve ortalama puan -->
+                <div class="product-info">
+                    <img src="{{ reviews[0].product_image or url_for('static', filename='images/default-product.png') }}" 
+                         alt="{{ reviews[0].product_name }}">
+                    <div class="product-details">
+                        <h2>{{ reviews[0].product_name }}</h2>
+                        <div class="avg-rating">
+                            <span class="rating-stars">
+                                {% for i in range(1, 6) %}
+                                    {% if i <= reviews[0].avg_rating|round %}
+                                        <i class="fas fa-star"></i>
+                                    {% elif i-0.5 <= reviews[0].avg_rating %}
+                                        <i class="fas fa-star-half-alt"></i>
+                                    {% else %}
+                                        <i class="far fa-star"></i>
+                                    {% endif %}
+                                {% endfor %}
+                            </span>
+                            {{ "%.1f"|format(reviews[0].avg_rating) }} ({{ reviews|length }} inceleme)
+                        </div>
+                    </div>
+                </div>
+                <!-- İnceleme filtreleme ve arama -->
+                <form method="GET" action="{{ url_for('product.reviews') }}" class="search-form">
+                    <input type="text" name="search" placeholder="İncelemelerde ara..." value="{{ search_term or '' }}">
+                    <select name="rating_filter">
+                        <option value="">Tüm Puanlar</option>
+                        <option value="5" {% if rating_filter == '5' %}selected{% endif %}>5 Yıldız</option>
+                        <option value="4" {% if rating_filter == '4' %}selected{% endif %}>4 Yıldız</option>
+                        <option value="3" {% if rating_filter == '3' %}selected{% endif %}>3 Yıldız</option>
+                        <option value="2" {% if rating_filter == '2' %}selected{% endif %}>2 Yıldız</option>
+                        <option value="1" {% if rating_filter == '1' %}selected{% endif %}>1 Yıldız</option>
+                    </select>
+                    <button type="submit" class="btn btn-primary">Filtrele</button>
+                </form>
+
+                <!-- İncelemeler listesi -->
+                <div class="reviews-list">
+                    {% for review in reviews %}
+                    <div class="review-card">
+                        <div class="review-header">
+                            <div class="rating">
+                                <span class="rating-stars">
+                                    {% for i in range(1, 6) %}
+                                        {% if i <= review.rating %}
+                                            <i class="fas fa-star"></i>
+                                        {% elif i - 0.5 <= review.rating %}
+                                            <i class="fas fa-star-half-alt"></i>
+                                        {% else %}
+                                            <i class="far fa-star"></i>
+                                        {% endif %}
+                                    {% endfor %}
+                                </span>
+                                <span>{{ review.rating }} Yıldız</span>
+                            </div>
+                            <div class="review-date">
+                                {% if review.review_date %}
+                                    {{ review.review_date.strftime('%d.%m.%Y %H:%M') }}
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="review-content">
+                            <p>{{ review.review }}</p>
+                        </div>
+                        <div class="reviewer-info">
+                            <strong>{{ review.customer_name or 'Anonim Kullanıcı' }}</strong>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Sayfalama -->
+                <div class="pagination">
+                    {% if page > 1 %}
+                    <a href="{{ url_for('product.reviews', page=page-1, search=search_term, rating_filter=rating_filter) }}" 
+                       class="btn btn-light">Önceki</a>
+                    {% endif %}
+                    
+                    <span class="pagination-info">Sayfa {{ page }} (Toplam {{ (total/per_page)|round(0, 'ceil')|int }} sayfa)</span>
+                    
+                    {% if page * per_page < total %}
+                    <a href="{{ url_for('product.reviews', page=page+1, search=search_term, rating_filter=rating_filter) }}" 
+                       class="btn btn-light">Sonraki</a>
+                    {% endif %}
+                </div>
+            {% else %}
+                <div class="empty-state">
+                    <i class="far fa-frown"></i>
+                    <h3>İnceleme Bulunamadı</h3>
+                    <p>Bu ürüne henüz bir inceleme yapılmamış.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <p>&copy; 2025 Envanter Yönetim Sistemi</p>
+            <div class="footer-links">
+                <a href="/privacy">Gizlilik</a>
+                <a href="/terms">Şartlar</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="{{ url_for('static', filename='scripts/search.js') }}"></script>
+</body>
+</html>

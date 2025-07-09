@@ -1,13 +1,14 @@
 # routes/shipments.py
 from flask import Blueprint, render_template, request, redirect, url_for, flash
-from db.connection import conn
+from db.connection import get_connection
+
 
 shipments_bp = Blueprint('shipments', __name__, url_prefix='/shipments')
 PER_PAGE = 20
-    
 
 @shipments_bp.route('/')
 def list_shipments():
+    conn = get_connection()
     cursor = conn.cursor()
     search = request.args.get('q', '').strip()
     status_filter = request.args.get('status', '').strip()
@@ -115,6 +116,7 @@ def add_shipment():
             flash("Tüm alanlar zorunludur.", "error")
             return render_template('shipments_add.html')
 
+        conn = get_connection()
         cursor = conn.cursor()
         try:
             cursor.callproc("ADD_SHIPMENT", [
@@ -137,6 +139,7 @@ def add_shipment():
 
 @shipments_bp.route('/<int:shipment_id>')
 def shipment_details(shipment_id):
+    conn = get_connection()
     cursor = conn.cursor()
     try:
         cursor.execute("""
@@ -170,6 +173,7 @@ def update_shipment_status(shipment_id):
         flash("Durum bilgisi eksik.", "error")
         return redirect(url_for('shipments.shipment_details', shipment_id=shipment_id))
 
+    conn = get_connection()
     cursor = conn.cursor()
     try:
         cursor.execute("""
@@ -189,6 +193,7 @@ def update_shipment_status(shipment_id):
 
 @shipments_bp.route('/logs')
 def shipments_log():
+    conn = get_connection()
     cursor = conn.cursor()
     try:
         cursor.execute("""

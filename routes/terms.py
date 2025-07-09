@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template
-from db.connection import conn
+from db.connection import get_connection
 
 terms_bp = Blueprint('terms', __name__, url_prefix='/terms')
 

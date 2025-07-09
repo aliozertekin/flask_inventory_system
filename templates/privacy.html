@@ -121,7 +121,7 @@
 <body>
   <header>
     <div class="header-container">
-      <div class="logo">Gizlilik Politikası</div>
+      <div class="logo"><i class="fas fa-shield-alt"></i>Gizlilik Politikası</div>
       <nav>
         <ul class="nav-links">
  <li><a href="/"><i class="fa fa-home"></i> Ana Sayfa</a></li>
@@ -136,8 +136,11 @@
         </ul>
       </nav>
       <div class="user-info">
-        <span>Kullanıcı</span>
+        <i class="fa fa-user-circle"></i> <span> Admin</span>
       </div>
+      <a href="{{ url_for('auth.logout') }}" class="btn btn-danger">
+        <i class="fas fa-sign-out-alt"></i> Çıkış
+      </a>
     </div>
   </header>
 

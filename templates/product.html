@@ -167,8 +167,11 @@
         </ul>
       </nav>
       <div class="user-info">
-        <span>Kullanıcı</span>
+        <i class="fa fa-user-circle"></i> <span> Admin</span>
       </div>
+      <a href="{{ url_for('auth.logout') }}" class="btn btn-danger">
+        <i class="fas fa-sign-out-alt"></i> Çıkış
+      </a>
     </div>
   </header>
 
@@ -186,6 +189,9 @@
                  value="{{ request.args.get('search', '') }}">
           <button type="submit" class="btn btn-primary">
             <i class="fas fa-search"></i> Ara
+          </button>
+          <button type="submit" class="btn btn-secondary" style="text-decoration: none; color: #3c4146;">
+            <a href="/product/reviews"> İncelemeler</a>
           </button>
         </form>
       </div>

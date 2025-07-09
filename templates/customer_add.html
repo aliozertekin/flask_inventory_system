@@ -254,8 +254,11 @@
             </nav>
             <div class="user-info">
                 <i class="fas fa-user-circle"></i>
-                <span>Yönetici</span>
+                <span> Admin</span>
             </div>
+            <a href="{{ url_for('auth.logout') }}" class="btn btn-danger">
+                <i class="fas fa-sign-out-alt"></i> Çıkış
+            </a>
         </div>
     </header>
 

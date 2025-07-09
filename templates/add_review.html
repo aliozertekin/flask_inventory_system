@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>İnceleme Ekle | Envanter Yönetimi</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <style>
+        /* Özel stil eklemeleri */
+        .review-form-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .rating-selector {
+            display: flex;
+            gap: 10px;
+            margin: 15px 0;
+        }
+        .rating-option {
+            cursor: pointer;
+            font-size: 2rem;
+            color: #ddd;
+            transition: all 0.2s;
+        }
+        .rating-option:hover {
+            transform: scale(1.1);
+        }
+        .rating-option.selected {
+            color: #FFD700;
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+        .form-control:focus {
+            border-color: #3498db;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+        }
+        textarea.form-control {
+            min-height: 120px;
+            resize: vertical;
+        }
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: #3498db;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .back-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <div class="logo"><i class="fa fa-boxes-stacked"></i>Envanter Yönetimi</div>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="/"><i class="fa fa-home"></i> Ana Sayfa</a></li>
+                    <li><a href="/inventory/add"><i class="fa fa-boxes-stacked"></i>Envantere Ekle</a></li>
+                    <li><a href="/orders"><i class="fa fa-receipt"></i> Siparişler</a></li>
+                    <li><a href="/customers"><i class="fa fa-user"></i> Müşteriler</a></li>
+                    <li><a href="/log"><i class="fa fa-clock-rotate-left"></i> Kayıtlar</a></li>
+                    <li><a href="/product"><i class="fa fa-cube"></i> Ürünler</a></li>
+                    <li><a href="/store"><i class="fa fa-store"></i> Mağazalar</a></li>
+                    <li><a href="/shipments"><i class="fa fa-truck"></i> Kargolar</a></li>
+                </ul>
+            </nav>
+            <div class="user-info">
+                <i class="fa fa-user-circle"></i> <span> Admin</span>
+            </div>
+            <a href="{{ url_for('auth.logout') }}" class="btn btn-danger">
+                <i class="fas fa-sign-out-alt"></i> Çıkış
+            </a>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="card review-form-container">
+            <div class="page-header">
+                <h1 class="page-title"><i class="fas fa-star"></i> Yeni İnceleme Ekle</h1>
+            </div>
+
+            <form method="POST" action="{{ url_for('product.add_review') }}">
+                <div class="form-group">
+                    <label for="product_id"><i class="fas fa-cube"></i> Ürün ID</label>
+                    <input type="number" id="product_id" name="product_id" class="form-control" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="customer_id"><i class="fas fa-user"></i> Müşteri ID</label>
+                    <input type="number" id="customer_id" name="customer_id" class="form-control" required>
+                </div>
+
+                <div class="form-group">
+                    <label><i class="fas fa-star"></i> Puan</label>
+                    <div class="rating-selector" id="ratingSelector">
+                        {% for i in range(1,6) %}
+                        <div class="rating-option" data-value="{{ i }}" onclick="selectRating(this)">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <input type="hidden" id="rating" name="rating" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="review_text"><i class="fas fa-comment"></i> Yorum</label>
+                    <textarea id="review_text" name="review_text" class="form-control" rows="4" required></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-plus-circle"></i> İncelemeyi Ekle
+                </button>
+            </form>
+
+            <a href="{{ url_for('product.reviews') }}" class="back-link">
+                <i class="fas fa-arrow-left"></i> İncelemelere Geri Dön
+            </a>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <p>&copy; 2025 Envanter Yönetim Sistemi</p>
+            <div class="footer-links">
+                <a href="/privacy">Gizlilik</a>
+                <a href="/terms">Şartlar</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Puan seçimi için JavaScript
+        function selectRating(element) {
+            const rating = element.getAttribute('data-value');
+            document.getElementById('rating').value = rating;
+            
+            // Tüm yıldızları sıfırla
+            document.querySelectorAll('.rating-option').forEach(star => {
+                star.classList.remove('selected');
+            });
+            
+            // Seçilen ve önceki yıldızları işaretle
+            document.querySelectorAll('.rating-option').forEach(star => {
+                if (star.getAttribute('data-value') <= rating) {
+                    star.classList.add('selected');
+                }
+            });
+        }
+    </script>
+</body>
+</html>

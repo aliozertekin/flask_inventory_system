@@ -1,5 +1,5 @@
 ﻿prompt PL/SQL Developer Export User Objects for user SYSTEM@FREE
-prompt Created by alioz on 8 Temmuz 2025 Salı
+prompt Created by alioz on 9 Temmuz 2025 Çarşamba
 set define off
 spool all_queries2.log
 
@@ -87,30 +87,6 @@ alter table SYSTEM.AUDIT_LOG
     minextents 1
     maxextents unlimited
   );
-
-prompt
-prompt Creating table COUNTRIES
-prompt ========================
-prompt
-create table SYSTEM.COUNTRIES
-(
-  country_id   CHAR(2),
-  country_name VARCHAR2(60),
-  region_id    NUMBER,
-  constraint COUNTRY_C_ID_PK primary key (COUNTRY_ID)
-)
-organization index;
-comment on table SYSTEM.COUNTRIES
-  is 'country dimension table (snowflake)';
-comment on column SYSTEM.COUNTRIES.country_id
-  is 'primary key';
-comment on column SYSTEM.COUNTRIES.country_name
-  is 'country name';
-comment on column SYSTEM.COUNTRIES.region_id
-  is 'Region ID for the country. Foreign key to region_id column in the departments table.';
-alter table SYSTEM.COUNTRIES
-  add constraint COUNTRY_ID_NN
-  check ("COUNTRY_ID" IS NOT NULL);
 
 prompt
 prompt Creating table CUSTOMER_LOG
@@ -214,6 +190,208 @@ alter table SYSTEM.CUSTOMERS
   novalidate;
 alter table SYSTEM.CUSTOMERS
   add constraint CUSTOMERS_EMAIL_U unique (EMAIL_ADDRESS)
+  using index
+  tablespace SYSTEM
+  pctfree 10
+  initrans 2
+  maxtrans 255
+  storage
+  (
+    initial 64K
+    next 1M
+    minextents 1
+    maxextents unlimited
+  );
+
+prompt
+prompt Creating table DR$SUP_TEXT_IDX$B
+prompt ================================
+prompt
+create table SYSTEM.DR$SUP_TEXT_IDX$B
+(
+  min_docid NUMBER,
+  max_docid NUMBER,
+  status    NUMBER
+)
+tablespace SYSTEM
+  pctfree 25
+  pctused 40
+  initrans 128
+  maxtrans 255
+  storage
+  (
+    initial 64K
+    next 1M
+    minextents 1
+    maxextents unlimited
+  );
+
+prompt
+prompt Creating table DR$SUP_TEXT_IDX$C
+prompt ================================
+prompt
+create table SYSTEM.DR$SUP_TEXT_IDX$C
+(
+  dml_scn NUMBER,
+  dml_id  NUMBER,
+  dml_op  NUMBER,
+  dml_rid ROWID
+)
+tablespace SYSTEM
+  pctfree 10
+  pctused 40
+  initrans 1
+  maxtrans 255
+  storage
+  (
+    initial 64K
+    next 1M
+    minextents 1
+    maxextents unlimited
+  );
+
+prompt
+prompt Creating table DR$SUP_TEXT_IDX$I
+prompt ================================
+prompt
+create table SYSTEM.DR$SUP_TEXT_IDX$I
+(
+  token_text  VARCHAR2(255) not null,
+  token_type  NUMBER(10) not null,
+  token_first NUMBER(10) not null,
+  token_last  NUMBER(10) not null,
+  token_count NUMBER(10) not null,
+  token_info  BLOB
+)
+tablespace SYSTEM
+  pctfree 10
+  pctused 40
+  initrans 1
+  maxtrans 255
+  storage
+  (
+    initial 64K
+    next 1M
+    minextents 1
+    maxextents unlimited
+  );
+create index SYSTEM.DR$SUP_TEXT_IDX$X on SYSTEM.DR$SUP_TEXT_IDX$I (TOKEN_TEXT, TOKEN_TYPE, TOKEN_FIRST, TOKEN_LAST, TOKEN_COUNT)
+  tablespace SYSTEM
+  pctfree 10
+  initrans 2
+  maxtrans 255
+  storage
+  (
+    initial 64K
+    next 1M
+    minextents 1
+    maxextents unlimited
+  )
+  compress 2;
+
+prompt
+prompt Creating table DR$SUP_TEXT_IDX$K
+prompt ================================
+prompt
+create table SYSTEM.DR$SUP_TEXT_IDX$K
+(
+  docid   NUMBER,
+  textkey ROWID
+)
+tablespace SYSTEM
+  pctfree 10
+  pctused 40
+  initrans 1
+  maxtrans 255
+  storage
+  (
+    initial 64K
+    next 1M
+    minextents 1
+    maxextents unlimited
+  );
+create unique index SYSTEM.DR$SUP_TEXT_IDX$KD on SYSTEM.DR$SUP_TEXT_IDX$K (DOCID, TEXTKEY)
+  tablespace SYSTEM
+  pctfree 10
+  initrans 2
+  maxtrans 255
+  storage
+  (
+    initial 64K
+    next 1M
+    minextents 1
+    maxextents unlimited
+  );
+create unique index SYSTEM.DR$SUP_TEXT_IDX$KR on SYSTEM.DR$SUP_TEXT_IDX$K (TEXTKEY, DOCID)
+  tablespace SYSTEM
+  pctfree 10
+  initrans 2
+  maxtrans 255
+  storage
+  (
+    initial 64K
+    next 1M
+    minextents 1
+    maxextents unlimited
+  );
+
+prompt
+prompt Creating table DR$SUP_TEXT_IDX$N
+prompt ================================
+prompt
+create table SYSTEM.DR$SUP_TEXT_IDX$N
+(
+  nlt_docid NUMBER(38) not null,
+  nlt_mark  CHAR(1) not null,
+  primary key (NLT_DOCID)
+)
+organization index;
+
+prompt
+prompt Creating table DR$SUP_TEXT_IDX$Q
+prompt ================================
+prompt
+create table SYSTEM.DR$SUP_TEXT_IDX$Q
+(
+  dml_id  NUMBER,
+  dml_op  NUMBER,
+  dml_rid ROWID
+)
+tablespace SYSTEM
+  pctfree 10
+  pctused 40
+  initrans 1
+  maxtrans 255
+  storage
+  (
+    initial 64K
+    next 1M
+    minextents 1
+    maxextents unlimited
+  );
+
+prompt
+prompt Creating table DR$SUP_TEXT_IDX$U
+prompt ================================
+prompt
+create table SYSTEM.DR$SUP_TEXT_IDX$U
+(
+  rid ROWID not null
+)
+tablespace SYSTEM
+  pctfree 10
+  pctused 40
+  initrans 1
+  maxtrans 255
+  storage
+  (
+    initial 64K
+    next 1M
+    minextents 1
+    maxextents unlimited
+  );
+alter table SYSTEM.DR$SUP_TEXT_IDX$U
+  add primary key (RID)
   using index
   tablespace SYSTEM
   pctfree 10
@@ -1103,6 +1281,18 @@ comment on column SYSTEM.PRODUCT_ORDERS.TOTAL_SALES is 'The total value of order
 comment on column SYSTEM.PRODUCT_ORDERS.ORDER_COUNT is 'The total number of orders placed';
 
 prompt
+prompt Creating view PRODUCT_REVIEW_META
+prompt =================================
+prompt
+CREATE OR REPLACE FORCE VIEW SYSTEM.PRODUCT_REVIEW_META AS
+SELECT
+    product_id,
+    product_name,
+    product_details
+FROM
+    products;
+
+prompt
 prompt Creating view PRODUCT_REVIEWS
 prompt =============================
 prompt
@@ -1463,7 +1653,8 @@ CREATE OR REPLACE NONEDITIONABLE PROCEDURE SYSTEM.ADD_PRODUCT(
   p_image_mime_type  IN VARCHAR2 DEFAULT NULL,
   p_image_filename   IN VARCHAR2 DEFAULT NULL,
   p_image_charset    IN VARCHAR2 DEFAULT NULL
-) IS
+)
+IS
 BEGIN
   INSERT INTO products (
     product_name,
@@ -1487,11 +1678,79 @@ BEGIN
   );
 
   COMMIT;
-EXCEPTION
-  WHEN OTHERS THEN
-    ROLLBACK;
-    RAISE;
-END ADD_PRODUCT;
+END;
+/
+
+prompt
+prompt Creating procedure ADD_REVIEW
+prompt =============================
+prompt
+CREATE OR REPLACE NONEDITIONABLE PROCEDURE SYSTEM.add_review (
+    p_product_id IN NUMBER,
+    p_customer_id IN NUMBER,
+    p_rating IN NUMBER,
+    p_review_text IN VARCHAR2
+) AS
+    l_blob           BLOB;
+    l_clob           CLOB;
+    l_details_json   JSON_OBJECT_T;
+    l_reviews        JSON_ARRAY_T;
+    l_new_review     JSON_OBJECT_T;
+    l_dest_offset    INTEGER := 1;
+    l_src_offset     INTEGER := 1;
+    l_lang_ctx       INTEGER := DBMS_LOB.DEFAULT_LANG_CTX;
+    l_warning        INTEGER;
+BEGIN
+    -- 1. Ürünün BLOB içeriğini oku
+    SELECT product_details INTO l_blob
+    FROM products
+    WHERE product_id = p_product_id
+    FOR UPDATE;
+
+    -- 2. BLOB → geçici CLOB’a dönüştür
+    DBMS_LOB.CREATETEMPORARY(l_clob, TRUE);
+    DBMS_LOB.CONVERTTOCLOB(
+        dest_lob     => l_clob,
+        src_blob     => l_blob,
+        amount       => DBMS_LOB.LOBMAXSIZE,
+        dest_offset  => l_dest_offset,
+        src_offset   => l_src_offset,
+        blob_csid    => DBMS_LOB.DEFAULT_CSID,
+        lang_context => l_lang_ctx,
+        warning      => l_warning
+    );
+
+    -- 3. JSON objesine çevir
+    l_details_json := JSON_OBJECT_T.parse(l_clob);
+
+    -- 4. reviews array'ini al veya oluştur
+    IF l_details_json.has('reviews') THEN
+        l_reviews := l_details_json.get_array('reviews');
+    ELSE
+        l_reviews := JSON_ARRAY_T();
+    END IF;
+
+    -- 5. Yeni review objesi
+    l_new_review := JSON_OBJECT_T();
+    l_new_review.put('rating', p_rating);
+    l_new_review.put('review', p_review_text);
+    l_new_review.put('customer_id', p_customer_id);
+    l_new_review.put('review_date', TO_CHAR(SYSDATE, 'YYYY-MM-DD HH24:MI:SS'));
+
+    -- 6. Listeye ekle
+    l_reviews.append(l_new_review);
+
+    -- 7. JSON objesini güncelle
+    l_details_json.put('reviews', l_reviews);
+    l_clob := l_details_json.to_string;
+
+    -- 8. Güncellenmiş CLOB’u tekrar BLOB olarak güncelle
+    UPDATE products
+    SET product_details = UTL_RAW.CAST_TO_RAW(l_clob)
+    WHERE product_id = p_product_id;
+
+    COMMIT;
+END;
 /
 
 prompt
@@ -1757,15 +2016,47 @@ CREATE OR REPLACE NONEDITIONABLE PACKAGE BODY SYSTEM.dashboard_pkg AS
         v_cursor SYS_REFCURSOR;
     BEGIN
         OPEN v_cursor FOR
-        SELECT 
-            (SELECT customer_id FROM vw_user_count) AS user_count,
-            (SELECT total_products FROM vw_inventory_stats) AS product_count,
-            (SELECT total_value FROM vw_inventory_stats) AS inventory_value,
-            (SELECT total_orders FROM vw_order_stats) AS order_count,
-            (SELECT total_cost FROM vw_order_stats) AS order_value,
-            (SELECT COUNT(*) FROM inventory i WHERE i.product_inventory < 10) AS low_stock_items
-            -- Min stock seviyesi için sabit değer kullanıldı
-        FROM dual;
+        WITH stats AS (
+            SELECT 
+                (SELECT COUNT(*) FROM stores) AS store_count,
+                (SELECT COUNT(*) FROM products) AS product_count,
+                (SELECT COUNT(*) FROM customers) AS customer_count,
+                (SELECT COUNT(*) FROM orders) AS order_count,
+                (SELECT COUNT(*) FROM shipments) AS shipment_count,
+                (SELECT SUM(p.unit_price * i.product_inventory) 
+                 FROM products p 
+                 JOIN inventory i ON p.product_id = i.product_id) AS inventory_value,
+                (SELECT SUM(oi.quantity * oi.unit_price) 
+                 FROM order_items oi) AS total_sales,
+                (SELECT COUNT(*) 
+                 FROM inventory i 
+                 WHERE i.product_inventory < 10) AS low_stock_items,
+                -- Complex metrics
+                (SELECT AVG(oi.quantity * oi.unit_price) 
+                 FROM order_items oi) AS avg_order_value,
+                (SELECT SUM(oi.quantity * oi.unit_price) / COUNT(DISTINCT o.customer_id)
+                 FROM order_items oi
+                 JOIN orders o ON oi.order_id = o.order_id) AS avg_customer_spending,
+                (SELECT MAX(oi.quantity * oi.unit_price) 
+                 FROM order_items oi) AS max_order_value,
+                (SELECT SUM(product_inventory) 
+                 FROM inventory i 
+                 )AS total_stock,
+                (SELECT COUNT(DISTINCT o.customer_id) 
+                 FROM orders o 
+                 WHERE o.order_tms >= ADD_MONTHS(SYSDATE, -1)) AS active_customers,
+                (SELECT COUNT(*) 
+                 FROM shipments 
+                 WHERE shipment_status = 'DELIVERED') AS delivered_shipments,
+                (SELECT COUNT(*) 
+                 FROM shipments 
+                 WHERE shipment_status = 'IN-TRANSIT') AS in_transit_shipments,
+                (SELECT COUNT(*) 
+                 FROM shipments 
+                 WHERE shipment_status = 'SHIPPED') AS preparing_shipments
+            FROM dual
+        )
+        SELECT * FROM stats;
 
         RETURN v_cursor;
     END;
@@ -1779,9 +2070,10 @@ CREATE OR REPLACE NONEDITIONABLE PACKAGE BODY SYSTEM.dashboard_pkg AS
                 TRUNC(o.order_tms, 'MM') AS month,
                 COUNT(DISTINCT o.order_id) AS order_count,
                 SUM(oi.quantity * oi.unit_price) AS order_value,
-                0 AS new_customers -- Müşteri kayıt tarihi olmadığı için 0 olarak ayarlandı
+                COUNT(DISTINCT c.customer_id) AS new_customers
             FROM orders o
             JOIN order_items oi ON o.order_id = oi.order_id
+            JOIN customers c ON o.customer_id = c.customer_id
             WHERE o.order_tms >= ADD_MONTHS(TRUNC(SYSDATE, 'MM'), -12)
               AND o.order_status NOT IN ('CANCELLED', 'REFUNDED')
             GROUP BY TRUNC(o.order_tms, 'MM')
@@ -1795,7 +2087,8 @@ CREATE OR REPLACE NONEDITIONABLE PACKAGE BODY SYSTEM.dashboard_pkg AS
                   NULLIF(LAG(order_count) OVER (ORDER BY month), 0) * 100, 2) AS order_change_pct,
             ROUND((order_value - LAG(order_value) OVER (ORDER BY month)) / 
                   NULLIF(LAG(order_value) OVER (ORDER BY month), 0) * 100, 2) AS value_change_pct,
-            0 AS customer_change_pct -- Müşteri kayıt tarihi olmadığı için 0
+            ROUND((new_customers - LAG(new_customers) OVER (ORDER BY month)) / 
+                  NULLIF(LAG(new_customers) OVER (ORDER BY month), 0) * 100, 2) AS customer_change_pct
         FROM monthly_data
         ORDER BY month DESC;
 
@@ -1952,12 +2245,32 @@ FOR EACH ROW
 DECLARE
   v_old_data CLOB;
   v_new_data CLOB;
+  v_old_details VARCHAR2(4000);
+  v_new_details VARCHAR2(4000);
 BEGIN
+  -- Ürün detaylarını BLOB'dan VARCHAR2'ye çevir (max 4000 karakter)
+  IF INSERTING OR UPDATING THEN
+    IF :NEW.product_details IS NOT NULL THEN
+      v_new_details := DBMS_LOB.SUBSTR(UTL_RAW.CAST_TO_VARCHAR2(:NEW.product_details), 4000, 1);
+    ELSE
+      v_new_details := 'NULL';
+    END IF;
+  END IF;
+
+  IF UPDATING OR DELETING THEN
+    IF :OLD.product_details IS NOT NULL THEN
+      v_old_details := DBMS_LOB.SUBSTR(UTL_RAW.CAST_TO_VARCHAR2(:OLD.product_details), 4000, 1);
+    ELSE
+      v_old_details := 'NULL';
+    END IF;
+  END IF;
+
   IF INSERTING THEN
     v_new_data := 'ID=' || :NEW.product_id || 
                   ', NAME=' || :NEW.product_name || 
                   ', PRICE=' || :NEW.unit_price ||
-                  ', IMAGE=' || NVL(:NEW.image_filename, 'NULL');
+                  ', IMAGE=' || NVL(:NEW.image_filename, 'NULL') ||
+                  ', DETAILS=' || v_new_details;
 
     INSERT INTO audit_log(table_name, operation, changed_by, new_data)
     VALUES ('PRODUCTS', 'INSERT', USER, v_new_data);
@@ -1966,12 +2279,14 @@ BEGIN
     v_old_data := 'ID=' || :OLD.product_id || 
                   ', NAME=' || :OLD.product_name || 
                   ', PRICE=' || :OLD.unit_price ||
-                  ', IMAGE=' || NVL(:OLD.image_filename, 'NULL');
+                  ', IMAGE=' || NVL(:OLD.image_filename, 'NULL') ||
+                  ', DETAILS=' || v_old_details;
 
     v_new_data := 'ID=' || :NEW.product_id || 
                   ', NAME=' || :NEW.product_name || 
                   ', PRICE=' || :NEW.unit_price ||
-                  ', IMAGE=' || NVL(:NEW.image_filename, 'NULL');
+                  ', IMAGE=' || NVL(:NEW.image_filename, 'NULL') ||
+                  ', DETAILS=' || v_new_details;
 
     INSERT INTO audit_log(table_name, operation, changed_by, old_data, new_data)
     VALUES ('PRODUCTS', 'UPDATE', USER, v_old_data, v_new_data);
@@ -1980,7 +2295,8 @@ BEGIN
     v_old_data := 'ID=' || :OLD.product_id || 
                   ', NAME=' || :OLD.product_name || 
                   ', PRICE=' || :OLD.unit_price ||
-                  ', IMAGE=' || NVL(:OLD.image_filename, 'NULL');
+                  ', IMAGE=' || NVL(:OLD.image_filename, 'NULL') ||
+                  ', DETAILS=' || v_old_details;
 
     INSERT INTO audit_log(table_name, operation, changed_by, old_data)
     VALUES ('PRODUCTS', 'DELETE', USER, v_old_data);
@@ -2054,18 +2370,18 @@ DECLARE
   v_new_data CLOB;
 BEGIN
   IF INSERTING THEN
-    v_new_data := 'STORE_ID=' || :NEW.store_id || ', NAME=' || :NEW.store_name;
+    v_new_data := 'STORE_ID=' || :NEW.store_id || ', NAME=' || :NEW.store_name || ', LOCATION=' || :NEW.physical_address ;
     INSERT INTO audit_log(table_name, operation, changed_by, new_data)
     VALUES ('STORES', 'INSERT', USER, v_new_data);
 
   ELSIF UPDATING THEN
-    v_old_data := 'STORE_ID=' || :OLD.store_id || ', NAME=' || :OLD.store_name;
-    v_new_data := 'STORE_ID=' || :NEW.store_id || ', NAME=' || :NEW.store_name;
+    v_old_data := 'STORE_ID=' || :OLD.store_id || ', NAME=' || :OLD.store_name || ', LOCATION=' || :NEW.physical_address;
+    v_new_data := 'STORE_ID=' || :NEW.store_id || ', NAME=' || :NEW.store_name || ', LOCATION=' || :NEW.physical_address;
     INSERT INTO audit_log(table_name, operation, changed_by, old_data, new_data)
     VALUES ('STORES', 'UPDATE', USER, v_old_data, v_new_data);
 
   ELSIF DELETING THEN
-    v_old_data := 'STORE_ID=' || :OLD.store_id || ', NAME=' || :OLD.store_name;
+    v_old_data := 'STORE_ID=' || :OLD.store_id || ', NAME=' || :OLD.store_name || ', LOCATION=' || :NEW.physical_address;
     INSERT INTO audit_log(table_name, operation, changed_by, old_data)
     VALUES ('STORES', 'DELETE', USER, v_old_data);
   END IF;
@@ -2243,20 +2559,32 @@ DECLARE
     v_new_data CLOB;
 BEGIN
     IF INSERTING THEN
-        v_new_data := 'NAME=' || :NEW.product_name || ', PRICE=' || :NEW.unit_price;
-        INSERT INTO product_log (product_id, product_name, unit_price, operation, new_data, changed_by)
-        VALUES (:NEW.product_id, :NEW.product_name, :NEW.unit_price, 'INSERT', v_new_data, USER);
+        v_new_data := 'NAME=' || :NEW.product_name || ', PRICE=' || :NEW.unit_price || ', DETAILS=' || TO_CHAR(UTL_RAW.CAST_TO_VARCHAR2(:NEW.product_details));
+        
+        INSERT INTO product_log (
+            product_id, product_name, unit_price, operation, new_data, changed_by
+        ) VALUES (
+            :NEW.product_id, :NEW.product_name, :NEW.unit_price, 'INSERT', v_new_data, USER
+        );
 
     ELSIF UPDATING THEN
-        v_old_data := 'NAME=' || :OLD.product_name || ', PRICE=' || :OLD.unit_price;
-        v_new_data := 'NAME=' || :NEW.product_name || ', PRICE=' || :NEW.unit_price;
-        INSERT INTO product_log (product_id, product_name, unit_price, operation, old_data, new_data, changed_by)
-        VALUES (:NEW.product_id, :NEW.product_name, :NEW.unit_price, 'UPDATE', v_old_data, v_new_data, USER);
+        v_old_data := 'NAME=' || :OLD.product_name || ', PRICE=' || :OLD.unit_price || ', DETAILS=' || TO_CHAR(UTL_RAW.CAST_TO_VARCHAR2(:OLD.product_details));
+        v_new_data := 'NAME=' || :NEW.product_name || ', PRICE=' || :NEW.unit_price || ', DETAILS=' || TO_CHAR(UTL_RAW.CAST_TO_VARCHAR2(:NEW.product_details));
+        
+        INSERT INTO product_log (
+            product_id, product_name, unit_price, operation, old_data, new_data, changed_by
+        ) VALUES (
+            :NEW.product_id, :NEW.product_name, :NEW.unit_price, 'UPDATE', v_old_data, v_new_data, USER
+        );
 
     ELSIF DELETING THEN
-        v_old_data := 'NAME=' || :OLD.product_name || ', PRICE=' || :OLD.unit_price;
-        INSERT INTO product_log (product_id, product_name, unit_price, operation, old_data, changed_by)
-        VALUES (:OLD.product_id, :OLD.product_name, :OLD.unit_price, 'DELETE', v_old_data, USER);
+        v_old_data := 'NAME=' || :OLD.product_name || ', PRICE=' || :OLD.unit_price || ', DETAILS=' || TO_CHAR(UTL_RAW.CAST_TO_VARCHAR2(:OLD.product_details));
+        
+        INSERT INTO product_log (
+            product_id, product_name, unit_price, operation, old_data, changed_by
+        ) VALUES (
+            :OLD.product_id, :OLD.product_name, :OLD.unit_price, 'DELETE', v_old_data, USER
+        );
     END IF;
 END;
 /

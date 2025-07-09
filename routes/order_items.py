@@ -1,10 +1,11 @@
 from flask import Blueprint, render_template, request, jsonify, send_file, request
-from db.connection import conn 
+from db.connection import get_connection
 
 order_items_bp = Blueprint('order_items', __name__, url_prefix='/order_items')
 
 @order_items_bp.route('/logs')
 def order_items_log():
+    conn = get_connection()
     cursor = conn.cursor()
     try:
         cursor.execute("""

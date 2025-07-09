@@ -221,8 +221,11 @@
         </ul>
       </nav>
       <div class="user-info">
-        <span>Kullanıcı</span>
+        <i class="fa fa-user-circle"></i> <span> Admin</span>
       </div>
+      <a href="{{ url_for('auth.logout') }}" class="btn btn-danger">
+        <i class="fas fa-sign-out-alt"></i> Çıkış
+      </a>
     </div>
   </header>
     <div class="log-links" style="padding:10px 20px; background:#eef3fb; border-bottom: 1px solid #ccc; display:flex; gap:15px; flex-wrap: wrap; align-items:center; justify-content:center;">
