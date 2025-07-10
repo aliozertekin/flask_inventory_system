@@ -98,19 +98,35 @@ def inventory_log():
     cursor = conn.cursor()
     try:
         cursor.execute("""
-        SELECT log_id, inventory_id, store_id, product_id, change_amount, old_quantity, new_quantity, operation, TO_CHAR(changed_at, 'YYYY-MM-DD HH24:MI:SS') AS changed_at, changed_by
-        FROM inventory_log
-        ORDER BY log_id DESC
-        FETCH FIRST 1000 ROWS ONLY
+            SELECT log_id, inventory_id, store_id, product_id, change_amount, old_quantity, new_quantity, operation,
+                   TO_CHAR(changed_at, 'YYYY-MM-DD HH24:MI:SS') AS changed_at, changed_by
+            FROM inventory_log
+            ORDER BY log_id DESC
+            FETCH FIRST 1000 ROWS ONLY
         """)
         columns = [col[0].lower() for col in cursor.description]
         rows = cursor.fetchall()
-        logs = [dict(zip(columns, row)) for row in rows]  # dict listesi
-        for log in logs:  log['table_name'] = 'INVENTORY'  
+        
+        logs = []
+        for row in rows:
+            log = dict(zip(columns, row))
+            log['table_name'] = 'INVENTORY'
+
+            # old_data ve new_data detaylı formatta (ID, store, product, stok)
+            log['old_data'] = (
+                f"ID={log['inventory_id']}, STORE={log['store_id']}, PRODUCT={log['product_id']}, STOCK={log['old_quantity']}"
+                if log['old_quantity'] is not None else None
+            )
+            log['new_data'] = (
+                f"ID={log['inventory_id']}, STORE={log['store_id']}, PRODUCT={log['product_id']}, STOCK={log['new_quantity']}"
+                if log['new_quantity'] is not None else None
+            )
+
+            logs.append(log)
+
         return render_template('log_generic.html', logs=logs)
     finally:
         cursor.close()
-
 
 @inventory_bp.route('/get_price/<int:product_id>')
 def get_price(product_id):

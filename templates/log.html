@@ -215,6 +215,7 @@
           <li><a href="/inventory"><i class="fa fa-boxes-stacked"></i> Envanter</a></li>  
           <li><a href="/orders"><i class="fa fa-receipt"></i> Siparişler</a></li>
           <li><a href="/customers"><i class="fa fa-user"></i> Müşteriler</a></li>
+          <li><a href="/log"><i class="fa fa-clock-rotate-left"></i> Kayıtlar</a></li>
           <li><a href="/product"><i class="fa fa-cube"></i> Ürünler</a></li>
           <li><a href="/store"><i class="fa fa-store"></i> Mağazalar</a></li>
           <li><a href="/shipments"><i class="fa fa-truck"></i> Kargolar</a></li>
@@ -243,11 +244,26 @@
         <h1 class="logs-title">
           <i class="fas fa-clipboard-list"></i> İşlem Logları
         </h1>
-        <div>
-          <span>{{ logs|length }} kayıt</span>
+        
+      <!-- Sayfalama -->
+      <div class="pagination-container">
+        <div class="pagination">
+          {% if page > 1 %}
+            <a href="{{ url_for('log.show_logs', page=page-1) }}" class="btn btn-light">Önceki</a>
+          {% endif %}
+        
+          <span class="pagination-info">
+            Sayfa {{ page }} / {{ (total // per_page) + (1 if total % per_page else 0) }}
+            (Toplam {{ total }} kayıt)
+          </span>
+        
+          {% if page * per_page < total %}
+            <a href="{{ url_for('log.show_logs', page=page+1) }}" class="btn btn-light">Sonraki</a>
+          {% endif %}
         </div>
       </div>
-
+      
+      </div>
       <div class="filters">
         <div class="filter-group">
           <label for="table-filter"><i class="fas fa-table"></i> Tablo</label>
@@ -284,7 +300,6 @@
         </div>
       </div>
 
-      
       {% if logs %}
       <div class="table-responsive">
         <table class="logs-table">
@@ -334,8 +349,20 @@
         </div>
       {% endif %}
     </div>
+    <div class="pagination-container">
+      <div class="pagination">
+        {% if page > 1 %}
+          <a href="{{ url_for('log.show_logs', page=page-1) }}" class="btn btn-light">Önceki</a>
+        {% endif %}
+        <span class="pagination-info">
+          Sayfa {{ page }} (Toplam {{ (total / per_page) | round(0, 'ceil') | int }} sayfa - {{ total }} kayıt)
+        </span>
+        {% if page * per_page < total %}
+          <a href="{{ url_for('log.show_logs', page=page+1) }}" class="btn btn-light">Sonraki</a>
+        {% endif %}
+    </div>
+    </div>
   </div>
-
   <footer>
     <div class="footer-content">
       <p>&copy; 2025 İşlem Logları Yönetimi</p>
