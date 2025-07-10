@@ -1,4 +1,3 @@
-
 # Oracle Inventory, Order & Shipment Management System
 
 This project is a complete **Inventory, Order, and Shipment Management System** built on **Oracle SQL and PL/SQL** with a **Flask** frontend. It manages product stocks, orders, shipments, customers, and stores using relational database structures with triggers, sequences, views, stored procedures, and audit logging.
@@ -12,6 +11,7 @@ Created by **aliozertekin**.
 - Inventory management per store and product  
 - Full order and order item tracking  
 - Shipment handling and status tracking  
+- **Serial port integration for real-time inventory updates**  
 - Audit log tables for change tracking  
 - JSON-supported product details  
 - Blob/image storage for product and store visuals  
@@ -31,6 +31,105 @@ Created by **aliozertekin**.
 - cx_Oracle  
 - Oracle Database 21c+  
 - HTML, CSS, JavaScript  
+- PySerial  
+
+---
+
+## Serial Integration for Real-time Inventory Updates
+
+The system now includes serial port integration for automatic inventory updates from external devices/machines. This feature allows real-time stock level adjustments based on physical inventory changes detected by connected sensors or machines.
+
+### How It Works
+1. **Machine Simulation**: `simulate_machine.py` generates random inventory update events
+2. **Serial Receiver**: `receiver.py` listens to the serial port and processes incoming data
+3. **Database Update**: Calls `ADD_INVENTORY` PL/SQL procedure to update stock levels
+
+### Setup Guide
+1. Connect your device/machine to a serial port (COM3/COM4)
+2. Configure baud rate and port settings:
+   ```python
+   ser = serial.Serial('COM3', 9600, timeout=1)
+   ```
+3. Start the receiver script:
+   ```bash
+   python receiver.py
+   ```
+4. (Optional) Run machine simulator for testing:
+   ```bash
+   python simulate_machine.py
+   ```
+
+### Screenshots
+
+**Main Interface**  
+![Main Interface](images/index_window.png)  
+
+**Serial Log Window**  
+![Log Window](images/log_window.png)  
+
+**Serial Settings Configuration**  
+![Serial Settings](serial/images/serial_settings.png)  
+
+### Sample Code
+**receiver.py** (Serial Data Processor):
+```python
+import serial
+import cx_Oracle
+import time
+
+# Seri port bağlantısı
+ser = serial.Serial('COM3', 9600, timeout=1)
+
+# Oracle bağlantı bilgileri
+dsn = cx_Oracle.makedsn("localhost", 1521, service_name="FREE")
+conn = cx_Oracle.connect(user="system", password="admin", dsn=dsn)
+
+def process_serial_line(line):
+    try:
+        cursor = conn.cursor()
+        store_id_str, product_id_str, quantity_str = line.strip().split(",")
+        store_id = int(store_id_str)
+        product_id = int(product_id_str)
+        quantity = int(quantity_str)
+
+        old_amount = cursor.var(cx_Oracle.NUMBER)
+        new_amount = cursor.var(cx_Oracle.NUMBER)
+
+        cursor.callproc("ADD_INVENTORY", [
+            store_id,
+            product_id,
+            quantity,
+            old_amount,
+            new_amount,
+            "MACHINE"
+        ])
+
+        print(f"[✓] Store={store_id} Product={product_id} +{quantity} → New: {new_amount.getvalue()}")
+
+        conn.commit()
+        cursor.close()
+    except Exception as e:
+        print(f"[Hata] {e}")
+
+print("Dinleniyor...")
+
+while True:
+    try:
+        cursor = conn.cursor()
+        if ser.in_waiting > 0:
+            line = ser.readline().decode('utf-8').strip()
+            if line:
+                print(f"Tarih: {time.strftime("%c")} Alındı: {line}")
+                process_serial_line(line)
+    except KeyboardInterrupt:
+        print("Durduruluyor...")
+        break
+    except Exception as e:
+        print(f"Okuma Hatası: {e}")
+        time.sleep(1)
+ser.close()
+cursor.close()
+```
 
 ---
 
@@ -190,68 +289,36 @@ Created by **aliozertekin**.
 1. Ensure Oracle Database 21c+ is running and accessible.  
 2. Clone this repository:
    ```bash
-   git clone https://github.com/your-username/flask_inventory_system.git
+   git clone https://github.com/aliozertekin/flask_inventory_system.git
    cd flask_inventory_system
    ```
 3. Install Python dependencies:
    ```bash
    pip install -r requirements.txt
    ```
-   If you don’t want a separate file, you can also install them directly with:
+   If you don't have a requirements file:
    ```bash
-   pip install flask cx_Oracle reportlab python-dotenv wtforms flask-wtf email-validator
+   pip install flask cx_Oracle pyserial
    ```
-5. Configure Oracle connection in `db/connection.py`:
+4. Configure Oracle connection in `db/connection.py`:
    ```python
    import cx_Oracle
-
    dsn = cx_Oracle.makedsn("localhost", 1521, service_name="FREE")
    conn = cx_Oracle.connect("your_user", "your_password", dsn=dsn)
    ```
-6. Run the SQL scripts in `db/sql/` folder (in order) to create schema, procedures, views, and populate sample data. Example:
+5. Run the SQL scripts in `db/sql/` folder to create the schema:
    ```sql
    @co_create.sql
    @co_install.sql
    @co_populate.sql
    ```
-5. Run the SQL script all_queries in `db/sql/methods` folder to create user defined schema, procedures, views. Example:
-   ```sql
-   @all_queries.sql
-   ```
-7. Start the Flask application:
+6. Start the Flask application:
    ```bash
    python app.py
    ```
-8. Open [http://localhost:5000](http://localhost:5000) in your browser.
+7. Open [http://localhost:5000](http://localhost:5000) in your browser.
 
 ---
-
-## Sample API Usage
-
-### Add Order
-
-**POST** `/orders/add`
-
-**Request Body Example:**
-
-```json
-{
-  "customer_id": 1,
-  "store_id": 101,
-  "items": [
-    {
-      "product_id": 2001,
-      "quantity": 2,
-      "unit_price": 50.0
-    },
-    {
-      "product_id": 2002,
-      "quantity": 1,
-      "unit_price": 75.0
-    }
-  ]
-}
-```
 
 ## Project Structure
 
@@ -259,11 +326,17 @@ Created by **aliozertekin**.
 flask_inventory_system/
 │
 ├── app.py                      # Main application entry point
+├── receiver.py                 # Serial port data receiver
+├── simulate_machine.py         # Machine data simulator
 ├── db/
 │   ├── connection.py           # Oracle DB connection setup
 │   └── sql/                    # SQL scripts for schema and logic
 │
-├── images/                     # Images of the website
+├── images/                     # Application screenshots
+│   ├── index_window.png
+│   ├── log_window.png
+│   └── serial_settings.png
+│
 ├── modules/                    # Modules for easier handling
 ├── routes/                     # Flask route handlers
 ├── templates/                  # HTML templates
