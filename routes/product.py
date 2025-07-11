@@ -333,12 +333,12 @@ def reviews():
     cursor = conn.cursor()
 
     try:
-        cursor.execute("SELECT product_name, product_details FROM products")
+        cursor.execute("SELECT product_id, product_name, product_details FROM products")
         rows = cursor.fetchall()
         
         all_reviews = []
 
-        for name, details_blob in rows:
+        for product_id, name, details_blob in rows:
             if not details_blob:
                 continue
             
@@ -362,8 +362,7 @@ def reviews():
                     'rating': r.get('rating'),
                     'review': r.get('review'),
                     'avg_rating': avg_rating,
-                    # Bu alanlar şablonun kullandığı için örnek veri verdim, gerekirse düzenle
-                    'product_image': None,
+                    'product_image': url_for('product.get_image', product_id=product_id),
                     'review_date': None,
                     'customer_name': None
                 })

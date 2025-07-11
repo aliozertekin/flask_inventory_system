@@ -109,13 +109,12 @@
             {% if reviews %}
                 <!-- Ürün bilgisi ve ortalama puan -->
                 <div class="product-info">
-                    <img src="{{ reviews[0].product_image or url_for('static', filename='images/default-product.png') }}" 
-                         alt="{{ reviews[0].product_name }}">
+                    <img src="{{ reviews[0].product_image }}" alt="{{ reviews[0].product_name }}">
                     <div class="product-details">
                         <h2>{{ reviews[0].product_name }}</h2>
                         <div class="avg-rating">
                             <span class="rating-stars">
-                                {% for i in range(1, 6) %}
+                                {% for i in range(1, 11) %}
                                     {% if i <= reviews[0].avg_rating|round %}
                                         <i class="fas fa-star"></i>
                                     {% elif i-0.5 <= reviews[0].avg_rating %}
@@ -150,7 +149,7 @@
                         <div class="review-header">
                             <div class="rating">
                                 <span class="rating-stars">
-                                    {% for i in range(1, 6) %}
+                                    {% for i in range(1, 11) %}
                                         {% if i <= review.rating %}
                                             <i class="fas fa-star"></i>
                                         {% elif i - 0.5 <= review.rating %}
