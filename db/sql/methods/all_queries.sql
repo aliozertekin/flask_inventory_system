@@ -1,7 +1,7 @@
 ﻿prompt PL/SQL Developer Export User Objects for user SYSTEM@FREE
-prompt Created by alioz on 9 Temmuz 2025 Çarşamba
+prompt Created by alioz on 17 Temmuz 2025 Perşembe
 set define off
-spool all_queries2.log
+spool all_queries.log
 
 prompt
 prompt Creating sequence INVENTORY_SEQ
@@ -10,9 +10,31 @@ prompt
 create sequence SYSTEM.INVENTORY_SEQ
 minvalue 1
 maxvalue 9999999999999999999999999999
-start with 568
+start with 692
 increment by 1
 nocache;
+
+prompt
+prompt Creating sequence LOT_LOGS_SEQ
+prompt ==============================
+prompt
+create sequence SYSTEM.LOT_LOGS_SEQ
+minvalue 1
+maxvalue 9999999999999999999999999999
+start with 1
+increment by 1
+nocache;
+
+prompt
+prompt Creating sequence LOT_SEQ
+prompt =========================
+prompt
+create sequence SYSTEM.LOT_SEQ
+minvalue 1
+maxvalue 9999999999999999999999999999
+start with 121
+increment by 1
+cache 20;
 
 prompt
 prompt Creating sequence SHIPMENT_SEQ
@@ -683,6 +705,93 @@ alter table SYSTEM.INVENTORY_LOG
     minextents 1
     maxextents unlimited
   );
+
+prompt
+prompt Creating table LOT_LOGS
+prompt =======================
+prompt
+create table SYSTEM.LOT_LOGS
+(
+  log_id      NUMBER generated always as identity,
+  lot_id      NUMBER,
+  action      VARCHAR2(20),
+  action_date DATE default SYSDATE,
+  user_name   VARCHAR2(50),
+  description VARCHAR2(500)
+)
+tablespace SYSTEM
+  pctfree 10
+  pctused 40
+  initrans 1
+  maxtrans 255
+  storage
+  (
+    initial 64K
+    next 1M
+    minextents 1
+    maxextents unlimited
+  );
+alter table SYSTEM.LOT_LOGS
+  add primary key (LOG_ID)
+  using index
+  tablespace SYSTEM
+  pctfree 10
+  initrans 2
+  maxtrans 255
+  storage
+  (
+    initial 64K
+    next 1M
+    minextents 1
+    maxextents unlimited
+  );
+
+prompt
+prompt Creating table LOTS
+prompt ===================
+prompt
+create table SYSTEM.LOTS
+(
+  lot_id       NUMBER not null,
+  inventory_id NUMBER not null,
+  product_id   NUMBER not null,
+  amount       NUMBER,
+  exp_date     DATE
+)
+tablespace SYSTEM
+  pctfree 10
+  pctused 40
+  initrans 1
+  maxtrans 255
+  storage
+  (
+    initial 64K
+    next 1M
+    minextents 1
+    maxextents unlimited
+  );
+alter table SYSTEM.LOTS
+  add primary key (LOT_ID)
+  using index
+  tablespace SYSTEM
+  pctfree 10
+  initrans 2
+  maxtrans 255
+  storage
+  (
+    initial 64K
+    next 1M
+    minextents 1
+    maxextents unlimited
+  );
+alter table SYSTEM.LOTS
+  add constraint FK_LOT_INVENTORY foreign key (INVENTORY_ID)
+  references SYSTEM.INVENTORY (INVENTORY_ID);
+alter table SYSTEM.LOTS
+  add constraint FK_LOT_PRODUCT foreign key (PRODUCT_ID)
+  references SYSTEM.PRODUCTS (PRODUCT_ID);
+alter table SYSTEM.LOTS
+  add check (AMOUNT >= 0);
 
 prompt
 prompt Creating table ORDERS
@@ -1506,7 +1615,13 @@ CREATE OR REPLACE NONEDITIONABLE PROCEDURE SYSTEM.ADD_INVENTORY (
   p_new_amount     OUT NUMBER,
   p_changed_by     IN  VARCHAR2 DEFAULT 'SYSTEM'
 ) IS
-  v_inventory_id NUMBER;
+  v_inventory_id  NUMBER;
+  v_lot_size      CONSTANT NUMBER := 25;
+  v_lot_count     NUMBER;
+  v_remaining     NUMBER;
+  v_exp_date      DATE := SYSDATE + 730; -- 2 yıl sonrası
+  v_lot_id        NUMBER;
+  v_description   VARCHAR2(1000);
 BEGIN
   BEGIN
     SELECT inventory_id, product_inventory
@@ -1521,12 +1636,14 @@ BEGIN
   END;
 
   IF v_inventory_id IS NOT NULL THEN
+    -- Stoğu güncelle
     UPDATE inventory
     SET product_inventory = product_inventory + p_product_amount
     WHERE inventory_id = v_inventory_id;
 
     SELECT product_inventory INTO p_new_amount FROM inventory WHERE inventory_id = v_inventory_id;
   ELSE
+    -- Yeni envanter oluştur
     SELECT inventory_seq.NEXTVAL INTO v_inventory_id FROM dual;
 
     INSERT INTO inventory (inventory_id, store_id, product_id, product_inventory)
@@ -1535,6 +1652,52 @@ BEGIN
     p_new_amount := p_product_amount;
   END IF;
 
+  -- LOT oluştur (25’lik parçalar)
+  v_lot_count := TRUNC(p_product_amount / v_lot_size);
+  v_remaining := MOD(p_product_amount, v_lot_size);
+
+  FOR i IN 1..v_lot_count LOOP
+    SELECT lot_seq.NEXTVAL INTO v_lot_id FROM dual;
+
+    INSERT INTO lots (lot_id, inventory_id, product_id, amount, exp_date)
+    VALUES (v_lot_id, v_inventory_id, p_product_id, v_lot_size, v_exp_date);
+
+    -- LOT_LOG kaydı
+    v_description := 'LOT_ID=' || v_lot_id ||
+                     ', INVENTORY_ID=' || v_inventory_id ||
+                     ', PRODUCT_ID=' || p_product_id ||
+                     ', AMOUNT=' || v_lot_size ||
+                     ', EXP_DATE=' || TO_CHAR(v_exp_date, 'YYYY-MM-DD HH24:MI:SS');
+
+    INSERT INTO lot_logs (
+      lot_id, action, action_date, user_name, description
+    ) VALUES (
+      v_lot_id, 'INSERT', SYSTIMESTAMP, p_changed_by, v_description
+    );
+  END LOOP;
+
+  -- Kalan varsa
+  IF v_remaining > 0 THEN
+    SELECT lot_seq.NEXTVAL INTO v_lot_id FROM dual;
+
+    INSERT INTO lots (lot_id, inventory_id, product_id, amount, exp_date)
+    VALUES (v_lot_id, v_inventory_id, p_product_id, v_remaining, v_exp_date);
+
+    -- LOT_LOG kaydı
+    v_description := 'LOT_ID=' || v_lot_id ||
+                     ', INVENTORY_ID=' || v_inventory_id ||
+                     ', PRODUCT_ID=' || p_product_id ||
+                     ', AMOUNT=' || v_remaining ||
+                     ', EXP_DATE=' || TO_CHAR(v_exp_date, 'YYYY-MM-DD HH24:MI:SS');
+
+    INSERT INTO lot_logs (
+      lot_id, action, action_date, user_name, description
+    ) VALUES (
+      v_lot_id, 'INSERT', SYSTIMESTAMP, p_changed_by, v_description
+    );
+  END IF;
+
+  -- INVENTORY LOG kaydı
   INSERT INTO inventory_log (
     inventory_id, store_id, product_id,
     change_amount, old_quantity, new_quantity,
@@ -1552,6 +1715,47 @@ EXCEPTION
     ROLLBACK;
     RAISE;
 END ADD_INVENTORY;
+/
+
+prompt
+prompt Creating procedure ADD_LOT
+prompt ==========================
+prompt
+CREATE OR REPLACE NONEDITIONABLE PROCEDURE SYSTEM.ADD_LOT (
+  P_LOT_ID       IN NUMBER,
+  P_INVENTORY_ID IN NUMBER,
+  P_PRODUCT_ID   IN NUMBER,
+  P_AMOUNT       IN NUMBER,
+  P_EXP_DATE     IN DATE,
+  P_CHANGED_BY   IN VARCHAR2 DEFAULT 'SYSTEM'  -- Kullanıcı parametresi eklendi
+) AS
+BEGIN
+  -- Lot ekleme
+  INSERT INTO LOTS (LOT_ID, INVENTORY_ID, PRODUCT_ID, AMOUNT, EXP_DATE)
+  VALUES (P_LOT_ID, P_INVENTORY_ID, P_PRODUCT_ID, P_AMOUNT, P_EXP_DATE);
+
+  -- Log tablosuna ekleme
+  INSERT INTO LOT_LOGS (
+    LOG_ID,       -- Sequence ile otomatik artan ID
+    LOT_ID,
+    ACTION,
+    ACTION_DATE,
+    USER_NAME,
+    DESCRIPTION
+  )
+  VALUES (
+    LOT_LOGS_SEQ.NEXTVAL,
+    P_LOT_ID,
+    'INSERT',
+    SYSTIMESTAMP,
+    P_CHANGED_BY,
+    'LOT_ID=' || P_LOT_ID || ', INVENTORY_ID=' || P_INVENTORY_ID ||
+    ', PRODUCT_ID=' || P_PRODUCT_ID || ', AMOUNT=' || P_AMOUNT ||
+    ', EXP_DATE=' || TO_CHAR(P_EXP_DATE, 'YYYY-MM-DD HH24:MI:SS')
+  );
+
+  DBMS_OUTPUT.PUT_LINE('Lot başarıyla eklendi. LOT_ID: ' || P_LOT_ID);
+END;
 /
 
 prompt
@@ -2095,6 +2299,53 @@ CREATE OR REPLACE NONEDITIONABLE PACKAGE BODY SYSTEM.dashboard_pkg AS
         RETURN v_cursor;
     END;
 END dashboard_pkg;
+/
+
+prompt
+prompt Creating trigger TRG_ADD_LOT_ON_INSERT
+prompt ======================================
+prompt
+CREATE OR REPLACE NONEDITIONABLE TRIGGER SYSTEM.TRG_ADD_LOT_ON_INSERT
+AFTER INSERT ON INVENTORY
+FOR EACH ROW
+WHEN (SYS_CONTEXT('USERENV', 'SESSION_USER') = 'MACHINE')
+DECLARE
+  V_TOTAL_AMOUNT  NUMBER := :NEW.PRODUCT_INVENTORY;
+  V_PRODUCT_ID    NUMBER := :NEW.PRODUCT_ID;
+  V_INVENTORY_ID  NUMBER := :NEW.INVENTORY_ID;
+  V_LOT_SIZE      NUMBER := 25;
+  V_LOT_COUNT     NUMBER;
+  V_REMAINING     NUMBER;
+  V_EXP_DATE      DATE := SYSDATE + 730;
+  I               NUMBER := 1;
+BEGIN
+  -- Hesaplamalar
+  V_LOT_COUNT := TRUNC(V_TOTAL_AMOUNT / V_LOT_SIZE);
+  V_REMAINING := MOD(V_TOTAL_AMOUNT, V_LOT_SIZE);
+
+  -- 25'lik lotlar
+  WHILE I <= V_LOT_COUNT LOOP
+    ADD_LOT(
+      P_LOT_ID       => LOT_SEQ.NEXTVAL,
+      P_INVENTORY_ID => V_INVENTORY_ID,
+      P_PRODUCT_ID   => V_PRODUCT_ID,
+      P_AMOUNT       => V_LOT_SIZE,
+      P_EXP_DATE     => V_EXP_DATE
+    );
+    I := I + 1;
+  END LOOP;
+
+  -- Kalan varsa
+  IF V_REMAINING > 0 THEN
+    ADD_LOT(
+      P_LOT_ID       => LOT_SEQ.NEXTVAL,
+      P_INVENTORY_ID => V_INVENTORY_ID,
+      P_PRODUCT_ID   => V_PRODUCT_ID,
+      P_AMOUNT       => V_REMAINING,
+      P_EXP_DATE     => V_EXP_DATE
+    );
+  END IF;
+END;
 /
 
 prompt

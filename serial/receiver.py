@@ -9,25 +9,28 @@ ser = serial.Serial('COM3', 9600, timeout=1)
 dsn = cx_Oracle.makedsn("localhost", 1521, service_name="FREE")
 conn = cx_Oracle.connect(user="system", password="admin", dsn=dsn)
 
-
 def process_serial_line(line):
     try:
         cursor = conn.cursor()
-        store_id_str, product_id_str, quantity_str = line.strip().split(",")
+        store_id_str, product_id_str, quantity_str ,machine_name = line.strip().split(",")
         store_id = int(store_id_str)
         product_id = int(product_id_str)
         quantity = int(quantity_str)
 
+        # NOT: ADD_INVENTORY prosedürünün envantere stoğu eklemesi yeterli
+        # Lot oluşturma işlemi Oracle trigger/prosedürde halledilecek
+
         old_amount = cursor.var(cx_Oracle.NUMBER)
         new_amount = cursor.var(cx_Oracle.NUMBER)
 
+        # Burada ADD_INVENTORY prosedürünü çağırıyoruz
         cursor.callproc("ADD_INVENTORY", [
             store_id,
             product_id,
             quantity,
             old_amount,
             new_amount,
-            "MACHINE"
+            machine_name
         ])
 
         print(f"[✓] Store={store_id} Product={product_id} +{quantity} → New: {new_amount.getvalue()}")
@@ -41,11 +44,10 @@ print("Dinleniyor...")
 
 while True:
     try:
-        cursor = conn.cursor()
         if ser.in_waiting > 0:
             line = ser.readline().decode('utf-8').strip()
             if line:
-                print(f"Tarih: {time.strftime("%c")} Alındı: {line}")
+                print(f"Tarih: {time.strftime('%c')} Alındı: {line}")
                 process_serial_line(line)
     except KeyboardInterrupt:
         print("Durduruluyor...")
@@ -53,5 +55,5 @@ while True:
     except Exception as e:
         print(f"Okuma Hatası: {e}")
         time.sleep(1)
+
 ser.close()
-cursor.close()

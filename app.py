@@ -12,6 +12,7 @@ from routes.store import store_bp
 from routes.shipments import shipments_bp
 from routes.order_items import order_items_bp
 from routes.auth import auth_bp
+from routes.lots import lot_bp
 
 app = Flask(__name__)
 
@@ -29,6 +30,7 @@ app.register_blueprint(store_bp)
 app.register_blueprint(shipments_bp)
 app.register_blueprint(order_items_bp)
 app.register_blueprint(auth_bp)
+app.register_blueprint(lot_bp)
 
 # Genel 500 Internal Server Error için
 @app.errorhandler(500)

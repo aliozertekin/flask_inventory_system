@@ -12,7 +12,6 @@ def index():
 @index_bp.route('/api/dashboard')
 def api_dashboard():
     conn = get_connection()
-    conn = get_connection()
     cursor = conn.cursor()
     
     try:

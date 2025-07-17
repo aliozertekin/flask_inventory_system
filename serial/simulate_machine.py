@@ -4,7 +4,7 @@ import random
 
 # COM port (örnek: COM5 veya /dev/ttyUSB0)
 ser = serial.Serial('COM4', 9600)
-
+machine_name = "MACHINE"
 # Store ve Product ID listeleri
 store_ids = list(range(1, 23))       # Mağaza 1-23
 product_ids = list(range(1, 46))    # Ürün 1-46
@@ -17,8 +17,8 @@ while True:
     quantity = random.randint(1, 50)
 
     # Veri formatı: store_id,product_id,quantity
-    data = f"{store_id},{product_id},{quantity}\n"
+    data = f"{store_id},{product_id},{quantity},{machine_name}\n"
     ser.write(data.encode('utf-8'))
-    print(f"Tarih: {time.strftime("%c")} Gönderildi: {f"Store_ID = {store_id}, Product_ID = {product_id}, Miktar = {quantity}\n"}")
+    print(f"Tarih: {time.strftime("%c")} Gönderildi: {f"Store_ID = {store_id}, Product_ID = {product_id}, Miktar = {quantity}, Makine İsmi = {machine_name}\n"}")
 
     time.sleep(random.randint(1, 60))  # 1-60 saniye arası bekle
