@@ -56,7 +56,7 @@ This script:
 
 Example output:
 ```
-Tarih: Tue Jul 16 10:15:20 2025 Gönderildi: Store_ID = 8, Product_ID = 22, Miktar = 14
+Tarih: Tue Jul 16 10:15:20 2025 Gönderildi: Store_ID = 8, Product_ID = 22, Miktar = 14, Makine İsmi = MACHINE
 ```
 
 ## How to Run
@@ -77,11 +77,12 @@ python simulator.py
 
 ## File Overview
 
-| File           | Description                                |
-|----------------|--------------------------------------------|
-| `receiver.py`  | Receives data from serial and updates DB   |
-| `simulator.py` | Sends test inventory data via serial       |
-| `README.md`    | Project documentation                      |
+| File                 | Description                                |
+|----------------------|--------------------------------------------|
+| `receiver.py`        | Receives data from serial and updates DB   |
+| `simulator.py`       | Sends test inventory data via serial       |
+| `README.md`          | Project documentation                      |
+| `serial_settings.png`| Settings for serial port                   |
 
 ## Notes
 

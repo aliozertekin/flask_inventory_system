@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8" />
+    <title>Lotlar</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <div class="logo"><i class="fas fa-box-open"></i>Lot Yönetimi</div>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="/"><i class="fa fa-home"></i> Ana Sayfa</a></li>
+                    <li><a href="/inventory/add"><i class="fa fa-boxes-stacked"></i>Envantere Ekle</a></li>
+                    <li><a href="/orders"><i class="fa fa-receipt"></i> Siparişler</a></li>
+                    <li><a href="/customers"><i class="fa fa-user"></i> Müşteriler</a></li>
+                    <li><a href="/log"><i class="fa fa-clock-rotate-left"></i> Kayıtlar</a></li>
+                    <li><a href="/product"><i class="fa fa-cube"></i> Ürünler</a></li>
+                    <li><a href="/store"><i class="fa fa-store"></i> Mağazalar</a></li>
+                    <li><a href="/shipments"><i class="fa fa-truck"></i> Kargolar</a></li>
+                    <li><a href="/lots"><i class="fas fa-box-open"></i> Lotlar</a></li>
+                </ul>
+            </nav>
+            <div class="user-info">
+                <i class="fa fa-user-circle"></i> <span> Admin</span>
+            </div>
+            <a href="{{ url_for('auth.logout') }}" class="btn btn-danger">
+                <i class="fas fa-sign-out-alt"></i> Çıkış
+            </a>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="card">
+            <div class="page-header">
+                <h1 class="page-title"><i class="fas fa-box-open"></i> Lotlar</h1>
+            </div>
+
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Lot ID</th>
+                            <th>Envanter ID</th>
+                            <th>Ürün ID</th>
+                            <th>Miktar</th>
+                            <th>Son Kullanma</th>
+                            <th>Barkod</th>
+                            <th>Barkodu Görüntüle</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for lot in lots %}
+                        <tr>
+                            <td>{{ lot[0] }}</td>
+                            <td>{{ lot[1] }}</td>
+                            <td>{{ lot[2] }}</td>
+                            <td>{{ lot[3] }}</td>
+                            <td>{{ lot[4] }}</td>
+                            <td>
+                                <img src="{{ url_for('lots.generate_barcode', lot_id=lot[0]) }}" alt="Barkod" height="40">
+                            </td>
+                            <td>
+                                <a href="barcode/{{ lot[0] }}" class="btn btn-primary" style="text-align: center; padding: 10px;">Barkodu görüntüle.</a>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr><td colspan="6">Lot bulunamadı.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <p>&copy; 2025 Envanter Yönetim Sistemi</p>
+            <div class="footer-links">
+                <a href="/privacy">Gizlilik</a>
+                <a href="/terms">Şartlar</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="{{ url_for('static', filename='scripts/search.js') }}"></script>
+</body>
+</html>
